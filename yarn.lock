@@ -1952,7 +1952,7 @@ got@^6.7.1:
     unzip-response "^2.0.1"
     url-parse-lax "^1.0.0"
 
-graceful-fs@^4.1.11, graceful-fs@^4.1.2:
+graceful-fs@^4.1.11, graceful-fs@^4.1.2, graceful-fs@^4.1.6:
   version "4.1.11"
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.1.11.tgz#0e8bdfe4d1ddb8854d64e04ea7c00e2a026e5658"
 
@@ -2390,6 +2390,14 @@ json5@^0.5.0, json5@^0.5.1:
   version "0.5.1"
   resolved "https://registry.yarnpkg.com/json5/-/json5-0.5.1.tgz#1eade7acc012034ad84e2396767ead9fa5495821"
 
+jsonfile@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/jsonfile/-/jsonfile-5.0.0.tgz#e6b718f73da420d612823996fdf14a03f6ff6922"
+  dependencies:
+    universalify "^0.1.2"
+  optionalDependencies:
+    graceful-fs "^4.1.6"
+
 jsonwebtoken@^8.3.0:
   version "8.3.0"
   resolved "https://registry.yarnpkg.com/jsonwebtoken/-/jsonwebtoken-8.3.0.tgz#056c90eee9a65ed6e6c72ddb0a1d325109aaf643"
@@ -2749,8 +2757,8 @@ mongoose-legacy-pluralize@1.0.2:
   resolved "https://registry.yarnpkg.com/mongoose-legacy-pluralize/-/mongoose-legacy-pluralize-1.0.2.tgz#3ba9f91fa507b5186d399fb40854bff18fb563e4"
 
 mongoose@^5.2.28:
-  version "5.2.13"
-  resolved "https://registry.yarnpkg.com/mongoose/-/mongoose-5.2.13.tgz#d2e2bd7fccb665640372431e8c8f943be9f5ec15"
+  version "5.2.14"
+  resolved "https://registry.yarnpkg.com/mongoose/-/mongoose-5.2.14.tgz#ce149749a17fffb324a9ff3bd2fa50701e75743a"
   dependencies:
     async "2.6.1"
     bson "~1.0.5"
@@ -4192,6 +4200,10 @@ unique-string@^1.0.0:
   resolved "https://registry.yarnpkg.com/unique-string/-/unique-string-1.0.0.tgz#9e1057cca851abb93398f8b33ae187b99caec11a"
   dependencies:
     crypto-random-string "^1.0.0"
+
+universalify@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/universalify/-/universalify-0.1.2.tgz#b646f69be3942dabcecc9d6639c80dc105efaa66"
 
 unpipe@1.0.0, unpipe@~1.0.0:
   version "1.0.0"

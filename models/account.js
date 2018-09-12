@@ -52,8 +52,13 @@ const accountSchema = mongoose.Schema({
     required : false,
     ref : 'mache'
   }],
+  memberOf : [{
+    type: ObjectId,
+    required : false,
+    ref : 'group'
+  }],
   scholar_explorer: {
-    user_id : { type: String, required: false, unique: true },
+    user_id : { type: String, required: false },
     exploration_ids : [{ type:String, required: false}]
   },
   reset_password_token : {

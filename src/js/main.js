@@ -4,28 +4,11 @@ import 'bootstrap'
 import '../css/style.css';
 import axios from 'axios'
 
-$('#loginButton').on('click', (el) => {
-  el.preventDefault();
-  let username = $('#inputUsername').val(),
-      password = $('#inputPassword').val();
-  axios.post('/login', {
-    username : username,
-    password : password
-  })
-  .then( (res) => {
-    if ( res.statusText === 'OK' ) {
-      if ( res.data.success === true ) {
-        window.location.href = '/postLogin'
-      }
-    } else { console.log("FAILED", res); }
-  })
-  .catch( (err) => {
-    console.log("ERROR in request runner login", err);
-    resolve(err);
-  })
-})
-
-$('#visitDashboard').on('click', (el) => {
-  el.preventDefault();
-  window.open('/getToken')
+let userId = $('h1').attr('data-userId');
+let user = {}
+axios.post('/getUser', { userId : userId } )
+.then( (response) => { console.log("User: ", response.data.user); return response.data.user; })
+.then( (user) => axios.post('/getGroup', { groupId : user.memberOf[0] } ) )
+.then( (response) => {
+  console.log("Group: ", response.data.group)
 })

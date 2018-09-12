@@ -26,7 +26,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-mongoose.connect(process.env.DB_CONN, { useNewUrlParser : true }).then(
+mongoose.connect(process.env.DB_CONN_DEV, { useNewUrlParser : true }).then(
   () => { console.log("Connected to database!") },
   err => { console.log("ERROR - Database connection failed")}
 )
