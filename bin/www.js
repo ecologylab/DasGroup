@@ -3,6 +3,7 @@ const debug = require('debug')('debug:server');
 const https = require('https');
 const fs = require('fs');
 const port = process.env.PORT || '3000';
+const logger = require('../utils/logger');
 app.set('port', port)
 
 const server = https.createServer({
@@ -14,11 +15,11 @@ server.listen(port);
 server.on('error', (err) => {
   switch (err.code) {
     case 'EACCES':
-      console.error(bind + ' requires elevated privileges');
+      logger.error(bind + ' requires elevated privileges');
       process.exit(1);
       break;
     case 'EADDRINUSE':
-      console.error(bind + ' is already in use');
+      logger.error(bind + ' is already in use');
       process.exit(1);
       break;
     default:
@@ -26,5 +27,5 @@ server.on('error', (err) => {
   }
 });
 server.on('listening', () => {
-  console.log(`Listening on port ${port}`);
+  logger.notice(`Listening on port ${port}`);
 })

@@ -7,9 +7,11 @@ const morgan = require('morgan');
 const session = require('express-session');
 const mongoose = require('mongoose');
 const passport = require('passport');
-
-require('dotenv').config()
 const app = express();
+const logger = require('./utils/logger');
+require('dotenv').config()
+require('./passport.js')(passport);
+
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 app.use(morgan('dev'));
@@ -27,12 +29,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 mongoose.connect(process.env.DB_CONN_DEV, { useNewUrlParser : true }).then(
-  () => { console.log("Connected to database!") },
-  err => { console.log("ERROR - Database connection failed")}
+  () => { logger.notice("Connected to database!") },
+  err => { logger.error("ERROR - Database connection failed")}
 )
 
 
-require('./passport.js')(passport);
 app.use(passport.initialize() );
 app.use(passport.session() )
 
