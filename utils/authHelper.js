@@ -8,11 +8,12 @@ function isAuthenticated(req, res, next) {
   }
 }
 function getUser(userInfo) {
+  console.log("USER INFO ", userInfo)
   return new Promise( (resolve, reject) => {
     Account.findOne( {username : userInfo.username}, (err, foundUser) => {
       if ( err ) { reject(err); }
       else if ( !foundUser ) {
-        reject("No user")
+        reject("No user found in auth helper getUser")
       } else {
         resolve(foundUser);
       }

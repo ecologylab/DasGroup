@@ -7,7 +7,11 @@
     "dev": "node node_modules/nodemon/bin/nodemon.js  bin/www",
     "start": "node bin/www",
     "build": "webpack",
-    "watch": "webpack --watch"
+    "watch": "webpack --watch",
+    "test": "mocha"
+  },
+  "nodemonConfig" : {
+    "ignore" : ["node_modules/*", "logs/*"]
   },
   "author": "avsphere",
   "license": "ISC",
@@ -40,6 +44,7 @@
     "popper.js": "^1.14.4",
     "pug": "^2.0.3",
     "serve-favicon": "^2.5.0",
+    "shortid": "^2.2.13",
     "winston": "^3.1.0"
   }
 }

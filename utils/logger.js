@@ -13,13 +13,15 @@ const customLevels = {
     error: 0,
     warning: 1,
     notice: 2,
-    info: 3
+    test: 3,
+    info: 4
   },
   colors: {
     error: 'red',
     warning: 'yellow',
     notice: 'blue',
-    info: 'green'
+    test : 'green',
+    info: 'grey'
   }
 };
 
@@ -29,18 +31,23 @@ module.exports = winston.createLogger({
   format: combine( timestamp(), winston.format.json() ),
   transports: [
 		new winston.transports.Console({
-      format: combine( colorize({colors : customLevels.colors}), myConsoleFormat )
+      format: combine(
+         colorize({colors : customLevels.colors}),
+         winston.format.splat(),
+         winston.format.simple(),
+         myConsoleFormat
+       )
     }),
     new winston.transports.File({
-      filename: `${LogBase}/combined.log`,
+      filename: `${LogBase}/combined.json`,
       level: 'verbose'
     }),
     new winston.transports.File({
-      filename:  `${LogBase}/info.log`,
+      filename:  `${LogBase}/info.json`,
       level: 'info'
     }),
     new winston.transports.File({
-      filename:  `${LogBase}/errors.log`,
+      filename:  `${LogBase}/errors.json`,
       level: 'error'
     })
   ]

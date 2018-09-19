@@ -1,5 +1,8 @@
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Schema.Types.ObjectId;
+const Account = require('./account');
+const shortId = require('shortid')
+const logger = require('../utils/logger')
 const groupSchema = mongoose.Schema({
   creator: {
     type: ObjectId,
@@ -24,11 +27,11 @@ const groupSchema = mongoose.Schema({
   key: {
     type: String,
     unique: true,
-    required : true
+    required : true,
+    default : shortId.generate
   },
   name: {
     type: String,
-    unique: true,
     required : true
   },
   description: {
@@ -56,11 +59,26 @@ const groupSchema = mongoose.Schema({
 
 groupSchema.pre('save', function(next)
 {
-    this.last_modified = new Date();;
+    this.last_modified = new Date();
     next();
 });
 
-
+groupSchema.methods.getGroupMembers = function() {
+  let members = this.members;
+  return new Promise( (resolve, reject) => {
+    if ( this.members.length == 0 ) {
+      logger.info('getGroupMembers - No members in group')
+      resolve([]);
+    }
+    Account
+    .find({'_id' : { $in : members }} )
+    .exec()
+    .then( (groupMembers) => {
+      if ( !groupMembers ) { reject('Could not find group members'); }
+      resolve(groupMembers);
+    })
+  })
+}
 
 
 module.exports = mongoose.model('Group', groupSchema);
