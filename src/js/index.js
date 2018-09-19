@@ -1,18 +1,25 @@
 import logic from './logic.js';
 const index = {};
 
-index.queryUser = () => {
-  let userId = $('h1').attr('data-userId');
-  let user = {}
-  console.log(logic);
 
-  // axios.get('/getUser?username=avsphere')
-  // .then( (response) => { console.log("User: ", response.data); return response.data; })
-  // .then( (user) => axios.get(`/getGroup?groupId=${user.memberOf[0]}`) )
-  // .then( (response) => {
-  //   console.log("Group: ", response.data)
-  // })
+let user = {},
+    group = {},
+    components = [];
+
+index.getUserAndGroups = () => {
+  const userId = $('h1').attr('data-userId');
+  logic.getUser('userId', userId)
+  .then( (u) => {
+    user = u;
+    console.log(u);
+    return logic.getGroups('groupIds',u.adminOf)
+  })
+  .then( groups => console.log(groups) )
 
 }
+
+
+
+
 
 module.exports = index;

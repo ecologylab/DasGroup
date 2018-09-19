@@ -8,29 +8,33 @@ const jsonfile = require('jsonfile');
 const seedFile = './scripts/seed/seedData.json'
 const aaronsId = mongoose.Types.ObjectId();
 const groupId = mongoose.Types.ObjectId();
+const groupId2 = mongoose.Types.ObjectId();
 const groupMembers = []; //populated during pull
+const groupMembers2 = []; //populated during pull
 require('dotenv').config()
 mongoose.connect('mongodb://localhost/bpath', { useNewUrlParser : true }).then(
   () => { console.log("Connected. Beginning pull"); buildSeed(); },
   err => { console.log("ERROR - Database connection failed")}
 )
 const pullAccounts = () => {
-  let data = [];
+  let accountData = [];
   return new Promise( (resolve, reject) => {
     Account.find({}, (err, docs) => {
       if (err) { reject(err); }
       docs.forEach( (d,i) => {
         if ( i % 20 === 0 ) {
-          data.push(d);
-          if ( i % 60 === 0 ) { groupMembers.push(d._id); }
+          accountData.push(d);
+          if ( i % 40 === 0 ) { groupMembers.push(d._id); }
+          if ( i % 80 === 0 ) { groupMembers2.push(d._id); }
         }
       })
-      resolve(data);
+      resolve(accountData);
     })
   })
 }
 const createGroupSeedData = (memberIds) => {
-  return {
+  return [
+      {
           "_id" : groupId,
           "creator" : aaronsId,
           "admins" : [aaronsId],
@@ -38,7 +42,17 @@ const createGroupSeedData = (memberIds) => {
           "key" : 'abc',
           "name" : "##420Swag",
           "description" : 'But are we even real though'
-        }
+        },
+        {
+            "_id" : groupId2,
+            "creator" : aaronsId,
+            "admins" : [aaronsId],
+            "members" : groupMembers2,
+            "key" : 'def',
+            "name" : "BACON",
+            "description" : 'Bad ass cronies only needin'
+          }
+      ]
 }
 const aaronsAccount = () => {
   return {
@@ -49,7 +63,8 @@ const aaronsAccount = () => {
     "salt": "xxx",
     "hash": "xxx",
     "bio": "living",
-    "memberOf" : groupId,
+    "memberOf" : [],
+    "adminOf" : [groupId, groupId2],
     "maches": ["5aa0a3e3d4d998961cb73292", "5abd471d0a1634b97fd952e7"]
   }
 }

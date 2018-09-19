@@ -32,6 +32,7 @@ router.get('/api', isAuthenticated, (req, res) => {
 
 router.get('/getUser', isAuthenticated, accountLogic.getUser);
 router.get('/getGroup', isAuthenticated, groupLogic.getGroup);
+router.get('/getGroups', isAuthenticated, groupLogic.getGroups);
 router.get('/getGroupMembers', isAuthenticated, groupLogic.getGroupMembers);
 
 router.post('/deleteGroup', isAuthenticated, groupLogic.deleteGroup);

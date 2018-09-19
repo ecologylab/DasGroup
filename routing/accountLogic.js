@@ -10,7 +10,6 @@ const logger = require('../utils/logger');
 
 const logic = {};
 
-
 const getQueryType = (requestParams) => {
   if ( requestParams.userId ) {
     return { _id : requestParams.userId }

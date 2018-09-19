@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Schema.Types.ObjectId;
+const Group = require('./group');
 const accountSchema = mongoose.Schema({
   username: {
     type : String,
@@ -53,6 +54,11 @@ const accountSchema = mongoose.Schema({
     ref : 'mache'
   }],
   memberOf : [{
+    type: ObjectId,
+    required : false,
+    ref : 'group'
+  }],
+  adminOf : [{
     type: ObjectId,
     required : false,
     ref : 'group'
@@ -124,7 +130,22 @@ accountSchema.pre('save', function(next)
     next();
 });
 
-
+// accountSchema.methods.getGroups = function() {
+//   let groups = this.memberOf;
+//   return new Promise( (resolve, reject) => {
+//     if ( this.groups.length == 0 ) {
+//       logger.info('getGroups - user is not part of any groups')
+//       resolve([]);
+//     }
+//     Group
+//     .find({'_id' : { $in : groups } } )
+//     .exec()
+//     .then( (groups) => {
+//       if ( !groups ) { reject('getGroups - Could not find any of the listed groups'); }
+//       resolve(groups);
+//     })
+//   })
+// }
 
 
 module.exports = mongoose.model('Account', accountSchema);

@@ -7,11 +7,13 @@
     "dev": "node node_modules/nodemon/bin/nodemon.js  bin/www",
     "start": "node bin/www",
     "build": "webpack",
-    "watch": "webpack --watch",
-    "test": "mocha"
+    "watch": "webpack --watch"
   },
-  "nodemonConfig" : {
-    "ignore" : ["node_modules/*", "logs/*"]
+  "nodemonConfig": {
+    "ignore": [
+      "node_modules/*",
+      "logs/*"
+    ]
   },
   "author": "avsphere",
   "license": "ISC",
@@ -39,6 +41,7 @@
     "moment": "^2.22.2",
     "mongoose": "^5.2.14",
     "morgan": "^1.9.0",
+    "npm": "^6.4.1",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
     "popper.js": "^1.14.4",

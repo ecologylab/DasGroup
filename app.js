@@ -12,6 +12,7 @@ const logger = require('./utils/logger');
 require('dotenv').config()
 require('./passport.js')(passport);
 
+app.use(favicon(path.join(__dirname, 'public', 'coolGuy.ico')))
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 if ( !process.env.test ) { app.use(morgan('dev')); }
@@ -49,7 +50,7 @@ app.use( (req, res, next) => {
 app.use(function(err, req, res, next) {
   // set locals, only providing error in development
   logger.error(err.message, {err: err.stack });
-  console.error(err);
+  console.error(err.message, err);
   next()
   // res.locals.message = err.message;
   // res.locals.error = req.app.get('env') === 'development' ? err : {};

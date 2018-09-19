@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Schema.Types.ObjectId;
-const Account = require('./account');
 const shortId = require('shortid')
 const logger = require('../utils/logger')
 const groupSchema = mongoose.Schema({
@@ -63,15 +62,14 @@ groupSchema.pre('save', function(next)
     next();
 });
 
-groupSchema.methods.getGroupMembers = function() {
+groupSchema.methods.getGroupMembers = function(accountDependency) {
   let members = this.members;
   return new Promise( (resolve, reject) => {
-    if ( this.members.length == 0 ) {
+    if ( members.length == 0 ) {
       logger.info('getGroupMembers - No members in group')
       resolve([]);
     }
-    Account
-    .find({'_id' : { $in : members }} )
+    accountDependency.find({'_id' : { $in : members } })
     .exec()
     .then( (groupMembers) => {
       if ( !groupMembers ) { reject('Could not find group members'); }
