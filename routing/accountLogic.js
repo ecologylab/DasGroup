@@ -30,6 +30,7 @@ logic.prelog = (req, res) => {
     const user = decryptedToken.data;
     authHelper.autoLogin(req, res, user)
     .then( (loggedInUser) => {
+      logger.notice("all is well, redirecting to home")
       res.redirect('/')
     }).catch( (e) => {
       logger.error("error in prelog", e)

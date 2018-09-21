@@ -4,7 +4,7 @@ function isAuthenticated(req, res, next) {
   if ( req.isAuthenticated() ) {
     next()
   } else {
-    res.redirect('https://localhost:5000/');
+    res.redirect('https://localhost:5000/?sendBack=true');
   }
 }
 function getUser(userInfo) {

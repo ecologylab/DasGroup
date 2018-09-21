@@ -9,6 +9,8 @@ const mongoose = require('mongoose');
 const passport = require('passport');
 const app = express();
 const logger = require('./utils/logger');
+const cors = require('cors');
+app.use(cors())
 require('dotenv').config()
 require('./passport.js')(passport);
 

@@ -37,7 +37,7 @@ const createGroupSeedData = (memberIds) => {
       {
           "_id" : groupId,
           "creator" : aaronsId,
-          "admins" : [aaronsId],
+          "roles.admins" : [aaronsId],
           "members" : groupMembers,
           "key" : 'abc',
           "name" : "##420Swag",
@@ -46,7 +46,7 @@ const createGroupSeedData = (memberIds) => {
         {
             "_id" : groupId2,
             "creator" : aaronsId,
-            "admins" : [aaronsId],
+            "roles.admins" : [aaronsId],
             "members" : groupMembers2,
             "key" : 'def',
             "name" : "BACON",
@@ -63,8 +63,7 @@ const aaronsAccount = () => {
     "salt": "xxx",
     "hash": "xxx",
     "bio": "living",
-    "memberOf" : [],
-    "adminOf" : [groupId, groupId2],
+    "memberOf" : [groupId, groupId2],
     "maches": ["5aa0a3e3d4d998961cb73292", "5abd471d0a1634b97fd952e7"]
   }
 }

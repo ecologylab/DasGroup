@@ -8,16 +8,18 @@ const groupSchema = mongoose.Schema({
     required : true,
     ref : 'account'
   },
-  admins : [{
-    type: ObjectId,
-    required : true,
-    ref : 'account'
-  }],
   members : [{
     type: ObjectId,
     required : false,
     ref : 'account'
   }],
+  roles : {
+    admins : [{
+      type: ObjectId,
+      required : true,
+      ref : 'account'
+    }]
+  },
   visibility: {
     type: String,
     required : true,
@@ -62,14 +64,14 @@ groupSchema.pre('save', function(next)
     next();
 });
 
-groupSchema.methods.getGroupMembers = function(accountDependency) {
+groupSchema.methods.getGroupMembers = function(AccountDependency) {
   let members = this.members;
   return new Promise( (resolve, reject) => {
     if ( members.length == 0 ) {
       logger.info('getGroupMembers - No members in group')
       resolve([]);
     }
-    accountDependency.find({'_id' : { $in : members } })
+    AccountDependency.find({'_id' : { $in : members } })
     .exec()
     .then( (groupMembers) => {
       if ( !groupMembers ) { reject('Could not find group members'); }

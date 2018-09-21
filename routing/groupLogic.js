@@ -28,7 +28,6 @@ const getQuery = (requestParams) => {
 
 
 const findGroup = (queryType) => {
-  console.log("find ggroup qt", queryType)
   return new Promise( (resolve, reject) => {
     Group.find(queryType).exec()
     .then( (group) => {
@@ -60,6 +59,7 @@ logic.getGroup = (req, res) => {
 //This getGroups differs from the Account model method in that it takes a list of groupIds where the account model expects a user
 logic.getGroups = (req, res) => {
   let queryType = getQuery(req.query);
+  logger.notice('%O',queryType)
   findGroup(queryType)
   .then( group => res.send(group) )
   .catch( (e) => {
@@ -72,10 +72,9 @@ logic.getGroups = (req, res) => {
 logic.getGroupMembers = (req, res) => {
   let queryType = getQuery(req.query);
   findGroup(queryType)
-  .then( group => group.getGroupMembers(Account) )
+  .then( group => group.getGroupMembers() )
   .then( members => res.send(members) )
   .catch( (e) => {
-    console.error(e);
     logger.error('Error in getGroupMembers %j', req.query,{err : e} )
     res.status(404);
     res.send({})
