@@ -38,7 +38,7 @@ const createUser = () => {
 
 const findGroupMembers = () => {
   return new Promise( (resolve, reject) => {
-    instance.get(`/getGroupMembers?groupKey=abc`)
+    instance.get(`/a/getGroupMembers?groupKey=abc`)
     .then( (res) => {
       logger.test('findGroupMembers - should be a number: %s', res.data.length)
       resolve(true);
@@ -49,11 +49,11 @@ const findGroupMembers = () => {
 
 const findUser = () => {
   return new Promise( (resolve, reject) => {
-    instance.get('/getUser?username=avsphere')
+    instance.get('/a/getUser?username=avsphere')
     .then( res => { logger.test('findUser - should be avsphere : %s', res.data.username); return res.data._id })
-    .then( id => instance.get(`/getUser?userId=${id}`) )
+    .then( id => instance.get(`/a/getUser?userId=${id}`) )
     .then( res => { logger.test('findUser - should be avsphere : %s', res.data.username); return res.data.email })
-    .then( email => instance.get(`/getUser?email=${email}`) )
+    .then( email => instance.get(`/a/getUser?email=${email}`) )
     .then( res => logger.test('findUser - should be avsphere : %s', res.data.username) )
     .then( _ => resolve(true) )
     .catch( (e) => logger.test('Error - testing findUser %O', e.message) )
@@ -64,25 +64,27 @@ const findUser = () => {
 
 const findGroup = () => {
   return new Promise( (resolve, reject) => {
-    instance.get('/getGroup?groupKey=abc')
+    instance.get('/a/getGroup?groupKey=abc')
     .then( res => {
       logger.test('findGroup - should be ##420Swag : %s', res.data.name);
       return res.data._id;
     })
-    .then( groupId => instance.get(`/getGroup?groupId=${groupId}`) )
+    .then( groupId => instance.get(`/a/getGroup?groupId=${groupId}`) )
     .then( res => { logger.test('findGroup - should be ##420Swag : %s', res.data.name); resolve(true); })
+    .then( _ => instance.get(`/a/getGroup?groupId=123456789012`) )
+    .then( res => { logger.test('findGroup - should be [] %O', res.data); resolve(true); })
     .catch( (e) =>  logger.test('Error - testing findGroup %O', e.message) )
   })
 }
 
 const findGroups = () => {
   return new Promise( (resolve, reject) => {
-    instance.get('/getGroups?groupKeys=abc,def')
+    instance.get('/a/getGroups?groupKeys=abc,def')
     .then( res => {
       logger.test('findGroups - should be ##420Swag BACON: %O, %O', res.data[0].name, res.data[1].name)
       return res.data.map( g => g._id);
     })
-    .then( groupIds => instance.get(`/getGroups?groupIds=${groupIds.toString()}`) )
+    .then( groupIds => instance.get(`/a/getGroups?groupIds=${groupIds.toString()}`) )
     .then( res => {
       logger.test('findGroups - should be ##420Swag BACON: %O %O', res.data[0].name, res.data[1].name);
       resolve(true)
@@ -95,11 +97,11 @@ const findGroups = () => {
 
 const createGroup = () => {
   return new Promise( (resolve, reject) => {
-    instance.post('/createGroup', {
+    instance.post('/a/createGroup', {
       "_id" : groupId,
       "creatorId" : userId,
-      "adminIds" : [userId],
-      "members" : [],
+      "members" : [userId],
+      "roles.admins" : [userId],
       "name" : "SwagSwag",
       "description" : 'Swag, swag swag... SWAGGGGGG',
     })
@@ -114,7 +116,7 @@ const createGroup = () => {
 
 const deleteGroup = () => {
   return new Promise( (resolve, reject) => {
-    instance.post('/deleteGroup', {
+    instance.post('/a/deleteGroup', {
       "groupKey" : groupKey
     })
     .then( (res) => {

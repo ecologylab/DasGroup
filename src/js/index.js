@@ -12,7 +12,7 @@ index.getUserAndGroups = () => {
   .then( (u) => {
     user = u;
     console.log(u);
-    return logic.getGroups('groupIds',u.adminOf)
+    return logic.getGroups('groupIds',u.memberOf)
   })
   .then( groups => console.log(groups) )
 

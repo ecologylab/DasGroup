@@ -40,7 +40,8 @@ mongoose.connect(process.env.DB_CONN_DEV, { useNewUrlParser : true }).then(
 app.use(passport.initialize() );
 app.use(passport.session() )
 
-app.use('/', require('./routing/masterRouter') );
+app.use('/', require('./routing/root') );
+app.use('/a', require('./routing/api') );
 
 app.use( (req, res, next) => {
   let err = new Error('Not found');
@@ -51,8 +52,11 @@ app.use( (req, res, next) => {
 // error handler
 app.use(function(err, req, res, next) {
   // set locals, only providing error in development
-  logger.error(err.message, {err: err.stack });
-  console.error(err.message, err);
+  if (err.status === 404) {
+    logger.error('Path not found %j %O', req.url, err);
+  } else {
+    logger.error('%O', err);
+  }
   next()
   // res.locals.message = err.message;
   // res.locals.error = req.app.get('env') === 'development' ? err : {};

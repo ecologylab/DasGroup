@@ -11,12 +11,14 @@ const groupSchema = mongoose.Schema({
   members : [{
     type: ObjectId,
     required : false,
+    unique : true,
     ref : 'account'
   }],
   roles : {
     admins : [{
       type: ObjectId,
       required : true,
+      unique : true,
       ref : 'account'
     }]
   },

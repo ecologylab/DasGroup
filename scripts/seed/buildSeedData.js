@@ -9,6 +9,8 @@ const seedFile = './scripts/seed/seedData.json'
 const aaronsId = mongoose.Types.ObjectId();
 const groupId = mongoose.Types.ObjectId();
 const groupId2 = mongoose.Types.ObjectId();
+const groupId3 = mongoose.Types.ObjectId();
+let randomMember = '';
 const groupMembers = []; //populated during pull
 const groupMembers2 = []; //populated during pull
 require('dotenv').config()
@@ -28,6 +30,9 @@ const pullAccounts = () => {
           if ( i % 80 === 0 ) { groupMembers2.push(d._id); }
         }
       })
+      randomMember = groupMembers2[groupMembers.length-1];
+      groupMembers.push(aaronsId)
+      groupMembers2.push(aaronsId)
       resolve(accountData);
     })
   })
@@ -51,7 +56,16 @@ const createGroupSeedData = (memberIds) => {
             "key" : 'def',
             "name" : "BACON",
             "description" : 'Bad ass cronies only needin'
-          }
+          },
+          {
+              "_id" : groupId3,
+              "creator" : randomMember,
+              "roles.admins" : [randomMember],
+              "members" : groupMembers2.concat,
+              "key" : 'efg',
+              "name" : 'Not Aarons Group',
+              "description" : 'Defintely not Aarons'
+            }
       ]
 }
 const aaronsAccount = () => {
@@ -63,7 +77,7 @@ const aaronsAccount = () => {
     "salt": "xxx",
     "hash": "xxx",
     "bio": "living",
-    "memberOf" : [groupId, groupId2],
+    "memberOf" : [groupId, groupId2, groupId3],
     "maches": ["5aa0a3e3d4d998961cb73292", "5abd471d0a1634b97fd952e7"]
   }
 }

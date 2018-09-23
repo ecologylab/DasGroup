@@ -7,22 +7,8 @@ const authHelper = require('../utils/authHelper.js')
 const Account = require('../models/account')
 const Group = require('../models/group')
 const logger = require('../utils/logger');
-
+const getQuery = require('./getQuery');
 const logic = {};
-
-const getQueryType = (requestParams) => {
-  if ( requestParams.userId ) {
-    return { _id : requestParams.userId }
-  } else if ( requestParams.username ) {
-    return { username : requestParams.username }
-  } else if ( requestParams.email ) {
-    return { email : requestParams.email }
-  } else {
-    logger.error('Invalid query type in group logic %j', requestParams);
-    throw new Error('Invalid query type in group logic')
-  }
-}
-
 
 logic.prelog = (req, res) => {
   const decryptedToken = tokenHandler.decryptToken(req.params.token);
@@ -30,7 +16,6 @@ logic.prelog = (req, res) => {
     const user = decryptedToken.data;
     authHelper.autoLogin(req, res, user)
     .then( (loggedInUser) => {
-      logger.notice("all is well, redirecting to home")
       res.redirect('/')
     }).catch( (e) => {
       logger.error("error in prelog", e)
@@ -54,12 +39,13 @@ logic.pseudoLogin = (req, res) => {
 
 
 logic.getUser = (req, res) => {
-  let queryType = getQueryType(req.query);
-  Account.findOne(queryType).exec()
+  let query = getQuery(req.query);
+  Account.findOne(query).exec()
   .then( (user) => {
     if ( !user ) {
       logger.error('A request for a user has failed.', req.query);
       res.status(404);
+      user = {};
     }
     res.send(user);
   })

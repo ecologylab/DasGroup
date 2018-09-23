@@ -6,7 +6,7 @@ const logic = {}
 //{ userId : } or { username : } or { email : }
 logic.getUser = (key, value) => {
   return new Promise( (resolve, reject) => {
-    axios.get(`/getUser?${key}=${value}`)
+    axios.get(`/a/getUser?${key}=${value}`)
     .then( (response) => {
       resolve(response.data)
     })
@@ -19,7 +19,7 @@ logic.getUser = (key, value) => {
 
 logic.getGroup = (key, value) => {
   return new Promise( (resolve, reject) => {
-    axios.get(`/getGroup?${key}=${value}`)
+    axios.get(`/a/getGroup?${key}=${value}`)
     .then( (response) => {
       resolve(response.data)
     })
@@ -31,7 +31,7 @@ logic.getGroup = (key, value) => {
 }
 logic.getGroups = (key, value) => {
   return new Promise( (resolve, reject) => {
-    axios.get(`/getGroups?${key}=${value}`)
+    axios.get(`/a/getGroups?${key}=${value}`)
     .then( (response) => {
       resolve(response.data)
     })

@@ -137,7 +137,7 @@ accountSchema.methods.getGroups = function() {
     .find({'_id' : { $in : groupIds } } )
     .exec()
     .then( (groups) => resolve(groups) )
-    .catch( (e) => { logger.test('Error - Account.getGroups', e); reject(e); })
+    .catch( (e) => { logger.error('Error - Account.getGroups %O', e); reject(e); })
   })
 }
 
@@ -150,14 +150,15 @@ accountSchema.methods.getAdminOf = function() {
       resolve([]);
     }
     Group
-    .find({'_id' : { $in : groupIds } } )
+    .find({'_id' : { $in : groupIds } }, 'roles.admins')
     .exec()
-    .then( (groups) => {
-      const adminOf = groups.map( g => g.toObject().roles.admins )
-      .filter( admins => admins.indexOf(userId) )
+    .then( (groupRoles) => {
+      const adminOf = groupRoles.filter( g => g.toObject().roles.admins.indexOf(userId) )
+      .map( g => g._id)
+      console.log("ADMINF OF", adminOf)
       resolve(adminOf)
     })
-    .catch( (e) => { logger.test('Error - Account.getAdminOf', e); reject(e); })
+    .catch( (e) => { logger.error('Error - Account.getAdminOf %O', e); reject(e); })
   })
 }
 
