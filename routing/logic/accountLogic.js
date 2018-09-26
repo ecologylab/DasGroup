@@ -1,12 +1,8 @@
-const express = require('express');
-const router = express.Router();
-const path = require('path')
-const passport = require('passport');
-const tokenHandler = require('../utils/tokenHandler.js')
-const authHelper = require('../utils/authHelper.js')
-const Account = require('../models/account')
-const Group = require('../models/group')
-const logger = require('../utils/logger');
+const tokenHandler = require('../../utils/tokenHandler.js')
+const authHelper = require('../../utils/authHelper.js')
+const Account = require('../../models/account')
+const Group = require('../../models/group')
+const logger = require('../../utils/logger');
 const getQuery = require('./getQuery');
 const logic = {};
 
@@ -39,7 +35,7 @@ logic.pseudoLogin = (req, res) => {
 
 
 logic.getUser = (req, res) => {
-  let query = getQuery(req.query);
+  const query = getQuery(req.query);
   Account.findOne(query).exec()
   .then( (user) => {
     if ( !user ) {

@@ -1,9 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const path = require('path')
-const passport = require('passport');
 const authHelper = require('../utils/authHelper.js')
-const accountLogic = require('./accountLogic');
+const accountLogic = require('./logic/accountLogic');
 require('dotenv').config()
 const isAuthenticated = process.env.test === 'true' ? (req,res,d) => d() : authHelper.isAuthenticated;
 

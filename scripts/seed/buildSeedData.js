@@ -7,12 +7,12 @@ const mongoose = require('mongoose');
 const jsonfile = require('jsonfile');
 const seedFile = './scripts/seed/seedData.json'
 const aaronsId = mongoose.Types.ObjectId();
-const groupId = mongoose.Types.ObjectId();
-const groupId2 = mongoose.Types.ObjectId();
-const groupId3 = mongoose.Types.ObjectId();
+const group1Id = mongoose.Types.ObjectId();
+const group2Id = mongoose.Types.ObjectId();
+const group3Id = mongoose.Types.ObjectId();
 let randomMember = '';
-const groupMembers = []; //populated during pull
-const groupMembers2 = []; //populated during pull
+const group1Members = []; //populated during pull
+const group2Members = []; //populated during pull
 require('dotenv').config()
 mongoose.connect('mongodb://localhost/bpath', { useNewUrlParser : true }).then(
   () => { console.log("Connected. Beginning pull"); buildSeed(); },
@@ -26,13 +26,20 @@ const pullAccounts = () => {
       docs.forEach( (d,i) => {
         if ( i % 20 === 0 ) {
           accountData.push(d);
-          if ( i % 40 === 0 ) { groupMembers.push(d._id); }
-          if ( i % 80 === 0 ) { groupMembers2.push(d._id); }
+          if ( i % 40 === 0 ) {
+            d.memberOf = [group1Id];
+            group1Members.push(d._id);
+          }
+          if ( i % 80 === 0 ) {
+            d.memberOf = [group2Id];
+            group2Members.push(d._id);
+          }
         }
       })
-      randomMember = groupMembers2[groupMembers.length-1];
-      groupMembers.push(aaronsId)
-      groupMembers2.push(aaronsId)
+      randomMember = accountData[group2Members.length-1];
+      randomMember.memberOf = randomMember.memberOf.concat([group3Id])
+      group1Members.push(aaronsId)
+      group2Members.push(aaronsId)
       resolve(accountData);
     })
   })
@@ -40,28 +47,28 @@ const pullAccounts = () => {
 const createGroupSeedData = (memberIds) => {
   return [
       {
-          "_id" : groupId,
+          "_id" : group1Id,
           "creator" : aaronsId,
           "roles.admins" : [aaronsId],
-          "members" : groupMembers,
+          "members" : group1Members,
           "key" : 'abc',
           "name" : "##420Swag",
           "description" : 'But are we even real though'
         },
         {
-            "_id" : groupId2,
+            "_id" : group2Id,
             "creator" : aaronsId,
             "roles.admins" : [aaronsId],
-            "members" : groupMembers2,
+            "members" : group2Members,
             "key" : 'def',
             "name" : "BACON",
-            "description" : 'Bad ass cronies only needin'
+            "description" : 'Bad ass cronies only kneedin???!?!?! Who is this guy?!?!'
           },
           {
-              "_id" : groupId3,
+              "_id" : group3Id,
               "creator" : randomMember,
               "roles.admins" : [randomMember],
-              "members" : groupMembers2.concat,
+              "members" : [randomMember, aaronsId],
               "key" : 'efg',
               "name" : 'Not Aarons Group',
               "description" : 'Defintely not Aarons'
@@ -77,7 +84,7 @@ const aaronsAccount = () => {
     "salt": "xxx",
     "hash": "xxx",
     "bio": "living",
-    "memberOf" : [groupId, groupId2, groupId3],
+    "memberOf" : [group1Id, group2Id, group3Id],
     "maches": ["5aa0a3e3d4d998961cb73292", "5abd471d0a1634b97fd952e7"]
   }
 }

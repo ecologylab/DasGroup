@@ -1,4 +1,4 @@
-import logic from './logic.js';
+import apiWrapper from './apiWrapper.js';
 const index = {};
 
 
@@ -8,13 +8,13 @@ let user = {},
 
 index.getUserAndGroups = () => {
   const userId = $('h1').attr('data-userId');
-  logic.getUser('userId', userId)
+  apiWrapper.getUser('userId', userId)
   .then( (u) => {
     user = u;
     console.log(u);
-    return logic.getGroups('groupIds',u.memberOf)
+    return apiWrapper.getGroups('groupIds',u.memberOf)
   })
-  .then( groups => console.log(groups) )
+  .then( groups => console.log(groups, apiWrapper) )
 
 }
 

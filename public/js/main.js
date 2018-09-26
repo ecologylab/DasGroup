@@ -507,6 +507,18 @@ eval("\nvar content = __webpack_require__(/*! !../../node_modules/css-loader!./s
 
 /***/ }),
 
+/***/ "./src/js/apiWrapper.js":
+/*!******************************!*\
+  !*** ./src/js/apiWrapper.js ***!
+  \******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+eval("\n\nvar _axios = __webpack_require__(/*! axios */ \"./node_modules/axios/index.js\");\n\nvar _axios2 = _interopRequireDefault(_axios);\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }\n\nvar wrapper = {};\n\nwrapper.getUser = function (key, value) {\n  return new Promise(function (resolve, reject) {\n    _axios2.default.get('/a/getUser?' + key + '=' + value).then(function (response) {\n      resolve(response.data);\n    }).catch(function (e) {\n      console.error('Error getUser ', key, value, e);\n      reject(e);\n    });\n  });\n};\nwrapper.getGroups = function (key, value) {\n  return new Promise(function (resolve, reject) {\n    _axios2.default.get('/a/getGroups?' + key + '=' + value).then(function (response) {\n      resolve(response.data);\n    }).catch(function (e) {\n      console.error('Error getGroups ', key, value, e);\n      reject(e);\n    });\n  });\n};\n\n//you could just getGroups then return members, but might as well expose this api function\nwrapper.getGroupMembers = function (key, value) {\n  return new Promise(function (resolve, reject) {\n    _axios2.default.get('/a/getGroupMembers?' + key + '=' + value).then(function (response) {\n      resolve(response.data);\n    }).catch(function (e) {\n      console.error('Error getGroup members ', key, value, e);\n      reject(e);\n    });\n  });\n};\n//groupLocator : singular key or id { groupKey : 12312 } or { groupId : 123123}\nwrapper.createBucket = function (groupLocator, bucketData) {\n  var request = { groupQuery: groupLocator, bucketData: bucketData };\n  return new Promise(function (resolve, reject) {\n    _axios2.default.post('/a/createBucket', request).then(function (response) {\n      resolve(response.data);\n    }).catch(function (e) {\n      console.error('Error creating bucket', group, e);\n      reject(e);\n    });\n  });\n};\n\nwrapper.createGroup = function (group) {\n  return new Promise(function (resolve, reject) {\n    _axios2.default.post('/a/createGroup', group).then(function (response) {\n      resolve(response.data);\n    }).catch(function (e) {\n      console.error('Error creating group', group, e);\n      reject(e);\n    });\n  });\n};\n//either a singular key or id { groupKey : 12312 } or { groupId : 123123}\nwrapper.deleteGroup = function (groupLocator) {\n  return new Promise(function (resolve, reject) {\n    _axios2.default.post('/a/deleteGroup', groupLocator).then(function (response) {\n      resolve(response.data);\n    }).catch(function (e) {\n      console.error('Error deleting group', groupLocator, e);\n      reject(e);\n    });\n  });\n};\n\nwrapper.updateGroup = function (modifiedGroupFields) {\n  return new Promise(function (resolve, reject) {\n    _axios2.default.post('/a/updateGroup', modifiedGroupFields).then(function (response) {\n      resolve(response.data);\n    }).catch(function (e) {\n      console.error('Error updating group', group, e);\n      reject(e);\n    });\n  });\n};\n\n// .then( (user) => axios.get(`/getGroup?groupId=${user.memberOf[0]}`) )\n\nmodule.exports = wrapper;\n\n//# sourceURL=webpack:///./src/js/apiWrapper.js?");
+
+/***/ }),
+
 /***/ "./src/js/index.js":
 /*!*************************!*\
   !*** ./src/js/index.js ***!
@@ -515,19 +527,7 @@ eval("\nvar content = __webpack_require__(/*! !../../node_modules/css-loader!./s
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-eval("/* WEBPACK VAR INJECTION */(function($) {\n\nvar _logic = __webpack_require__(/*! ./logic.js */ \"./src/js/logic.js\");\n\nvar _logic2 = _interopRequireDefault(_logic);\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }\n\nvar index = {};\n\nvar user = {},\n    group = {},\n    components = [];\n\nindex.getUserAndGroups = function () {\n  var userId = $('h1').attr('data-userId');\n  _logic2.default.getUser('userId', userId).then(function (u) {\n    user = u;\n    console.log(u);\n    return _logic2.default.getGroups('groupIds', u.memberOf);\n  }).then(function (groups) {\n    return console.log(groups);\n  });\n};\n\nmodule.exports = index;\n/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ \"./node_modules/jquery/dist/jquery.js\")))\n\n//# sourceURL=webpack:///./src/js/index.js?");
-
-/***/ }),
-
-/***/ "./src/js/logic.js":
-/*!*************************!*\
-  !*** ./src/js/logic.js ***!
-  \*************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-eval("\n\nvar _axios = __webpack_require__(/*! axios */ \"./node_modules/axios/index.js\");\n\nvar _axios2 = _interopRequireDefault(_axios);\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }\n\nvar logic = {};\n\n//{ userId : } or { username : } or { email : }\nlogic.getUser = function (key, value) {\n  return new Promise(function (resolve, reject) {\n    _axios2.default.get('/a/getUser?' + key + '=' + value).then(function (response) {\n      resolve(response.data);\n    }).catch(function (e) {\n      console.error('Error getUser ', key, value, e);\n      reject(e);\n    });\n  });\n};\n\nlogic.getGroup = function (key, value) {\n  return new Promise(function (resolve, reject) {\n    _axios2.default.get('/a/getGroup?' + key + '=' + value).then(function (response) {\n      resolve(response.data);\n    }).catch(function (e) {\n      console.error('Error getGroup ', key, value, e);\n      reject(e);\n    });\n  });\n};\nlogic.getGroups = function (key, value) {\n  return new Promise(function (resolve, reject) {\n    _axios2.default.get('/a/getGroups?' + key + '=' + value).then(function (response) {\n      resolve(response.data);\n    }).catch(function (e) {\n      console.error('Error getGroups ', key, value, e);\n      reject(e);\n    });\n  });\n};\n\n// .then( (user) => axios.get(`/getGroup?groupId=${user.memberOf[0]}`) )\n\nmodule.exports = logic;\n\n//# sourceURL=webpack:///./src/js/logic.js?");
+eval("/* WEBPACK VAR INJECTION */(function($) {\n\nvar _apiWrapper = __webpack_require__(/*! ./apiWrapper.js */ \"./src/js/apiWrapper.js\");\n\nvar _apiWrapper2 = _interopRequireDefault(_apiWrapper);\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }\n\nvar index = {};\n\nvar user = {},\n    group = {},\n    components = [];\n\nindex.getUserAndGroups = function () {\n  var userId = $('h1').attr('data-userId');\n  _apiWrapper2.default.getUser('userId', userId).then(function (u) {\n    user = u;\n    console.log(u);\n    return _apiWrapper2.default.getGroups('groupIds', u.memberOf);\n  }).then(function (groups) {\n    return console.log(groups, _apiWrapper2.default);\n  });\n};\n\nmodule.exports = index;\n/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ \"./node_modules/jquery/dist/jquery.js\")))\n\n//# sourceURL=webpack:///./src/js/index.js?");
 
 /***/ }),
 

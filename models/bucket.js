@@ -1,14 +1,26 @@
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Schema.Types.ObjectId;
+const shortId = require('shortid');
 const bucketSchema = mongoose.Schema({
+  creator : {
+    type: ObjectId,
+    required: true,
+    ref: 'account'
+  },
   belongsTo: {
     type: ObjectId,
     required : true,
     ref : 'group'
   },
+  key: {
+    type: String,
+    unique: true,
+    required : true,
+    default : shortId.generate
+  },
   maches : [{
     type: ObjectId,
-    required : true,
+    required : false,
     ref : 'mache'
   }],
   name: {
@@ -34,7 +46,7 @@ const bucketSchema = mongoose.Schema({
 
 bucketSchema.pre('save', function(next)
 {
-    this.last_modified = new Date();;
+    this.last_modified = new Date();
     next();
 });
 

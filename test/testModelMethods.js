@@ -27,7 +27,7 @@ const getGroups = () => {
   return new Promise( (resolve, reject) => {
     Account.findOne({ username : 'avsphere' })
     .exec()
-    .then( (user) => user.getGroups() )
+    .then( (user) => user.getGroups(Group) )
     .then( groups => resolve(groups) )
     .catch( (e) =>  logger.test('Error - getGroups %O', e.message) )
   })

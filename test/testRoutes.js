@@ -64,14 +64,14 @@ const findUser = () => {
 
 const findGroup = () => {
   return new Promise( (resolve, reject) => {
-    instance.get('/a/getGroup?groupKey=abc')
+    instance.get('/a/getGroups?groupKey=abc')
     .then( res => {
       logger.test('findGroup - should be ##420Swag : %s', res.data.name);
       return res.data._id;
     })
-    .then( groupId => instance.get(`/a/getGroup?groupId=${groupId}`) )
+    .then( groupId => instance.get(`/a/getGroups?groupId=${groupId}`) )
     .then( res => { logger.test('findGroup - should be ##420Swag : %s', res.data.name); resolve(true); })
-    .then( _ => instance.get(`/a/getGroup?groupId=123456789012`) )
+    .then( _ => instance.get(`/a/getGroups?groupId=123456789012`) )
     .then( res => { logger.test('findGroup - should be [] %O', res.data); resolve(true); })
     .catch( (e) =>  logger.test('Error - testing findGroup %O', e.message) )
   })
