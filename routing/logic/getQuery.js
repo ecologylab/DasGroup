@@ -43,7 +43,7 @@ module.exports = (request) => {
   } else if ( request.email ) {
     query = { email : request.email }
   } else {
-    throw new Error('Invalid query type in group logic')
+    throw new Error('Invalid query type in getQuery')
   }
   return query;
 }

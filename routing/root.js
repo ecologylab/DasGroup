@@ -8,7 +8,6 @@ const isAuthenticated = process.env.test === 'true' ? (req,res,d) => d() : authH
 
 /* token */
 router.get('/prelog/:token', accountLogic.prelog);
-router.get('/pseudoLogin', accountLogic.pseudoLogin);
 
 router.get('/', isAuthenticated, (req, res) => {
   res.render('index', {user : req.user})

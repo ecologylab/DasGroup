@@ -10,14 +10,31 @@ const isUserAdminOfGroup = groupLogic.isUserAdminOfGroup;
 const findGroup = groupLogic.findGroup;
 
 
+//req.body = { groupQuery : { groupId/key : ... }, bucketData : {name,description} }
+logic.addMachesToBucket = (req, res) => {
+  const groupQuery = getQuery(req.body.groupQuery);
+  findGroup(groupQuery)
+  //make sure user is in group
+  //find bucket
+  //make sure bucket is open
+  .catch( e => {
+    logger.error('Error in createBucket body : %O user : %O error : %O', req.body, req.user, e)
+    res.status(404);
+    res.send({})
+  })
+}
 
-//this expects req.body = { groupQuery : { groupId/key : ... }, bucketData : {} }
+
+
+
+//req.body = { groupQuery : { groupId/key : ... }, bucketData : {name,description} }
 logic.createBucket = (req, res) => {
   const groupQuery = getQuery(req.body.groupQuery);
+  let createdBucket, group;
   isUserAdminOfGroup(groupQuery, req.user)
   .then( adminStatus => {
     if ( !adminStatus.isAdmin ) { throw new Error('User is not authorized to create a bucket in this group') }
-    const group = adminStatus.group,
+    group = adminStatus.group,
     const b = new Bucket({
       "creator" : req.user._id,
       "belongsTo" : group._id,
@@ -26,7 +43,11 @@ logic.createBucket = (req, res) => {
     })
     return b.save();
   })
-  .then(savedBucket => res.send(savedBucket) )
+  .then(savedBucket => {
+    createdBucket = savedBucket;
+    return groupLogic.addBucketToGroup(group, createdBucket._id)
+  })
+  .then( )
   .catch( e => {
     logger.error('Error in createBucket body : %O user : %O error : %O', req.body, req.user, e)
     res.status(404);

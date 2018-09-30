@@ -60,10 +60,9 @@ const groupSchema = mongoose.Schema({
 
 })
 
-groupSchema.pre('save', function(next)
-{
-    this.last_modified = new Date();
-    next();
+groupSchema.pre('save', function(next) {  
+  this.last_modified = new Date();
+  next();
 });
 
 groupSchema.post('remove', function(deletedGroup, next) {
@@ -80,6 +79,7 @@ groupSchema.methods.getGroupMembers = function(AccountDependency) {
       resolve([]);
     }
     AccountDependency.find({'_id' : { $in : members } })
+    .select('-hash -salt')
     .exec()
     .then( (groupMembers) => {
       if ( !groupMembers ) { reject('Could not find group members'); }

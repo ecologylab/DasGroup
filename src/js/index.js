@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import logic from './logic.js';
-import apiWrapper from './apiWrapper.js'; //just for testing
+import testRoutes from './tests/testRoutes.js'; //just for testing
 const index = {};
 
 
@@ -15,7 +15,7 @@ index.init = () => {
     .then( userAndGroups => {
       user = userAndGroups.user;
       groups = userAndGroups.groups;
-      resolve(true)
+      resolve({user : user, groups : groups})
     })
     .catch( e => {
       console.error("Error in index init",e )
@@ -24,10 +24,17 @@ index.init = () => {
   })
 }
 
-index.tests = () => {
+index.tests = (userAndGroups) => {
   return new Promise( (resolve, reject) => {
-    console.log(user, groups, apiWrapper)
-    resolve(true);
+    console.log("Running tests!")
+    testRoutes(userAndGroups)
+    .then( s => {
+      resolve(s);
+    })
+    .catch( e => {
+      console.log("Testing failed: ", e)
+      reject(e);
+    })
   })
 }
 

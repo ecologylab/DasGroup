@@ -21,6 +21,9 @@ router.get('/getUser', isAuthenticated, accountLogic.getUser);
 router.get('/getGroups', isAuthenticated, groupLogic.getGroups);
 router.get('/getGroupMembers', isAuthenticated, groupLogic.getGroupMembers);
 
+router.post('/addGroupMembers', isAuthenticated, groupLogic.addGroupMembers); //testing before invite
+router.post('/addGroupAdmins', isAuthenticated, groupLogic.addGroupAdmins); //testing before invite
+
 router.post('/deleteGroup', isAuthenticated, groupLogic.deleteGroup);
 router.post('/createGroup', isAuthenticated, groupLogic.createGroup);
 

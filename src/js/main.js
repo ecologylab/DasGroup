@@ -7,5 +7,11 @@ import index from './index.js';
 
 
 index.init()
-.then( s => console.log("Index initialized: ", s) )
-.then( _ => index.tests() )
+.then( userAndGroups => {
+  // if ( userAndGroups.user )
+  return index.tests(userAndGroups)
+})
+.then( testStatus => {
+  console.log("Testing complete: ", testStatus)
+})
+.catch( e => console.error('Error in main chain', e))
