@@ -28,7 +28,8 @@ logic.pseudoLogin = (req, res) => {
     .then( (loggedInUser) => {
       res.send({success:true})
     }).catch( (e) => {
-      logger.error("error in prelog", e)
+      logger.error('Error in pseduoLogin %j %O', req, e)
+      reject(e);
     })
   })
 }
@@ -38,12 +39,12 @@ logic.getUser = (req, res) => {
   const query = getQuery(req.query);
   Account.findOne(query).exec()
   .then( (user) => {
-    if ( !user ) {
-      logger.error('A request for a user has failed.', req.query);
-      res.status(404);
-      user = {};
-    }
     res.send(user);
+  })
+  .catch( e => {
+    logger.error('Error in getUser %j %O', req.query, e)
+    res.status(404);
+    res.send([])
   })
 };
 

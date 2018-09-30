@@ -66,6 +66,12 @@ groupSchema.pre('save', function(next)
     next();
 });
 
+groupSchema.post('remove', function(deletedGroup, next) {
+  const members = deletedGroup.members;
+  logger.notice("Deleting a group, should remove groupId from all members who are part of")
+  next();
+});
+
 groupSchema.methods.getGroupMembers = function(AccountDependency) {
   let members = this.members;
   return new Promise( (resolve, reject) => {

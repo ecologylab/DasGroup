@@ -527,7 +527,19 @@ eval("\n\nvar _axios = __webpack_require__(/*! axios */ \"./node_modules/axios/i
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-eval("/* WEBPACK VAR INJECTION */(function($) {\n\nvar _apiWrapper = __webpack_require__(/*! ./apiWrapper.js */ \"./src/js/apiWrapper.js\");\n\nvar _apiWrapper2 = _interopRequireDefault(_apiWrapper);\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }\n\nvar index = {};\n\nvar user = {},\n    group = {},\n    components = [];\n\nindex.getUserAndGroups = function () {\n  var userId = $('h1').attr('data-userId');\n  _apiWrapper2.default.getUser('userId', userId).then(function (u) {\n    user = u;\n    console.log(u);\n    return _apiWrapper2.default.getGroups('groupIds', u.memberOf);\n  }).then(function (groups) {\n    return console.log(groups, _apiWrapper2.default);\n  });\n};\n\nmodule.exports = index;\n/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ \"./node_modules/jquery/dist/jquery.js\")))\n\n//# sourceURL=webpack:///./src/js/index.js?");
+eval("\n\nvar _jquery = __webpack_require__(/*! jquery */ \"./node_modules/jquery/dist/jquery.js\");\n\nvar _jquery2 = _interopRequireDefault(_jquery);\n\nvar _logic = __webpack_require__(/*! ./logic.js */ \"./src/js/logic.js\");\n\nvar _logic2 = _interopRequireDefault(_logic);\n\nvar _apiWrapper = __webpack_require__(/*! ./apiWrapper.js */ \"./src/js/apiWrapper.js\");\n\nvar _apiWrapper2 = _interopRequireDefault(_apiWrapper);\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }\n\n//just for testing\nvar index = {};\n\nvar user = {},\n    groups = {},\n    components = [];\n\nindex.init = function () {\n  var userId = (0, _jquery2.default)('h1').attr('data-userId');\n  return new Promise(function (resolve, reject) {\n    _logic2.default.getUserAndGroups(userId).then(function (userAndGroups) {\n      user = userAndGroups.user;\n      groups = userAndGroups.groups;\n      resolve(true);\n    }).catch(function (e) {\n      console.error(\"Error in index init\", e);\n      reject(e);\n    });\n  });\n};\n\nindex.tests = function () {\n  return new Promise(function (resolve, reject) {\n    console.log(user, groups, _apiWrapper2.default);\n    resolve(true);\n  });\n};\n\nmodule.exports = index;\n\n//# sourceURL=webpack:///./src/js/index.js?");
+
+/***/ }),
+
+/***/ "./src/js/logic.js":
+/*!*************************!*\
+  !*** ./src/js/logic.js ***!
+  \*************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+eval("\n\nvar _apiWrapper = __webpack_require__(/*! ./apiWrapper.js */ \"./src/js/apiWrapper.js\");\n\nvar _apiWrapper2 = _interopRequireDefault(_apiWrapper);\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }\n\nvar logic = {};\n\nlogic.getUserAndGroups = function (userId) {\n  var returnData = {};\n  return new Promise(function (resolve, reject) {\n    _apiWrapper2.default.getUser('userId', userId).then(function (u) {\n      returnData.user = u;\n      return _apiWrapper2.default.getGroups('groupIds', u.memberOf);\n    }).then(function (groups) {\n      returnData.groups = groups;\n      resolve(returnData);\n    }).catch(function (e) {\n      console.error(\"Error in get user and groups\", e);\n      reject(e);\n    });\n  });\n};\n\nmodule.exports = logic;\n\n//# sourceURL=webpack:///./src/js/logic.js?");
 
 /***/ }),
 
@@ -539,7 +551,7 @@ eval("/* WEBPACK VAR INJECTION */(function($) {\n\nvar _apiWrapper = __webpack_r
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-eval("\n\nvar _jquery = __webpack_require__(/*! jquery */ \"./node_modules/jquery/dist/jquery.js\");\n\nvar _jquery2 = _interopRequireDefault(_jquery);\n\n__webpack_require__(/*! popper.js */ \"./node_modules/popper.js/dist/esm/popper.js\");\n\n__webpack_require__(/*! bootstrap */ \"./node_modules/bootstrap/dist/js/bootstrap.js\");\n\n__webpack_require__(/*! ../css/style.css */ \"./src/css/style.css\");\n\nvar _axios = __webpack_require__(/*! axios */ \"./node_modules/axios/index.js\");\n\nvar _axios2 = _interopRequireDefault(_axios);\n\nvar _index = __webpack_require__(/*! ./index.js */ \"./src/js/index.js\");\n\nvar _index2 = _interopRequireDefault(_index);\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }\n\n_index2.default.getUserAndGroups();\n\n//# sourceURL=webpack:///./src/js/main.js?");
+eval("\n\nvar _jquery = __webpack_require__(/*! jquery */ \"./node_modules/jquery/dist/jquery.js\");\n\nvar _jquery2 = _interopRequireDefault(_jquery);\n\n__webpack_require__(/*! popper.js */ \"./node_modules/popper.js/dist/esm/popper.js\");\n\n__webpack_require__(/*! bootstrap */ \"./node_modules/bootstrap/dist/js/bootstrap.js\");\n\n__webpack_require__(/*! ../css/style.css */ \"./src/css/style.css\");\n\nvar _axios = __webpack_require__(/*! axios */ \"./node_modules/axios/index.js\");\n\nvar _axios2 = _interopRequireDefault(_axios);\n\nvar _index = __webpack_require__(/*! ./index.js */ \"./src/js/index.js\");\n\nvar _index2 = _interopRequireDefault(_index);\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }\n\n_index2.default.init().then(function (s) {\n  return console.log(\"Index initialized: \", s);\n}).then(function (_) {\n  return _index2.default.tests();\n});\n\n//# sourceURL=webpack:///./src/js/main.js?");
 
 /***/ })
 

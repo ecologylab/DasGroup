@@ -13,7 +13,9 @@ can then be broken into:
 
 module.exports = (request) => {
   //possible group queries
-  let query = {}
+  let key = Object.keys(request)[0];
+  if ( request[key] == "undefined") { throw new Error('getQuery query value undefined') }
+  let query = {};
   if ( request.groupId) {
     query = { _id : request.groupId }
   } else if ( request.groupIds ) {

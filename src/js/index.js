@@ -1,21 +1,34 @@
-import apiWrapper from './apiWrapper.js';
+import $ from 'jquery';
+import logic from './logic.js';
+import apiWrapper from './apiWrapper.js'; //just for testing
 const index = {};
 
 
 let user = {},
-    group = {},
+    groups = {},
     components = [];
 
-index.getUserAndGroups = () => {
+index.init = () => {
   const userId = $('h1').attr('data-userId');
-  apiWrapper.getUser('userId', userId)
-  .then( (u) => {
-    user = u;
-    console.log(u);
-    return apiWrapper.getGroups('groupIds',u.memberOf)
+  return new Promise( (resolve, reject) => {
+    logic.getUserAndGroups(userId)
+    .then( userAndGroups => {
+      user = userAndGroups.user;
+      groups = userAndGroups.groups;
+      resolve(true)
+    })
+    .catch( e => {
+      console.error("Error in index init",e )
+      reject(e);
+    })
   })
-  .then( groups => console.log(groups, apiWrapper) )
+}
 
+index.tests = () => {
+  return new Promise( (resolve, reject) => {
+    console.log(user, groups, apiWrapper)
+    resolve(true);
+  })
 }
 
 
