@@ -10,8 +10,7 @@ can then be broken into:
 
 */
 
-
-module.exports = (request) => {
+const getQuery = (request) => {
   //possible group queries
   let key = Object.keys(request)[0];
   if ( request[key] == "undefined") { throw new Error('getQuery query value undefined') }
@@ -46,4 +45,8 @@ module.exports = (request) => {
     throw new Error('Invalid query type in getQuery')
   }
   return query;
+}
+
+module.exports = {
+  getQuery : getQuery
 }

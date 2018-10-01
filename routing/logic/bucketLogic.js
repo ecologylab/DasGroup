@@ -2,12 +2,11 @@ const Account = require('../../models/account')
 const Group = require('../../models/group')
 const Bucket = require('../../models/bucket')
 const logger = require('../../utils/logger');
-const getQuery = require('./getQuery');
-const groupLogic = require('./logic/groupLogic');
+const groupLogic = require('./groupLogic');
+const helpers = require('../helpers/helpers')
+const isUserAdminOfGroup = helpers.isUserAdminOfGroup;
+const findGroup = helpers.findGroup;
 const logic = {};
-
-const isUserAdminOfGroup = groupLogic.isUserAdminOfGroup;
-const findGroup = groupLogic.findGroup;
 
 
 //req.body = { groupQuery : { groupId/key : ... }, bucketData : {name,description} }

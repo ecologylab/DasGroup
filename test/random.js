@@ -6,6 +6,7 @@ const jsonfile = require('jsonfile');
 const logger = require('../utils/logger');
 const groupLogic = require('../routing/logic/groupLogic')
 const accountLogic = require('../routing/logic/accountLogic')
+const helpers = require('../routing/helpers/helpers')
 require('dotenv').config()
 mongoose.connect(process.env.DB_CONN_DEV, { useNewUrlParser : true }).then(
   () => { console.log("Connected!"); },
@@ -13,56 +14,16 @@ mongoose.connect(process.env.DB_CONN_DEV, { useNewUrlParser : true }).then(
 )
 let group = {}
 const randomId = mongoose.Types.ObjectId();
-// Group.findOne( {key : 'abc' })
+
+
+// Account.find({username : 'avsphessre'})
 // .exec()
-// .then( g => {
-//   let userId = g.roles.admins[0].toString(),
-//       admins = Array.from(g.roles.admins, e => e.toString() );
-//
-//
-//   console.log(admins.includes(userId), userId)
-// })
-// Group.findOne( {key : 'abc' })
-// .exec()
-// .then( g => { group = g; return true; })
-// .then( _ => Account.findOne({ username : 'avsphere'}).exec() )
-// .then( user => {
-//   user.getAdminOf(Group)
-//   .then( adminOf => {
-//     console.log(group._id, adminOf)
-//     console.log(adminOf.includes(group._id.toString() ) )
-//
-//   })
+// .then( u => {
+//   if ( !u ) { console.log("in if", u) }
+//   else { console.log(u) }
 // })
 
-const getAvsp = Account.findOne({username : 'avsphere'})
 
-// getAvsp
-// .exec()
-// .then( user => groupLogic.isUserAdminOfGroup({key : 'def' }, user) )
-// .then( adminStatus => console.log(adminStatus))
-// .catch( e => {
-//   console.log("In outter e", e)
-// })
-
-accountLogic.addGroupToUser({ username: 'avsphere'}, "5babac5d18ef68217ceb9816")
-.then( s => {
-  console.log(s);
-})
-.catch( e => {
-  console.error(e)
-})
-// getAvsp
-// .exec()
-// .then( user => accountLogic.addGroupToUser(randomId) )
-// .then( s => {
-//   if ( s ) {
-//     console.log("User exists")
-//   } else {
-//     console.log("User DOES NOT exist")
-//
-//   }
-// })
-// .catch( e => {
-//   console.log("In outter e", e)
-// })
+helpers.findUser({username : 'avsphere'})
+.then( u => console.log(u) )
+.catch(e => console.log(e) )

@@ -1,52 +1,16 @@
-const authHelper = require('../../utils/authHelper.js')
 const Account = require('../../models/account')
 const Group = require('../../models/group')
 const logger = require('../../utils/logger');
-const getQuery = require('./getQuery');
-const accountLogic = require('./accountLogic');
+const helpers = require('../helpers/helpers')
 require('dotenv').config()
 const logic = {};
 
-const uniq = (a) => Array.from(new Set(a));
+const uniq = helpers.uniq;
+const getQuery = helpers.getQuery;
+const findGroup = helpers.findGroup;
+const isUserAdminOfGroup = helpers.isUserAdminOfGroup;
 
 
-
-const findGroup = (query) => {
-  return new Promise( (resolve, reject) => {
-    Group.find(query).exec()
-    .then( (group) => {
-      if ( group.length === 1 ) { resolve(group[0]) }
-      else if ( group.length < 1 ) { reject('No group found')}
-      else { resolve(group); }
-    })
-    .catch( e => {
-      logger.error('Error in findGroup %j %O', query, e)
-      reject(e);
-    })
-  })
-}
-
-const isUserAdminOfGroup = (groupQuery, user) => {
-  return new Promise( (resolve, reject) => {
-    Promise.all( [ findGroup(groupQuery), user.getAdminOf(Group) ])
-    .then( resolves => {
-      const group = resolves[0],
-            adminOf = resolves[1];
-      if ( adminOf.includes( group._id.toString() ) ) { resolve({ isAdmin : true, group : group }); }
-      else { resolve({ isAdmin : false, group : group }); }
-    })
-    .catch( e => reject(e) )
-  })
-}
-
-const addBucketToGroup = (groupQuery, bucketId) => {
-  return new Promise( (resolve, reject) => {
-    findGroup(groupQuery)
-    .then( group => {
-
-    })
-  })
-}
 
 
 //This getGroups differs from the Account model method in that it takes a list of groupIds or keys where the account model expects a user
@@ -113,7 +77,7 @@ logic.addGroupMembers = (req, res) => {
   .then( adminStatus => {
     if ( !adminStatus.isAdmin ) { throw new Error('User is not authorized to add members this group') }
     group = adminStatus.group;
-    userChecks = req.body.newMembers.map( m => accountLogic.checkUserExists(m) )
+    userChecks = req.body.newMembers.map( m => helpers.checkUserExists(m) )
     newGroupMembers = uniq(group.members.concat(req.body.newMembers))
     return Promise.all(userChecks)
   })
@@ -124,7 +88,7 @@ logic.addGroupMembers = (req, res) => {
   })
   .then( updatedGroup => {
     group = updatedGroup;
-    return Promise.all( newGroupMembers.map( m => accountLogic.addGroupToUser({ _id : m }, updatedGroup._id) ) )
+    return Promise.all( newGroupMembers.map( m => helpers.addGroupToUser({ _id : m }, updatedGroup._id) ) )
   })
   .then( updatedUsers => {console.log("addGroupMembers", group); res.send(group)} )
   .catch( e => {
@@ -142,7 +106,7 @@ logic.addGroupAdmins = (req, res) => {
   .then( adminStatus => {
     if ( !adminStatus.isAdmin ) { throw new Error('User is not authorized to add admins this group') }
     group = adminStatus.group;
-    userChecks = req.body.newAdmins.map( m => accountLogic.checkUserExists(m) )
+    userChecks = req.body.newAdmins.map( m => helpers.checkUserExists(m) )
     newAdmins = uniq(group.roles.admins.concat(req.body.newAdmins))
     return Promise.all(userChecks)
   })
@@ -153,7 +117,7 @@ logic.addGroupAdmins = (req, res) => {
   })
   .then( updatedGroup => {
     group = updatedGroup;
-    return Promise.all( newAdmins.map( m => accountLogic.addGroupToUser({ _id : m }, updatedGroup._id) ) )
+    return Promise.all( newAdmins.map( m => helpers.addGroupToUser({ _id : m }, updatedGroup._id) ) )
   })
   .then( updatedUsers => res.send(group) )
   .catch( e => {
@@ -178,7 +142,7 @@ logic.createGroup = (req, res) => {
   g.save()
   .then( newGroup => {
     createdGroup = newGroup;
-    return accountLogic.addGroupToUser({ _id : req.user._id}, newGroup._id)
+    return helpers.addGroupToUser({ _id : req.user._id}, newGroup._id)
   })
   .then( updatedUser => {
     res.send(createdGroup)
