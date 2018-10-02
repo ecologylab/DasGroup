@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const tokenHandler = require('../utils/tokenHandler.js')
-const authHelper = require('../utils/authHelper.js')
 const logger = require('../utils/logger');
 const accountLogic = require('./logic/accountLogic');
 const groupLogic = require('./logic/groupLogic');
+const helpers = require('./helpers/helpers')
 require('dotenv').config()
-const isAuthenticated = process.env.test === 'true' ? (req,res,d) => d() : authHelper.isAuthenticated;
+const isAuthenticated = helpers.isAuthenticated;
 
 
 /* account */

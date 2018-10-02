@@ -18,4 +18,4 @@ const buildHelpers = (modules) => {
 }
 
 
-module.exports = buildHelpers([ accountHelper, authHelper, getQuery ])
+module.exports = buildHelpers([ accountHelper, authHelper, getQuery, groupHelpers, miscHelpers ])

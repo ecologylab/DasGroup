@@ -1,15 +1,14 @@
+require('dotenv').config()
 const Account = require('../../models/account')
 const Group = require('../../models/group')
 const logger = require('../../utils/logger');
 const helpers = require('../helpers/helpers')
-require('dotenv').config()
 const logic = {};
 
 const uniq = helpers.uniq;
 const getQuery = helpers.getQuery;
 const findGroup = helpers.findGroup;
 const isUserAdminOfGroup = helpers.isUserAdminOfGroup;
-
 
 
 

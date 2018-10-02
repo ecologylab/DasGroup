@@ -7,6 +7,18 @@ const logic = {};
 
 
 
+const getQuery = helpers.getQuery;
+
+logic.getUser = (req,res) => {
+  const query = getQuery(req.query);
+  helpers.findUser(query)
+  .then( u => res.send(u) )
+  .catch( e => {
+    logger.error('Error in getUser %j %O', req.query, e)
+    res.status(404);
+    res.send([])
+  })
+}
 
 
 

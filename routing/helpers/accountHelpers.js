@@ -2,7 +2,7 @@ const Account = require('../../models/account')
 const logger = require('./logger')
 const accountHelpers = {};
 
-accountHelpers.findUser = (query) => {
+const findUser = (query) => {
   return new Promise( (resolve, reject) => {
     Account.find(query).exec()
     .then( (user) => {
@@ -50,4 +50,5 @@ accountHelpers.checkUserExists = (userId) => {
   })
 }
 
+accountHelpers.findUser = findUser;
 module.exports = accountHelpers;

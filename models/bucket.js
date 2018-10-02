@@ -12,6 +12,11 @@ const bucketSchema = mongoose.Schema({
     required : true,
     ref : 'group'
   },
+  visibility: {
+    type: String,
+    required : true,
+    default : 'open'
+  },
   key: {
     type: String,
     unique: true,

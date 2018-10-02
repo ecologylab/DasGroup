@@ -1,7 +1,8 @@
 const logger = require('./logger')
+const Group = require('../../models/group')
 const groupHelpers = {}
 
-groupHelpers.findGroup = (query) => {
+const findGroup = (query) => {
   return new Promise( (resolve, reject) => {
     Group.find(query).exec()
     .then( (group) => {
@@ -38,4 +39,5 @@ groupHelpers.addBucketToGroup = (groupQuery, bucketId) => {
   })
 }
 
+groupHelpers.findGroup = findGroup;
 module.exports = groupHelpers
