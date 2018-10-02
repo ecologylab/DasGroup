@@ -10,6 +10,7 @@ const passport = require('passport');
 const app = express();
 const logger = require('./utils/logger');
 const cors = require('cors');
+const config = require('config')
 app.use(cors())
 require('dotenv').config()
 require('./passport.js')(passport);
@@ -17,11 +18,11 @@ require('./passport.js')(passport);
 app.use(favicon(path.join(__dirname, 'public', 'coolGuy.ico')))
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
-if ( !process.env.test ) { app.use(morgan('dev')); }
+if ( process.env.NODE_ENV === 'dev' ) { app.use(morgan('dev')); }
 app.use(cookieParser());
 
 app.use(session({
-  secret: process.env.SESS_SECRET,
+  secret: config.session.secret,
   resave: true,
   saveUninitialized: true,
   cookie: { secure: false }
@@ -31,7 +32,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-mongoose.connect(process.env.DB_CONN_DEV, { useNewUrlParser : true }).then(
+mongoose.connect(config.database.connectionString, { useNewUrlParser : true }).then(
   () => { logger.notice("Connected to database!") },
   err => { logger.error("ERROR - Database connection failed")}
 )
