@@ -10,7 +10,9 @@ logic.getUserAndGroups = (userId) => {
     apiWrapper.getUser('userId', userId)
     .then( (u) => {
       returnData.user = u;
-      return apiWrapper.getGroups('groupIds',u.memberOf)
+      if ( u.memberOf.length > 0 ) {
+        return apiWrapper.getGroups('groupIds',u.memberOf)
+      } else { resolve([])}
     })
     .then( groups => {
         returnData.groups = groups;

@@ -11,14 +11,12 @@ const groupSchema = mongoose.Schema({
   members : [{
     type: ObjectId,
     required : false,
-    unique : true,
     ref : 'account'
   }],
   roles : {
     admins : [{
       type: ObjectId,
       required : true,
-      unique : true,
       ref : 'account'
     }]
   },
@@ -60,7 +58,7 @@ const groupSchema = mongoose.Schema({
 
 })
 
-groupSchema.pre('save', function(next) {  
+groupSchema.pre('save', function(next) {
   this.last_modified = new Date();
   next();
 });
