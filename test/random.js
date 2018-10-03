@@ -1,3 +1,4 @@
+process.env.NODE_ENV = 'dev'
 const Account = require('../models/account');
 const Group = require('../models/group');
 const mongoose = require('mongoose');
@@ -8,8 +9,7 @@ const groupLogic = require('../routing/logic/groupLogic')
 const accountLogic = require('../routing/logic/accountLogic')
 const helpers = require('../routing/helpers/helpers')
 const config = require('config')
-require('dotenv').config()
-mongoose.connect(process.env.DB_CONN_DEV, { useNewUrlParser : true }).then(
+mongoose.connect(config.database.connectionString, { useNewUrlParser : true }).then(
   () => { console.log("Connected!"); },
   err => { console.log("ERROR - Database connection failed")}
 )

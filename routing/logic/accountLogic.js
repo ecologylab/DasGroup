@@ -3,6 +3,7 @@ const Account = require('../../models/account')
 const Group = require('../../models/group')
 const logger = require('../../utils/logger');
 const helpers = require('../helpers/helpers')
+const config = require('./config')
 const logic = {};
 
 
@@ -33,7 +34,7 @@ logic.prelog = (req, res) => {
           logger.error('Error in prelog - req.login %O %O', user, err)
           throw new Error(err.toString())
         } else {
-          res.redirect('/')
+          res.redirect(config.redirects.prelog)
         }
       })
     })

@@ -1,3 +1,4 @@
+process.env.NODE_ENV = 'dev'
 const Account = require('../models/account');
 const Group = require('../models/group');
 const mongoose = require('mongoose');

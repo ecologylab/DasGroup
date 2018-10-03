@@ -1,3 +1,4 @@
+process.env.NODE_ENV = 'dev'
 const logger = require('../utils/logger');
 
 logger.log({ level : 'error', message : 'Test error level log' })
