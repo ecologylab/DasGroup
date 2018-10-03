@@ -1,11 +1,12 @@
+process.env.NODE_ENV = 'dev'
 //This uses the seed data which should have been populated from buildSeedData
 const Account = require('../../models/account');
 const Group = require('../../models/group');
 const mongoose = require('mongoose');
 const seedFile = './scripts/seed/seedData.json';
 const jsonfile = require('jsonfile');
-require('dotenv').config()
-mongoose.connect(process.env.DB_CONN_DEV, { useNewUrlParser : true }).then(
+const config = require('config')
+mongoose.connect(config.database.connectionString, { useNewUrlParser : true }).then(
   () => { console.log("Connected and seeding!"); runSeed(true); },
   err => { console.log("ERROR - Database connection failed")}
 )

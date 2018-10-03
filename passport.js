@@ -1,6 +1,5 @@
 const LocalStrategy = require('passport-local').Strategy;
 const Account = require('./models/account');
-require('dotenv').config()
 
 //This is dependent on Live Maches auth
 

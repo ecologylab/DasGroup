@@ -13,7 +13,7 @@ const group3Id = mongoose.Types.ObjectId();
 let randomMember = '';
 const group1Members = []; //populated during pull
 const group2Members = []; //populated during pull
-require('dotenv').config()
+//A local restored live mache backup
 mongoose.connect('mongodb://localhost/bpath', { useNewUrlParser : true }).then(
   () => { console.log("Connected. Beginning pull"); buildSeed(); },
   err => { console.log("ERROR - Database connection failed")}

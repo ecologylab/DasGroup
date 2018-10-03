@@ -5,7 +5,6 @@ const logger = require('../utils/logger');
 const accountLogic = require('./logic/accountLogic');
 const groupLogic = require('./logic/groupLogic');
 const helpers = require('./helpers/helpers')
-require('dotenv').config()
 const isAuthenticated = helpers.isAuthenticated;
 
 

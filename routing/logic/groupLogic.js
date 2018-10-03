@@ -1,4 +1,3 @@
-require('dotenv').config()
 const Account = require('../../models/account')
 const Group = require('../../models/group')
 const logger = require('../../utils/logger');

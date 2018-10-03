@@ -4,8 +4,8 @@ const mongoose = require('mongoose');
 const seedFile = './scripts/seed/seedData.json';
 const jsonfile = require('jsonfile');
 const logger = require('../utils/logger');
-require('dotenv').config()
-mongoose.connect(process.env.DB_CONN_DEV, { useNewUrlParser : true }).then(
+const config = require('config')
+mongoose.connect(config.database.connectionString, { useNewUrlParser : true }).then(
   () => { console.log("Connected!"); },
   err => { console.log("ERROR - Database connection failed")}
 )

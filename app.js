@@ -11,8 +11,14 @@ const app = express();
 const logger = require('./utils/logger');
 const cors = require('cors');
 const config = require('config')
+const redis = require('redis')
+const RedisStore = require('connect-redis')(session)
+const redisClient = redis.createClient({
+  host : config.redis.host,
+  port : config.redis.port,
+  password : config.redis.password
+})
 app.use(cors())
-require('dotenv').config()
 require('./passport.js')(passport);
 
 app.use(favicon(path.join(__dirname, 'public', 'coolGuy.ico')))
@@ -22,10 +28,12 @@ if ( process.env.NODE_ENV === 'dev' ) { app.use(morgan('dev')); }
 app.use(cookieParser());
 
 app.use(session({
+  store : new RedisStore({client : redisClient}),
   secret: config.session.secret,
-  resave: true,
-  saveUninitialized: true,
-  cookie: { secure: false }
+  resave: false,
+  name : 'dasCookie',
+  cookie: { secure: true },
+  saveUninitialized: false,
 }))
 
 app.use(bodyParser.json());
