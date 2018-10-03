@@ -19,8 +19,8 @@ const redisClient = redis.createClient({
   password : config.redis.password
 })
 
+app.use(morgan('dev'));
 if ( process.env.NODE_ENV === 'dev' ) {
-  app.use(morgan('dev'));
   app.use( (req,res,next) => {
     res.locals.resourceBasePath = '/';
     next();

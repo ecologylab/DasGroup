@@ -10,6 +10,7 @@ let user = {},
 
 index.init = () => {
   const userId = $('h1').attr('data-userId');
+  console.log("Index init: ", userId)
   return new Promise( (resolve, reject) => {
     logic.getUserAndGroups(userId)
     .then( userAndGroups => {

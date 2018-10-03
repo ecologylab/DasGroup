@@ -95,6 +95,7 @@ wrapper.updateGroup = (modifiedGroupFields) => {
 }
 
 
+console.log('wrapper', wrapper, base)
 
 // .then( (user) => axios.get(`/getGroup?groupId=${user.memberOf[0]}`) )
 
