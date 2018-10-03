@@ -127,8 +127,8 @@ logic.addGroupAdmins = (req, res) => {
 
 logic.createGroup = (req, res) => {
   let createdGroup = {}
-  req.body.members.push(req.user._id);
-  req.body.adminIds.push(req.user._id);
+  req.body.members.push(req.user._id.toString());
+  req.body.adminIds.push(req.user._id.toString());
   const g = new Group({
     "creator" : req.user._id,
     "roles.admins" : uniq(req.body.adminIds),
