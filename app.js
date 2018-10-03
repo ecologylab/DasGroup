@@ -18,13 +18,28 @@ const redisClient = redis.createClient({
   port : config.redis.port,
   password : config.redis.password
 })
+
+if ( process.env.NODE_ENV === 'dev' ) {
+  app.use(morgan('dev'));
+  app.use( (req,res,next) => {
+    res.locals.resourceBasePath = '/';
+    next();
+  })
+} else {
+  app.use( (req,res,next) => {
+    res.locals.resourceBasePath = '/g/';
+    next();
+  })
+}
+
+
 app.use(cors())
 require('./passport.js')(passport);
 
 app.use(favicon(path.join(__dirname, 'public', 'coolGuy.ico')))
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
-if ( process.env.NODE_ENV === 'dev' ) { app.use(morgan('dev')); }
+
 app.use(cookieParser());
 
 app.use(session({
