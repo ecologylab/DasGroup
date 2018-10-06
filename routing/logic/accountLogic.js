@@ -34,7 +34,8 @@ logic.prelog = (req, res) => {
           logger.error('Error in prelog - req.login %O %O', user, err)
           throw new Error(err.toString())
         } else {
-          res.redirect(config.redirects.prelog)
+          let redirectUrl = config.redirects.prelog || "/";
+          res.redirect(redirectUrl)
         }
       })
     })

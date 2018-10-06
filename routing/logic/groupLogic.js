@@ -11,6 +11,35 @@ const isUserAdminOfGroup = helpers.isUserAdminOfGroup;
 
 
 
+logic.renderGroup = (req, res) => {
+  let locator = req.params.locator
+  let query = locator.length === 24 ? getQuery({ groupId : locator }) : getQuery({groupKey : locator})
+  findGroup(query)
+  .then( group => {
+    if ( group ) { res.render('group', {user : req.user, group : group }) }
+    else { res.render('error', {message : "No such group exists"} )}
+  })
+  .catch( (e) => {
+    logger.error('Error in renderGroup %j %O', req.query, e)
+    res.status(404);
+    res.send([])
+  })
+}
+
+logic.renderRoot = (req, res) => {
+  let groupQuery = getQuery({ groupIds : req.user.memberOf });
+  findGroup(groupQuery)
+  .then( groups => {
+    res.render('index', {user : req.user, groups : groups })
+  })
+  .catch( (e) => {
+    logger.error('Error in renderGroup %j %O', req.query, e)
+    res.status(404);
+    res.send([])
+  })
+}
+
+
 //This getGroups differs from the Account model method in that it takes a list of groupIds or keys where the account model expects a user
 logic.getGroups = (req, res) => {
   const query = getQuery(req.query);

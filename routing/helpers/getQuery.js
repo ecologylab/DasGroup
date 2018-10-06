@@ -18,21 +18,29 @@ const getQuery = (request) => {
   if ( request.groupId) {
     query = { _id : request.groupId }
   } else if ( request.groupIds ) {
-    query = { _id : { $in : request.groupIds.split(',') } }
+    query = Array.isArray(request.groupIds)
+    ? query = { _id : { $in : request.groupIds } }
+    : query = { _id : { $in : request.groupIds.split(',') } }
   } else if ( request.groupKey ) {
     query = { key : request.groupKey }
   } else if ( request.groupKeys ) {
-    query = { key : { $in : request.groupKeys.split(',') } }
+    query = Array.isArray(request.groupKeys)
+    ? query = { _id : { $in : request.groupKeys } }
+    : query = { _id : { $in : request.groupKeys.split(',') } }
   }
   //possible bucket queries
   else if ( request.bucketId ) {
     query = { _id : request.bucketId }
   } else if ( request.bucketIds ) {
-    query = { _id : { $in : request.groupIds.split(',') } }
+    query = Array.isArray(request.bucketIds)
+    ? query = { _id : { $in : request.bucketIds } }
+    : query = { _id : { $in : request.bucketIds.split(',') } }
   } else if ( request.bucketKey ) {
     query = { key : request.bucketKey }
   } else if ( request.bucketKeys ) {
-    query = { key : { $in : request.bucketKeys.split(',') } }
+    query = Array.isArray(request.bucketKeys)
+    ? query = { _id : { $in : request.bucketKeys } }
+    : query = { _id : { $in : request.bucketKeys.split(',') } }
   }
   //possible user queries
   else if ( request.userId ) {

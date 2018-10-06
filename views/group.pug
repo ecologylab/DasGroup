@@ -1,0 +1,21 @@
+extends layout
+
+block content
+  .wrapper
+    .title
+      h1#userId(data-userId=user._id) User: #{user.username}
+    .groupFields
+      h2#groupId(data-groupId=group._id) Group Name: #{group.name}
+      ul.list-group
+      li.list-group-item Roles : #{group.roles}
+      li.list-group-item Members : #{group.members}
+      li.list-group-item Visibility : #{group.visibility}
+      li.list-group-item Key : #{group.key}
+      li.list-group-item Description : #{group.description}
+      li.list-group-item Buckets : #{group.buckets}
+      li.list-group-item Created on : #{group.created_on}
+      li.list-group-item Last modified : #{group.last_modified}
+    #buttonArea
+  
+    
+    

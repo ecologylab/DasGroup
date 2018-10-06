@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const config = require('config')
-let secret = 'othelloIsNotADog';
+let secret = "othelloIsNotADog";
 
 
 
