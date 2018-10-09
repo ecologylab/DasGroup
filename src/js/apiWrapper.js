@@ -1,6 +1,7 @@
 import axios from 'axios'
 const wrapper = {}
 const base = window.location.host.includes('localhost') ? '/' : '/g/';
+console.log("Api wrapper initialized with ", base)
 
 wrapper.getUser = (key, value) => {
   return new Promise( (resolve, reject) => {
@@ -56,6 +57,9 @@ wrapper.createBucket = (groupLocator, bucketData) => {
 }
 
 wrapper.createGroup = (group) => {
+  if ( !group.hasOwnProperty('members') ) { group.members = [] }
+  if ( !group.hasOwnProperty('adminIds') ) { group.adminIds = [] }
+  if ( !group.hasOwnProperty('visibility') ) { group.visibility = 'public' }
   return new Promise( (resolve, reject) => {
     axios.post(`${base}a/createGroup`, group)
     .then( (response) => {
@@ -76,6 +80,19 @@ wrapper.deleteGroup = (groupLocator) => {
     })
     .catch( e => {
       console.error('Error deleting group', groupLocator, e)
+      reject(e);
+    })
+  })
+}
+
+wrapper.joinGroup = (groupLocator) => {
+  return new Promise( (resolve, reject) => {
+    axios.post(`${base}a/joinGroup`, groupLocator)
+    .then( (response) => {
+      resolve(response.data)
+    })
+    .catch( e => {
+      console.error('Error joining group', group, e)
       reject(e);
     })
   })

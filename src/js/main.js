@@ -19,6 +19,6 @@ if ( window.location.pathname.includes('test') ) {
   .catch( e => console.error('Error in group.init', e) )
 } else {
   index.init()
-  .then( usersAndGroups => console.log(usersAndGroups) )
+  .then( status => console.log(status) )
   .catch( e => console.error('Error in index.init', e) )
 }

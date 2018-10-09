@@ -3,9 +3,9 @@ extends layout
 block content
   .wrapper
     .title
-      h1#userId(data-userId=user._id) User: #{user.username}
+      h1#user(data-userId=user._id) User: #{user.username}
     .groupFields
-      h2#groupId(data-groupId=group._id) Group Name: #{group.name}
+      h2#group(data-groupId=group._id, data-groupVisibility=group.visibility) Group Name: #{group.name}
       ul.list-group
       li.list-group-item Roles : #{group.roles}
       li.list-group-item Members : #{group.members}

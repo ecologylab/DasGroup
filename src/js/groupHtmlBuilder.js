@@ -8,7 +8,6 @@ const builder = {};
 const buttonBuilder = {};
 const formBuilder = {};
 
-
 buttonBuilder.getMembers = (group) => {
   let itemId = 'button_' + shortId.generate()
   let html = `<button type="button" class="btn btn-primary">Get Members</button>`;
@@ -25,31 +24,39 @@ buttonBuilder.getMembers = (group) => {
 formBuilder.createGroup = () => {
   let itemId = 'form' + shortId.generate()
   const buildHtml = () => {
-    const buildFieldHtml = (fieldName, fieldId) => {
+    const buildFieldHtml = (fieldName, fieldId, placeholder) => {
+      if (!placeholder) { placeholder = ''; }
       return `<div class="input-group mb-3">
         <div class="input-group-prepend">
           <span class="input-group-text" id="${fieldId}">${fieldName}</span>
         </div>
-        <input type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+        <input type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" placeholder="${placeholder}">
       </div>`;
     }
     let html = `<div id=${itemId}>`
     html += buildFieldHtml('Name', 'name') + buildFieldHtml('Description', 'description');
-    html += buildFieldHtml('Visibility', 'visibility')
+    html += buildFieldHtml('Visibility', 'visibility', 'public or private')
     html += `<button type="button" class="btn btn-primary">Create group</button>`;
     html += '</div>'
     return html;
   }
   let html = buildHtml()
   let createHandle = () => {
-    //FIX ME
     return (el) => {
       el.preventDefault;
-      $('#' + itemId)
+      const groupData = $('#' + itemId)
       .find('.input-group').toArray()
-      .map( input => {
-        return 0
+      .map( inputGroup => {
+        const fieldKey = $(inputGroup).find('.input-group-prepend span').attr('id');
+        const fieldValue = $(inputGroup).find('.form-control').val();
+        return {key : fieldKey, value : fieldValue };
       })
+      .reduce( (obj, item) => Object.assign(obj, { [item.key] : item.value }, {}), {})
+      apiWrapper.createGroup(groupData)
+      .then( newGroup => {
+        window.location.href = `./group/${newGroup.key}`
+      })
+      .catch( e => console.error(e) )
     }
   }
   return { html : html, handler : createHandle() }

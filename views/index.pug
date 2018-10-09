@@ -2,11 +2,20 @@ extends layout
 
 block content
   .wrapper
-    h1(data-userId= user._id) #{user.username} welcome to DasGroup
-  .title
-    h1 User: #{user.username}
-  .groupList
-    ul.list-group
-      each group in groups
-        li.list-group-item 
-          a(href=resourceBasePath + 'group/' + group.key) #{group.name}
+    h1#user(data-userId= user._id) #{user.username} welcome to DasGroup
+    .title
+    .groupListWrapper
+      .row
+        .col
+          h1 Member of
+        .col
+          button#createNewGroup.btn.btn-primary(type='button') Create New Group
+      br
+      br
+      #formArea
+      br
+      .groupList
+        ul.list-group
+          each group in groups
+            li.list-group-item 
+              a(href=resourceBasePath + 'group/' + group.key) #{group.name}

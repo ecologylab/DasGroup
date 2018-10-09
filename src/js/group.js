@@ -1,27 +1,67 @@
 import $ from 'jquery';
 import logic from './logic.js';
+import apiWrapper from './apiWrapper.js'
 import viewHelper from './groupViewHelper.js'
 const groupLogic = {};
 const components = [];
 
-
-let user = {};
-let group = {};
-let state = {
-      isAdmin : false
+const state = {
+      userId : $('#user').attr('data-userId'),
+      groupId : $('#group').attr('data-groupId'),
+      groupVisiblity : $('#group').attr('data-groupVisibility'),
+      user : {},
+      group : {},
+      isAdmin : false,
+      isMember : false
     }
+const renderChain = []
 
-const setState = () => {
-  if ( group.roles.admins.includes(user._id) ) { state.isAdmin = true; }
-  return true;
+const renderAdmin = () => {
+  if ( state.isAdmin ) {
+    let currComponents = viewHelper.renderGetMembersButton('#buttonArea', state.group);
+    console.log("curr components ", currComponents)
+  }
 }
 
 const renderPage = () => {
-  if ( state.isAdmin ) {
-    viewHelper.renderGetMembersButton('#buttonArea', group);
-    let ren = viewHelper.renderCreateGroupForm('#buttonArea');
-    console.log(ren)
+  console.log("rendering page!");
+}
+
+const renderInvite = () => {
+  $('.wrapper').empty();
+  const buildAndAppendModal = () => {
+    let html = `<div class="modal fade" id="joinGroupModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Join Group</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                You are currently not part of ${state.group.name}. Click join to join!
+              </div>
+              <div class="modal-footer">
+                <button id='modal_declineInvite' type="button" class="btn btn-secondary" data-dismiss="modal">Nah</button>
+                <button id='modal_acceptInvite' type="button" class="btn btn-primary">Join</button>
+              </div>
+            </div>
+          </div>
+        </div>`
+    $('.wrapper').append(html)
   }
+  buildAndAppendModal()
+  $('#modal_declineInvite').on('click', () => { window.location.href = '/' })
+  $('#modal_acceptInvite').on('click', () => {
+    apiWrapper.joinGroup({groupId : state.groupId })
+    .then( s => {
+      window.location.reload();
+    })
+    .catch(e => console.error("Error accepting group invite", e))
+  })
+  $('#joinGroupModal').modal({})
+  console.log("rendering invite!")
 }
 
 groupLogic.getState = () => {
@@ -31,21 +71,54 @@ groupLogic.getState = () => {
 
 
 
-groupLogic.init = () => {
-  const userId = $('#userId').attr('data-userId');
-  const groupId = $('#groupId').attr('data-groupId');
-  console.log("Group init: ", userId)
+const _pre_initState = () => {
   return new Promise( (resolve, reject) => {
-    logic.getUserAndGroups(userId, [groupId])
-    .then( userAndGroup => {
-      //setting base state
-      user = userAndGroup.user;
-      group = userAndGroup.groups[0];
-      resolve(user);
+    apiWrapper.getUser('userId', state.userId)
+    .then( u => {
+      console.log(state);
+      state.user = u;
+      if ( u.memberOf.includes(state.groupId) ) { state.isMember = true; }
+      if ( state.isMember === false && state.groupVisiblity === 'private' ) {
+        window.location.href = '/';
+      }
+      return apiWrapper.getGroups('groupId', state.groupId);
     })
-    .then( _ => setState() )
-    .then( _ => renderPage() )
-    .then( _ => { return { user : user, group : group } })
+    .then( group => {
+      group = group[0]
+      console.log(group)
+      state.group = group;
+      if ( group.roles.admins.includes(state.userId) ) {
+        state.isAdmin = true;
+      }
+      resolve(true);
+    })
+    .catch( e => console.error('Error in _pre_initState ', e))
+  })
+}
+
+const _pre_setRenderChain = () => {
+  if ( state.isMember === true ) {
+    renderChain.push(renderPage);
+    if ( state.isAdmin === true ) { renderChain.push(renderAdmin); }
+  } else if (state.groupVisiblity !== 'private' ) {
+    renderChain.push(renderInvite)
+  }
+  return true;
+}
+
+
+groupLogic.init = () => {
+
+  return new Promise( (resolve, reject) => {
+    _pre_initState()
+    .then( s => {
+      return _pre_setRenderChain()
+    })
+    .then( s => {
+      console.log("render chain " , renderChain)
+      renderChain.forEach( renderFunc => renderFunc() )
+    })
+    .then( _ => { return { user : state.user, group : state.group } })
     .catch( e => {
       console.error("Error in group init",e )
       reject(e);

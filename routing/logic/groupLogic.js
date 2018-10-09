@@ -94,9 +94,36 @@ logic.updateGroup = (req, res) => {
 
 
 
+logic.joinGroup = (req, res) => {
+  const query = getQuery(req.body);
+  let updatedGroup = {}
+  findGroup(query)
+  .then( group => {
+    const groupMembers = group.members.map( mem => mem.toString() )
+    if ( !groupMembers.includes( req.user._id.toString() ) && group.visibility.toString() === 'public' ) {
+      group.members.push(req.user._id);
+      return group.save();
+    } else {
+      console.log("IN CONSOLE LOG", group, group.visibility, group.visibility.toString() === 'public')
+      //FIX ME TO check invite list
+      throw new Error('user is trying to join non public group')
+    }
+  })
+  .then( savedGroup => {
+    updatedGroup = savedGroup;
+    return helpers.addGroupToUser({ _id : req.user._id}, updatedGroup._id)
+  })
+  .then( updatedUser => {
+    res.send(updatedGroup);
+  })
+  .catch( e => {
+    logger.error('Error in joinGroup %j %O %O', req.body, req.user, e)
+    res.status(404);
+    res.send({})
+  })
+}
 
-
-//groupQuery, newMembers [userIds]
+//THIS SHOULD BE REPLACED WITH INVITE GROUP MEMBERS groupQuery, newMembers [userIds]
 logic.addGroupMembers = (req, res) => {
   const query = getQuery(req.body.groupQuery);
   let group, userChecks, newGroupMembers;
@@ -125,7 +152,7 @@ logic.addGroupMembers = (req, res) => {
   })
 }
 
-//groupQuery, newAdmins [userIds]
+//NOT TESTED groupQuery, newAdmins [userIds]
 logic.addGroupAdmins = (req, res) => {
   const query = getQuery(req.body.groupQuery);
   let group, userChecks, newAdmins;
@@ -135,11 +162,13 @@ logic.addGroupAdmins = (req, res) => {
     group = adminStatus.group;
     userChecks = req.body.newAdmins.map( m => helpers.checkUserExists(m) )
     newAdmins = uniq(group.roles.admins.concat(req.body.newAdmins))
+    newMembers = uniq(group.members.concat(req.body.newAdmins))
     return Promise.all(userChecks)
   })
   .then( usersExist => {
     usersExist.forEach( c => { if ( c !== true ) { throw new Error('Cannot add nonexistant user to group admins') } })
     group.roles.admins = newAdmins
+    group.members = newMembers;
     return group.save()
   })
   .then( updatedGroup => {
@@ -154,13 +183,37 @@ logic.addGroupAdmins = (req, res) => {
   })
 }
 
+logic.removeGroupAdmins = (req, res) => {
+  const query = getQuery(req.body.groupQuery);
+  let group, userChecks, removeAdmins;
+  isUserAdminOfGroup(query, req.user)
+  .then( adminStatus => {
+    if ( !adminStatus.isAdmin ) { throw new Error('User is not authorized to add admins this group') }
+    group = adminStatus.group;
+    group.roles.admins = group.roles.admins.filter( adminId => {
+      if ( req.body.removeAdmins.includes( adminId.toString() ) === false ) {
+        return true
+      }
+    })
+  return group.save()
+  })
+  .then( updatedGroup => res.send(updatedGroup))
+  .catch( e => {
+    logger.error('Error in removeGroupAdmins %j %O %O', req.body, req.user, e)
+    res.status(404);
+    res.send({})
+  })
+
+
+}
+
 logic.createGroup = (req, res) => {
   let createdGroup = {}
   req.body.members.push(req.user._id.toString());
   req.body.adminIds.push(req.user._id.toString());
   console.log('before uniq', req.body.members)
   console.log('after uniq', uniq(req.body.members) )
-
+  if ( req.body.visibility !== 'public' || req.body.visibility !== 'private' ) { req.body.visibility = 'public' }
   const g = new Group({
     "creator" : req.user._id,
     "roles.admins" : uniq(req.body.adminIds),

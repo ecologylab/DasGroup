@@ -68,7 +68,7 @@ const createGroupSeedData = (memberIds) => {
               "_id" : group3Id,
               "creator" : randomMember,
               "roles.admins" : [randomMember],
-              "members" : [randomMember, aaronsId],
+              "members" : [randomMember],
               "key" : 'efg',
               "name" : 'Not Aarons Group',
               "description" : 'Defintely not Aarons'
@@ -84,7 +84,7 @@ const aaronsAccount = () => {
     "salt": "xxx",
     "hash": "xxx",
     "bio": "living",
-    "memberOf" : [group1Id, group2Id, group3Id],
+    "memberOf" : [group1Id, group2Id],
     "maches": ["5aa0a3e3d4d998961cb73292", "5abd471d0a1634b97fd952e7"]
   }
 }
