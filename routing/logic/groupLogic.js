@@ -31,6 +31,7 @@ logic.renderRoot = (req, res) => {
     let groupQuery = getQuery({ groupIds : req.user.memberOf });
     findGroup(groupQuery)
     .then( groups => {
+      if ( !Array.isArray(groups) ) { groups = [groups]; }
       res.render('index', {user : req.user, groups : groups })
     })
     .catch( (e) => {
