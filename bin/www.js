@@ -2,8 +2,9 @@ const app = require('../app');
 const debug = require('debug')('debug:server');
 const https = require('https');
 const fs = require('fs');
-const port = process.env.PORT || '3000';
+const port = config.appPort || '3000';
 const logger = require('../utils/logger');
+const config = require('config')
 app.set('port', port)
 
 const server = https.createServer({
