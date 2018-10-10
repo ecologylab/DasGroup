@@ -4,7 +4,9 @@ authHelpers.isAuthenticated = (req, res, next) => {
   if ( req.isAuthenticated() ) {
     next()
   } else {
-    res.redirect(config.redirects.fromLoginToDasGroup);
+    const redirect = `${config.redirects.fromLoginToDasGroup}&redirectTo=${req.url}`
+    console.log('les go', req.url, redirect)
+    res.redirect(redirect);
   }
 }
 

@@ -26,7 +26,8 @@ logic.getUser = (req,res) => {
 logic.prelog = (req, res) => {
   const decryptedToken = tokenHandler.decryptToken(req.params.token);
   if ( decryptedToken ) {
-    const user = decryptedToken.data;
+    const user = decryptedToken.data.user;
+    const redirectTo = decryptedToken.data.redirectTo || '/';
     helpers.findUser({ username : user.username })
     .then( user => {
       req.login(user, (err) => {
@@ -34,8 +35,7 @@ logic.prelog = (req, res) => {
           logger.error('Error in prelog - req.login %O %O', user, err)
           throw new Error(err.toString())
         } else {
-          let redirectUrl = config.redirects.prelog || "/";
-          res.redirect(redirectUrl)
+          res.redirect(redirectTo)
         }
       })
     })
