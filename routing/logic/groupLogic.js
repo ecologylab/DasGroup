@@ -27,16 +27,20 @@ logic.renderGroup = (req, res) => {
 }
 
 logic.renderRoot = (req, res) => {
-  let groupQuery = getQuery({ groupIds : req.user.memberOf });
-  findGroup(groupQuery)
-  .then( groups => {
-    res.render('index', {user : req.user, groups : groups })
-  })
-  .catch( (e) => {
-    logger.error('Error in renderGroup %j %O', req.query, e)
-    res.status(404);
-    res.send([])
-  })
+  if ( req.user.memberOf.length > 0 ) {
+    let groupQuery = getQuery({ groupIds : req.user.memberOf });
+    findGroup(groupQuery)
+    .then( groups => {
+      res.render('index', {user : req.user, groups : groups })
+    })
+    .catch( (e) => {
+      logger.error('Error in renderRoot %j %O', req.query, e)
+      res.status(404);
+      res.send([])
+    })
+  } else {
+    res.render('index', {user : req.user, groups : [] })
+  }
 }
 
 
