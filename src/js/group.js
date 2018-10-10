@@ -31,10 +31,10 @@ const renderInvite = () => {
   $('.wrapper').empty();
   const buildAndAppendModal = () => {
     let html = `<div class="modal fade" id="joinGroupModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-          <div class="modal-dialog" role="document">
+          <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
               <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Join Group</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Join Group: ${state.group.name}</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>
@@ -43,8 +43,8 @@ const renderInvite = () => {
                 You are currently not part of ${state.group.name}. Click join to join!
               </div>
               <div class="modal-footer">
-                <button id='modal_declineInvite' type="button" class="btn btn-secondary" data-dismiss="modal">Nah</button>
                 <button id='modal_acceptInvite' type="button" class="btn btn-primary">Join</button>
+                <button id='modal_declineInvite' type="button" class="btn btn-secondary" data-dismiss="modal">No Way</button>
               </div>
             </div>
           </div>
@@ -56,7 +56,7 @@ const renderInvite = () => {
   $('#modal_acceptInvite').on('click', () => {
     apiWrapper.joinGroup({groupId : state.groupId })
     .then( s => {
-      window.location.reload();
+      window.location.href = '/';
     })
     .catch(e => console.error("Error accepting group invite", e))
   })
