@@ -1,11 +1,8 @@
 import axios from 'axios'
 const wrapper = {}
-const base = window.location.host.includes('localhost') ? '/' : '/g/';
-console.log("Api wrapper initialized with ", base)
-
 wrapper.getUser = (key, value) => {
   return new Promise( (resolve, reject) => {
-    axios.get(`${base}a/getUser?${key}=${value}`)
+    axios.get(`${BASEPATH}a/getUser?${key}=${value}`)
     .then( (response) => {
       resolve(response.data)
     })
@@ -15,9 +12,10 @@ wrapper.getUser = (key, value) => {
     })
   })
 }
+
 wrapper.getGroups = (key, value) => {
   return new Promise( (resolve, reject) => {
-    axios.get(`${base}a/getGroups?${key}=${value}`)
+    axios.get(`${BASEPATH}a/getGroups?${key}=${value}`)
     .then( (response) => {
       resolve(response.data)
     })
@@ -31,7 +29,7 @@ wrapper.getGroups = (key, value) => {
 //you could just getGroups then return members, but might as well expose this api function
 wrapper.getGroupMembers = (key, value) => {
   return new Promise( (resolve, reject) => {
-    axios.get(`${base}a/getGroupMembers?${key}=${value}`)
+    axios.get(`${BASEPATH}a/getGroupMembers?${key}=${value}`)
     .then( (response) => {
       resolve(response.data)
     })
@@ -45,7 +43,7 @@ wrapper.getGroupMembers = (key, value) => {
 wrapper.createBucket = (groupLocator, bucketData) => {
   let request = { groupQuery : groupLocator, bucketData : bucketData };
   return new Promise( (resolve, reject) => {
-    axios.post(`${base}a/createBucket`, request)
+    axios.post(`${BASEPATH}a/createBucket`, request)
     .then( (response) => {
       resolve(response.data)
     })
@@ -61,7 +59,7 @@ wrapper.createGroup = (group) => {
   if ( !group.hasOwnProperty('adminIds') ) { group.adminIds = [] }
   if ( !group.hasOwnProperty('visibility') ) { group.visibility = 'public' }
   return new Promise( (resolve, reject) => {
-    axios.post(`${base}a/createGroup`, group)
+    axios.post(`${BASEPATH}a/createGroup`, group)
     .then( (response) => {
       resolve(response.data)
     })
@@ -74,7 +72,7 @@ wrapper.createGroup = (group) => {
 //either a singular key or id { groupKey : 12312 } or { groupId : 123123}
 wrapper.deleteGroup = (groupLocator) => {
   return new Promise( (resolve, reject) => {
-    axios.post(`${base}a/deleteGroup`, groupLocator)
+    axios.post(`${BASEPATH}a/deleteGroup`, groupLocator)
     .then( (response) => {
       resolve(response.data)
     })
@@ -87,7 +85,7 @@ wrapper.deleteGroup = (groupLocator) => {
 
 wrapper.joinGroup = (groupLocator) => {
   return new Promise( (resolve, reject) => {
-    axios.post(`${base}a/joinGroup`, groupLocator)
+    axios.post(`${BASEPATH}a/joinGroup`, groupLocator)
     .then( (response) => {
       resolve(response.data)
     })
@@ -100,7 +98,7 @@ wrapper.joinGroup = (groupLocator) => {
 
 wrapper.updateGroup = (modifiedGroupFields) => {
   return new Promise( (resolve, reject) => {
-    axios.post(`${base}a/updateGroup`, modifiedGroupFields)
+    axios.post(`${BASEPATH}a/updateGroup`, modifiedGroupFields)
     .then( (response) => {
       resolve(response.data)
     })
@@ -112,7 +110,7 @@ wrapper.updateGroup = (modifiedGroupFields) => {
 }
 
 
-console.log('wrapper', wrapper, base)
+console.log('wrapper', wrapper, BASEPATH)
 
 // .then( (user) => axios.get(`/getGroup?groupId=${user.memberOf[0]}`) )
 

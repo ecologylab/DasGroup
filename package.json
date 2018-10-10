@@ -7,8 +7,8 @@
     "dev": "cross-env NODE_ENV=dev node node_modules/nodemon/bin/nodemon.js  bin/www",
     "staging": "cross-env NODE_ENV=staging node bin/www",
     "start": "cross-env NODE_ENV=production node bin/www",
-    "build": "webpack",
-    "watch": "webpack --watch"
+    "build": "webpack --env.NODE_ENV=production",
+    "watch": "webpack --watch --env.NODE_ENV=dev"
   },
   "nodemonConfig": {
     "ignore": [
