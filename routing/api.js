@@ -4,6 +4,7 @@ const tokenHandler = require('../utils/tokenHandler.js')
 const logger = require('../utils/logger');
 const accountLogic = require('./logic/accountLogic');
 const groupLogic = require('./logic/groupLogic');
+const bucketLogic = require('./logic/bucketLogic');
 const helpers = require('./helpers/helpers')
 const isAuthenticated = helpers.isAuthenticated;
 
@@ -21,13 +22,13 @@ router.get('/getGroups', isAuthenticated, groupLogic.getGroups);
 router.get('/getGroupMembers', isAuthenticated, groupLogic.getGroupMembers);
 
 router.post('/joinGroup', isAuthenticated, groupLogic.joinGroup);
-router.post('/addGroupMembers', isAuthenticated, groupLogic.addGroupMembers); //testing before invite
-router.post('/addGroupAdmins', isAuthenticated, groupLogic.addGroupAdmins); //testing before invite
+router.post('/addGroupAdmins', isAuthenticated, groupLogic.addGroupAdmins);
 
 router.post('/deleteGroup', isAuthenticated, groupLogic.deleteGroup);
 router.post('/createGroup', isAuthenticated, groupLogic.createGroup);
 
 /* buckets */
+router.post('/createBucket', isAuthenticated, bucketLogic.createBucket);
 router.post('/getBuckets')
 
 

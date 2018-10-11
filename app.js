@@ -13,11 +13,7 @@ const cors = require('cors');
 const config = require('config')
 const redis = require('redis')
 const RedisStore = require('connect-redis')(session)
-const redisClient = redis.createClient({
-  host : config.redis.host,
-  port : config.redis.port,
-  password : config.redis.password
-})
+const redisClient = redis.createClient(config.redis)
 
 app.use(morgan('dev'));
 if ( process.env.NODE_ENV === 'dev' ) {
@@ -31,8 +27,11 @@ if ( process.env.NODE_ENV === 'dev' ) {
     next();
   })
 }
-
-
+// redis:
+//  {
+//      host: '192.168.122.155', //enter host used for redis server
+//      port: '6379', // port for redis server
+//  },
 app.use(cors())
 require('./passport.js')(passport);
 
@@ -41,15 +40,21 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
 app.use(cookieParser());
-
 app.use(session({
   store : new RedisStore({client : redisClient}),
   secret: config.session.secret,
   resave: false,
-  name : 'dasCookie',
+  name : 'connect.sid',
   cookie: { secure: true },
   saveUninitialized: false,
 }))
+
+app.get('/sessTest', (req,res) => {
+  redisClient.get(`sess:${req.session.id}`, (err, reply) => {
+    console.log("reply ", reply)
+    res.send(reply)
+  })
+})
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));

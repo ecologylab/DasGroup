@@ -108,10 +108,12 @@ logic.joinGroup = (req, res) => {
     if ( !groupMembers.includes( req.user._id.toString() ) && group.visibility.toString() === 'public' ) {
       group.members.push(req.user._id);
       return group.save();
-    } else {
-      console.log("IN CONSOLE LOG", group, group.visibility, group.visibility.toString() === 'public')
-      //FIX ME TO check invite list
+    } else if ( group.visibility.toString() === 'private' ) {
       throw new Error('user is trying to join non public group')
+    } else {
+      //In this case the user is already part of the group
+      logger.notice('User is trying to join a group that they are already a part of %O', req.user);
+      res.send(group)
     }
   })
   .then( savedGroup => {

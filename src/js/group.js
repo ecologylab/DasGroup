@@ -56,7 +56,7 @@ const renderInvite = () => {
   $('#modal_acceptInvite').on('click', () => {
     apiWrapper.joinGroup({groupId : state.groupId })
     .then( s => {
-      window.location.href = '/';
+      window.location.href = `/joined?${state.group.name}`;
     })
     .catch(e => console.error("Error accepting group invite", e))
   })

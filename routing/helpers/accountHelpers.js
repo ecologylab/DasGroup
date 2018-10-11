@@ -27,11 +27,11 @@ accountHelpers.addGroupToUser = (userQuery, groupId) => {
         resolve(user);
       } else {
         user.memberOf.push(groupId)
-        user.save()
-        .then( updatedUser => resolve(updatedUser))
-        .catch( e => { reject(e); })
+        return user.save()
       }
     })
+    .then( updatedUser => resolve(updatedUser))
+    .catch( e => { reject(e); })
   })
 }
 

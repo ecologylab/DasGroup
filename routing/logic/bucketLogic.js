@@ -4,9 +4,12 @@ const Bucket = require('../../models/bucket')
 const logger = require('../../utils/logger');
 const groupLogic = require('./groupLogic');
 const helpers = require('../helpers/helpers')
-const isUserAdminOfGroup = helpers.isUserAdminOfGroup;
-const findGroup = helpers.findGroup;
 const logic = {};
+
+const uniq = helpers.uniq;
+const getQuery = helpers.getQuery;
+const findGroup = helpers.findGroup;
+const isUserAdminOfGroup = helpers.isUserAdminOfGroup;
 
 
 //req.body = { groupQuery : { groupId/key : ... }, bucketData : {name,description} }
@@ -35,7 +38,7 @@ logic.createBucket = (req, res) => {
   isUserAdminOfGroup(groupQuery, req.user)
   .then( adminStatus => {
     if ( !adminStatus.isAdmin ) { throw new Error('User is not authorized to create a bucket in this group') }
-    group = adminStatus.group,
+    group = adminStatus.group;
     const b = new Bucket({
       "creator" : req.user._id,
       "belongsTo" : group._id,
@@ -46,9 +49,11 @@ logic.createBucket = (req, res) => {
   })
   .then(savedBucket => {
     createdBucket = savedBucket;
-    return groupLogic.addBucketToGroup(group, createdBucket._id)
+    return helpers.addBucketToGroup(groupQuery, createdBucket._id)
   })
-  .then( )
+  .then( updatedGroup => {
+    res.send(createdBucket);
+  })
   .catch( e => {
     logger.error('Error in createBucket body : %O user : %O error : %O', req.body, req.user, e)
     res.status(404);
@@ -78,3 +83,5 @@ logic.deleteBucket = (req, res) => {
     res.send({})
   })
 }
+
+module.exports = logic;

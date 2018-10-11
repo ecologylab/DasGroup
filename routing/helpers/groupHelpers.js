@@ -34,8 +34,17 @@ groupHelpers.addBucketToGroup = (groupQuery, bucketId) => {
   return new Promise( (resolve, reject) => {
     findGroup(groupQuery)
     .then( group => {
-
+      const currentBuckets = group.buckets.map( b => b.toString() )
+      if ( currentBuckets.includes( bucketId.toString() ) ) {
+        logger.bucket('Add bucket to group called with bucket that is already in group %O %O', userQuery, groupId)
+        resolve(group);
+      } else {
+        group.buckets.push(bucketId)
+        return group.save()
+      }
     })
+    .then( updatedGroup => resolve(updatedGroup) )
+    .catch( e => { reject(e); })
   })
 }
 

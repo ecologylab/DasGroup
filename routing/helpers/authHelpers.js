@@ -5,7 +5,7 @@ authHelpers.isAuthenticated = (req, res, next) => {
     next()
   } else {
     let redirect = config.redirects.fromLoginToDasGroup;
-    if ( config.basePath != '/' ) {
+    if ( config.basePath == '/' ) {
       redirect += `&redirectTo=${req.url}`
     } else {
       redirect += `&redirectTo=${config.basePath}${req.url}`

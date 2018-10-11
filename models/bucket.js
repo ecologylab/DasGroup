@@ -23,10 +23,22 @@ const bucketSchema = mongoose.Schema({
     required : true,
     default : shortId.generate
   },
-  maches : [{
-    type: ObjectId,
-    required : false,
-    ref : 'mache'
+  macheSubmissions : [{
+    mache : {
+      type: ObjectId,
+      required : false,
+      ref : 'mache'
+    },
+    submitter : {
+      type: ObjectId,
+      required : false,
+      ref : 'account'
+    },
+    date_submitted : {
+      type: Date,
+      default: Date.now(),
+      required: true
+    }
   }],
   name: {
     type: String,
@@ -58,4 +70,4 @@ bucketSchema.pre('save', function(next)
 
 
 
-module.exports = mongoose.model('Bucket', accountSchema);
+module.exports = mongoose.model('Bucket', bucketSchema);

@@ -7,7 +7,6 @@ const isAuthenticated = helpers.isAuthenticated;
 
 
 /* token */
-router.get('/prelog/:token', accountLogic.prelog);
 
 
 router.get('/', isAuthenticated, groupLogic.renderRoot);
