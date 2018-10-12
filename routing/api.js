@@ -29,6 +29,7 @@ router.post('/createGroup', isAuthenticated, groupLogic.createGroup);
 
 /* buckets */
 router.post('/createBucket', isAuthenticated, bucketLogic.createBucket);
+router.post('/addMacheToBucket', isAuthenticated, bucketLogic.addMacheToBucket);
 router.post('/getBuckets')
 
 

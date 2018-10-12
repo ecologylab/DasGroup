@@ -10,7 +10,6 @@ authHelpers.isAuthenticated = (req, res, next) => {
     } else {
       redirect += `&redirectTo=${config.basePath}${req.url}`
     }
-    console.log('les go', req.url, redirect)
     res.redirect(redirect);
   }
 }

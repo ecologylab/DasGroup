@@ -27,7 +27,8 @@ logic.renderGroup = (req, res) => {
 }
 
 logic.renderRoot = (req, res) => {
-  if ( req.user.memberOf.length > 0 ) {
+  if ( req.user.memberOf.length < 1 ) { res.render('index', {user : req.user, groups : [] }) }
+  else {
     let groupQuery = getQuery({ groupIds : req.user.memberOf });
     findGroup(groupQuery)
     .then( groups => {
@@ -39,8 +40,6 @@ logic.renderRoot = (req, res) => {
       res.status(404);
       res.send([])
     })
-  } else {
-    res.render('index', {user : req.user, groups : [] })
   }
 }
 
@@ -218,8 +217,6 @@ logic.createGroup = (req, res) => {
   let createdGroup = {}
   req.body.members.push(req.user._id.toString());
   req.body.adminIds.push(req.user._id.toString());
-  console.log('before uniq', req.body.members)
-  console.log('after uniq', uniq(req.body.members) )
   if ( req.body.visibility !== 'public' || req.body.visibility !== 'private' ) { req.body.visibility = 'public' }
   const g = new Group({
     "creator" : req.user._id,

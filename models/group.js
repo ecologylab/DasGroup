@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const ObjectId = mongoose.Schema.Types.ObjectId;
 const shortId = require('shortid')
 const logger = require('../utils/logger')
+const groupVisibilities = ['public', 'private'] //private means invite only
 const groupSchema = mongoose.Schema({
   creator: {
     type: ObjectId,
@@ -59,6 +60,7 @@ const groupSchema = mongoose.Schema({
 })
 
 groupSchema.pre('save', function(next) {
+  if ( !groupVisibilities.includes(this.visibility) ) { this.visibility = 'public'; }
   this.last_modified = new Date();
   next();
 });

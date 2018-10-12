@@ -4,18 +4,23 @@ const bucketHelper = require('./bucketHelpers')
 const getQuery = require('./getQuery')
 const groupHelpers = require('./groupHelpers')
 const miscHelpers = require('./miscHelpers')
-
+const bucketHelpers = require('./bucketHelpers')
 
 const buildHelpers = (modules) => {
   const functionKeys = {}
   const helper = {}
   modules.forEach( mod => {
     for ( functionKey in mod ) {
-      helper[functionKey] = mod[functionKey]
+      if ( functionKeys.hasOwnProperty(functionKey) ) { throw new Error('Helper aggregation namespace error'); }
+      else {
+        functionKeys[functionKey] = true;
+        helper[functionKey] = mod[functionKey]
+      }
+
     }
   })
   return helper;
 }
 
 
-module.exports = buildHelpers([ accountHelper, authHelper, getQuery, groupHelpers, miscHelpers ])
+module.exports = buildHelpers([ accountHelper, authHelper, getQuery, groupHelpers, miscHelpers, bucketHelpers])

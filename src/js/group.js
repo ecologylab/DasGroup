@@ -18,7 +18,8 @@ const renderChain = []
 
 const renderAdmin = () => {
   if ( state.isAdmin ) {
-    let currComponents = viewHelper.renderGetMembersButton('#buttonArea', state.group);
+    viewHelper.renderGetMembersButton('#buttonArea', state.group);
+    let currComponents = viewHelper.renderCreateBucket('#buttonArea', state.group);
     console.log("curr components ", currComponents)
   }
 }
@@ -56,7 +57,7 @@ const renderInvite = () => {
   $('#modal_acceptInvite').on('click', () => {
     apiWrapper.joinGroup({groupId : state.groupId })
     .then( s => {
-      window.location.href = `/joined?${state.group.name}`;
+      window.location.href = `/?joined=${state.group.name}`;
     })
     .catch(e => console.error("Error accepting group invite", e))
   })
