@@ -43,10 +43,13 @@ wrapper.addMacheToFolio = (folioQuery, macheQuery) => {
   })
 }
 //folioQuery : { folioId/folioKey : ... } macheQuery : { macheId/macheKey : ... }
-wrapper.removeMacheFromFolio = (folioQuery, macheQuery) => {
+wrapper.removeMacheFromFolio = (folioQuery, macheQuery, retryCount) => {
   return new Promise( (resolve, reject) => {
     axios.post(`${BASEPATH}a/removeMacheFromFolio`, { folioQuery : folioQuery, macheQuery : macheQuery })
     .then( (response) => {
+      if ( response.status === 202) {
+        console.error('version conflict in removeMacheFromFolio')
+      }
       resolve(response.data)
     })
     .catch( e => {

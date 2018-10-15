@@ -3,12 +3,23 @@ import $ from 'jquery';
 import helpers from '../helpers/helpers.js';
 import apiWrapper from '../api/apiWrapper.js'; //just for testing
 
+
+const getRandomName = () => {
+  function getRandomInt(max) {
+    return Math.floor(Math.random() * Math.floor(max));
+  }
+  let names = [
+    "weight", "sell", "survival", "tick", "preference", "spare", "credibility", "road", "learn", "fireplace", "reproduction", "superior", "rabbit", "conservation", "protest", "mood", "chin", "space", "canvas", "meaning", "trap", "cook", "absorption", "shower", "remember", "venture", "loss", "rise", "quota", "soldier", "dealer", "insist", "incapable", "powder", "resolution", "boot", "stop", "breast", "opposite", "provincial", "country", "design", "reaction", "represent", "heel", "lodge", "exile", "initiative", "final", "psychology", "wear out", "shame", "point", "failure", "pan", "brag", "weave", "boat", "hostility", "factor", "dip", "rest", "abortion", "episode", "complete", "tone", "budge", "world", "barrel", "stir", "volcano", "mosaic", "west", "elephant", "stimulation", "launch", "deficit", "shot", "tropical", "sound", "motorcycle", "curve", "contemporary", "musical", "trade", "flush", "heavy", "prevent", "unrest", "hold", "knot", "pillow", "turn", "wisecrack", "child", "content", "whip", "deter", "color-blind", "white"
+  ]
+  return names[getRandomInt(names.length-1)]
+}
+
 const testGroupCreation = (userAndGroups) => {
   const user = userAndGroups.user;
   const groups = userAndGroups.groups;
   let randomMembers = groups[0].members;
   return new Promise( (resolve, reject) => {
-    createGroup(user)
+    createGroup(getRandomName())
     .then( newGroup => addGroupMembers(newGroup._id, randomMembers) )
     .then( updatedGroup => addGroupAdmins(updatedGroup._id, randomMembers.slice(1,3) ))
     .then( updatedGroup => {
@@ -24,10 +35,10 @@ const testGroupCreation = (userAndGroups) => {
   })
 }
 
-const createGroup = (user) => {
+const createGroup = (name) => {
   return new Promise( (resolve, reject) => {
     let group = {
-      name : "A testy group",
+      name : 'Group ' + name,
       description : "Such test much fun",
       visibility : "public",
       adminIds : [],

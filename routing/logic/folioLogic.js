@@ -86,8 +86,9 @@ logic.removeMacheFromFolio = (req, res) => {
   .then( folio => {
     //validate can only be true or throw an error
     if ( validate(folio) ) {
-      folio.macheSubmissions = folio.macheSubmissions
-      .filter( macheSubmission => macheSubmission.mache.toString() != mache._id.toString() );
+      const removeIndex = folio.macheSubmissions.map( m => m.mache.toString() ).indexOf(mache._id.toString())
+      console.log("SREMOVING", folio.macheSubmissions, mache._id, removeIndex)
+      folio.macheSubmissions.splice(removeIndex,1);
       return folio.save()
     }
   })
@@ -102,6 +103,10 @@ logic.removeMacheFromFolio = (req, res) => {
   .then( savedMache => res.send(updatedFolio) )
   .catch( e => {
     logger.error('Error in removeMacheFromFolio body : %O user : %O error : %O', req.body, req.user, e)
+    if ( e.name === 'VersionError' ) {
+      res.status(202);
+      res.send(req.body)
+    }
     if ( sendOnError ) {
       res.status(404);
       res.send({})

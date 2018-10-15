@@ -68,7 +68,6 @@ const folioSchema = mongoose.Schema({
   }
 
 })
-folioSchema.plugin(versionIncrementer);
 
 folioSchema.pre('save', function(next)
 {

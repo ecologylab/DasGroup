@@ -39,8 +39,8 @@ const getQuery = (request) => {
     query = { key : request.folioKey }
   } else if ( request.folioKeys ) {
     query = Array.isArray(request.folioKeys)
-    ? query = { _id : { $in : request.folioKeys } }
-    : query = { _id : { $in : request.folioKeys.split(',') } }
+    ? query = { key : { $in : request.folioKeys } }
+    : query = { key : { $in : request.folioKeys.split(',') } }
   }
   //possible mache queries
   else if ( request.macheId ) {
@@ -50,11 +50,11 @@ const getQuery = (request) => {
     ? query = { _id : { $in : request.macheIds } }
     : query = { _id : { $in : request.macheIds.split(',') } }
   } else if ( request.macheKey ) {
-    query = { key : request.macheKey }
+    query = { hash_key : request.macheKey }
   } else if ( request.macheKeys ) {
     query = Array.isArray(request.macheKeys)
-    ? query = { _id : { $in : request.macheKeys } }
-    : query = { _id : { $in : request.macheKeys.split(',') } }
+    ? query = { hash_key : { $in : request.macheKeys } }
+    : query = { hash_key : { $in : request.macheKeys.split(',') } }
   }
   //possible user queries
   else if ( request.userId ) {
