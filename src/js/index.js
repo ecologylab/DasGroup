@@ -1,7 +1,7 @@
 import $ from 'jquery';
 import helpers from './helpers/helpers.js';
 import apiWrapper from './api/apiWrapper.js'
-import groupViewHelper from './helpers/groupviewHelper.js'
+import groupViewHelper from './helpers/groupViewHelper.js'
 const index = {};
 
 
@@ -24,7 +24,7 @@ index.init = () => {
   const userId = $('#user').attr('data-userId');
   console.log("Index init: ", userId)
   return new Promise( (resolve, reject) => {
-    logic.getUserAndGroups(userId)
+    helpers.getUserAndGroups(userId)
     .then( userAndGroups => {
       user = userAndGroups.user;
       groups = userAndGroups.groups;

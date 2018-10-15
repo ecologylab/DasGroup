@@ -1,7 +1,7 @@
 import $ from 'jquery';
 import helpers from './helpers/helpers.js';
 import apiWrapper from './api/apiWrapper.js'
-import viewHelper from './helpers/groupviewHelper.js'
+import viewHelper from './helpers/groupViewHelper.js'
 const groupLogic = {};
 const components = [];
 
