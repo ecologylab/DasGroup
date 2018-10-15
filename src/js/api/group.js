@@ -1,5 +1,6 @@
 import axios from 'axios'
 const wrapper = {};
+//key is groupId(s) or groupKey(s)
 wrapper.getGroups = (key, value) => {
   return new Promise( (resolve, reject) => {
     axios.get(`${BASEPATH}a/getGroups?${key}=${value}`)
@@ -13,6 +14,7 @@ wrapper.getGroups = (key, value) => {
   })
 }
 //you could just getGroups then return members, but might as well expose this api function
+//key is groupId(s) or groupKey(s)
 wrapper.getGroupMembers = (key, value) => {
   return new Promise( (resolve, reject) => {
     axios.get(`${BASEPATH}a/getGroupMembers?${key}=${value}`)
@@ -54,6 +56,7 @@ wrapper.deleteGroup = (groupLocator) => {
     })
   })
 }
+//either a singular key or id { groupKey : 12312 } or { groupId : 123123}
 wrapper.joinGroup = (groupLocator) => {
   return new Promise( (resolve, reject) => {
     axios.post(`${BASEPATH}a/joinGroup`, groupLocator)

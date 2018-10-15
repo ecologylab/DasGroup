@@ -199,12 +199,8 @@ logic.removeGroupAdmins = (req, res) => {
   .then( adminStatus => {
     if ( !adminStatus.isAdmin ) { throw new Error('User is not authorized to add admins this group') }
     group = adminStatus.group;
-    group.roles.admins = group.roles.admins.filter( adminId => {
-      if ( req.body.removeAdmins.includes( adminId.toString() ) === false ) {
-        return true
-      }
-    })
-  return group.save()
+    group.roles.admins = group.roles.admins.filter( adminId => !req.body.removeAdmins.includes( adminId.toString() ) )
+    return group.save()
   })
   .then( updatedGroup => res.send(updatedGroup))
   .catch( e => {

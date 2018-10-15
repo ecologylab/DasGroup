@@ -27,6 +27,7 @@ router.post('/createGroup', isAuthenticated, groupLogic.createGroup);
 /* folios */
 router.post('/createFolio', isAuthenticated, folioLogic.createFolio);
 router.post('/addMacheToFolio', isAuthenticated, folioLogic.addMacheToFolio);
+router.post('/removeMacheFromFolio', isAuthenticated, folioLogic.removeMacheFromFolio);
 router.post('/getFolios', isAuthenticated, folioLogic.getFolios)
 
 

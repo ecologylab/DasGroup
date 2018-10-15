@@ -15,14 +15,11 @@ const isUserAdminOfGroup = helpers.isUserAdminOfGroup;
 
 
 //req.body = { folioQuery : { folioId/key : ... }, macheQuery : { macheId/key : ... }
-//FIX ME check that user owns mache when mache model is in
 logic.addMacheToFolio = (req, res) => {
+  let mache = {}, updatedFolio = {}, sendOnError = true;
   const folioQuery = getQuery(req.body.folioQuery);
   const macheQuery = getQuery(req.body.macheQuery);
-  let mache = {}, updatedFolio = {}, sendOnError = true;
-  findMache(macheQuery)
-  .then( m => { mache = m; return findFolio(folioQuery); })
-  .then( folio => {
+  const validate = (folio) => {
     const folioSubmissions = folio.macheSubmissions.map( (m) => m.mache._id.toString() )
     const memberOf = req.user.memberOf.map( (groupId) => groupId.toString() )
     const userMaches = req.user.maches.map( (macheId) => macheId.toString() )
@@ -30,11 +27,18 @@ logic.addMacheToFolio = (req, res) => {
     if ( !userMaches.includes(mache._id.toString() ) ) { throw new Error('User cannot add a mache they are not a part of') }
     if ( folio.state == 'closed' ) { throw new Error('User cannot add mache to closed folio') }
     if ( folioSubmissions.includes(mache._id.toString() ) ) {
-      //In this case  I want to break out of my promise chain so i am throwing an error, then handling specifically
+      //I want to break out of my promise chain so i am throwing an error, then handling specifically
       res.send(folio);
       sendOnError = false;
       throw new Error('Mache attempted add to folio where it already existed')
-    } else {
+    }
+    return true;
+  }
+  findMache(macheQuery)
+  .then( m => { mache = m; return findFolio(folioQuery); })
+  .then( folio => {
+    //validate can only be true or throw an error
+    if ( validate(folio) ) {
       folio.macheSubmissions.push({
         mache : mache._id,
         submitter : req.user._id,
@@ -51,6 +55,53 @@ logic.addMacheToFolio = (req, res) => {
   .then( savedMache => res.send(updatedFolio) )
   .catch( e => {
     logger.error('Error in addMachesToFolio body : %O user : %O error : %O', req.body, req.user, e)
+    if ( sendOnError ) {
+      res.status(404);
+      res.send({})
+    }
+  })
+}
+
+logic.removeMacheFromFolio = (req, res) => {
+  let mache = {}, updatedFolio = {}, sendOnError = true;
+  const folioQuery = getQuery(req.body.folioQuery);
+  const macheQuery = getQuery(req.body.macheQuery);
+  const validate = (folio) => {
+    const folioSubmissions = folio.macheSubmissions.map( (m) => m.mache._id.toString() )
+    const memberOf = req.user.memberOf.map( (groupId) => groupId.toString() )
+    const userMaches = req.user.maches.map( (macheId) => macheId.toString() )
+    if ( !memberOf.includes(folio.belongsTo.toString() ) ) { throw new Error('User cannot remove maches to folio if they dont belong to group') }
+    if ( !userMaches.includes(mache._id.toString() ) ) { throw new Error('User cannot remove a mache they are not a part of') }
+    if ( folio.state == 'closed' ) { throw new Error('User cannot remove a mache from a closed folio') }
+    if ( !folioSubmissions.includes(mache._id.toString() ) ) {
+      //I want to break out of my promise chain so i am throwing an error, then handling specifically
+      res.send(folio);
+      sendOnError = false;
+      throw new Error('Cannot remove a mache from a folio if it is not in the folio')
+    }
+    return true;
+  }
+  findMache(macheQuery)
+  .then( m => { mache = m; return findFolio(folioQuery); })
+  .then( folio => {
+    //validate can only be true or throw an error
+    if ( validate(folio) ) {
+      folio.macheSubmissions = folio.macheSubmissions
+      .filter( macheSubmission => macheSubmission.mache.toString() != mache._id.toString() );
+      return folio.save()
+    }
+  })
+  .then( savedFolio => {
+    updatedFolio = savedFolio;
+    const updatedMacheMemberOf = mache.memberOfFolios
+    .map( mId => mId.toString() )
+    .filter( mId => mId != mache._id.toString() )
+    mache.memberOfFolios = updatedMacheMemberOf;
+    return mache.save();
+  })
+  .then( savedMache => res.send(updatedFolio) )
+  .catch( e => {
+    logger.error('Error in removeMacheFromFolio body : %O user : %O error : %O', req.body, req.user, e)
     if ( sendOnError ) {
       res.status(404);
       res.send({})

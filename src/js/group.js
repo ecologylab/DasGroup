@@ -109,7 +109,6 @@ const _pre_setRenderChain = () => {
 
 
 groupLogic.init = () => {
-
   return new Promise( (resolve, reject) => {
     _pre_initState()
     .then( s => {

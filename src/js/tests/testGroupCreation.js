@@ -13,7 +13,7 @@ const testGroupCreation = (userAndGroups) => {
     .then( updatedGroup => addGroupAdmins(updatedGroup._id, randomMembers.slice(1,3) ))
     .then( updatedGroup => {
       console.log("%cGroup Creation tests passed", "color: green");
-      console.table(updatedGroup)
+      console.log(updatedGroup)
       resolve(updatedGroup);
     })
     .catch(e => {

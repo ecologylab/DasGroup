@@ -10,7 +10,7 @@ wrapper.createFolio = (groupLocator, folioData) => {
       resolve(response.data)
     })
     .catch( e => {
-      console.error('Error creating folio', group, e)
+      console.error('Error creating folio', groupLocator, e)
       reject(e);
     })
   })
@@ -23,7 +23,7 @@ wrapper.getOpenedFolios = () => {
       resolve(response.data)
     })
     .catch( e => {
-      console.error('Error getOpenedFolios', group, e)
+      console.error('Error getOpenedFolios', e)
       reject(e);
     })
   })
@@ -37,7 +37,20 @@ wrapper.addMacheToFolio = (folioQuery, macheQuery) => {
       resolve(response.data)
     })
     .catch( e => {
-      console.error('Error addMacheToFolio', group, e)
+      console.error('Error addMacheToFolio', folioQuery, e)
+      reject(e);
+    })
+  })
+}
+//folioQuery : { folioId/folioKey : ... } macheQuery : { macheId/macheKey : ... }
+wrapper.removeMacheFromFolio = (folioQuery, macheQuery) => {
+  return new Promise( (resolve, reject) => {
+    axios.post(`${BASEPATH}a/removeMacheFromFolio`, { folioQuery : folioQuery, macheQuery : macheQuery })
+    .then( (response) => {
+      resolve(response.data)
+    })
+    .catch( e => {
+      console.error('Error removeMacheFromFolio', folioQuery, e)
       reject(e);
     })
   })
