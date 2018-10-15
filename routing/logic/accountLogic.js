@@ -1,6 +1,7 @@
 const tokenHandler = require('../../utils/tokenHandler.js')
 const Account = require('../../models/account')
 const Group = require('../../models/group')
+const Bucket = require('../../models/bucket')
 const logger = require('../../utils/logger');
 const helpers = require('../helpers/helpers')
 const config = require('config')
@@ -21,7 +22,15 @@ logic.getUser = (req,res) => {
   })
 }
 
-
+logic.getOpenedBuckets = (req, res) => {
+  req.user.getOpenedBuckets(Group,Bucket)
+  .then( openBuckets => res.send(openBuckets) )
+  .catch( e => {
+    logger.error('Error in getOpenedBuckets %j %O', req.user, e)
+    res.status(404);
+    res.send([])
+  })
+}
 
 // logic.prelog = (req, res) => {
 //   const decryptedToken = tokenHandler.decryptToken(req.params.token);

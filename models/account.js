@@ -151,7 +151,7 @@ accountSchema.methods.getAdminOf = function(GroupDep) {
     GroupDep
     .find({'_id' : { $in : groupIds } }, 'roles.admins')
     .exec()
-    .then( (groupRoles) => {
+    .then( groupRoles => {
       //The admins of the groups that acting user is a member of in tuples form (groupId, admins)
       let adminLists = groupRoles.map( g => [g._id.toString(), Array.from(g.roles.admins, e => e.toString() )] );
       let userIsAdminOf = adminLists
@@ -160,6 +160,22 @@ accountSchema.methods.getAdminOf = function(GroupDep) {
       resolve(userIsAdminOf)
     })
     .catch( (e) => { logger.error('Error - Account.getAdminOf %O', e); reject(e); })
+  })
+}
+
+accountSchema.methods.getOpenedBuckets = function(GroupDep, BucketDep) {
+  const groupIds = this.memberOf;
+  return new Promise( (resolve, reject) => {
+    if ( groupIds.length === 0 ) {
+      logger.info('getGroups - user is not part of any groups')
+      resolve([]);
+    }
+    GroupDep.find({'_id' : { $in : groupIds } } ).exec()
+    //flattening [ [ids], [more ids] ]
+    .then( groups => [].concat.apply([], groups.map( g => g.buckets) ) )
+    .then( bucketIds => BucketDep.find({'_id' : { $in : bucketIds } } ).exec() )
+    .then( buckets => resolve( buckets.filter(b => b.state == 'opened') ) )
+    .catch( (e) => { logger.error('Error - Account.getOpenedBuckets %O', e); reject(e); })
   })
 }
 

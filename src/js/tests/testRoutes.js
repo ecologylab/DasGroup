@@ -86,24 +86,30 @@ const createGroup = (user) => {
 }
 
 //This isnt wrapped because it should be replaced by the invite logic
-const addGroupMembers = (groupId, newMembers) => {
+const addGroupAdmins = (groupId, newAdmins) => {
   return new Promise( (resolve, reject) => {
-    axios.post(`${base}a/addGroupMembers`, { groupQuery : { groupId : groupId }, newMembers : newMembers})
+    axios.post(`${base}a/addGroupAdmins`, { groupQuery : { groupId : groupId }, newAdmins : newAdmins})
     .then( (response) => {
-      console.log("Test addGroupMembers - passed")
+      console.log("Test addGroupAdmins - passed")
       resolve(response.data)
     })
     .catch( e => {
-      console.error('Error addGroupMembers members ', groupId, newMembers, e)
+      console.error('Error addGroupAdmins members ', groupId, newAdmins, e)
       reject(e);
     })
   })
 }
 
-//This isnt wrapped because it should be replaced by the invite logic
-const addGroupAdmins = (groupId, newAdmins) => {
+
+const createBucket = (groupId) => {
+  let bucketData = {
+    name : "Awesome bucket",
+    description : "Oh so awesome bucket",
+    visibility : "public",
+    state : "open"
+  }
   return new Promise( (resolve, reject) => {
-    axios.post(`${base}a/addGroupAdmins`, { groupQuery : { groupId : groupId }, newAdmins : newAdmins})
+    axios.post(`${base}a/createBucket`, { groupQuery : { groupId : groupId }, bucketData})
     .then( (response) => {
       console.log("Test addGroupAdmins - passed")
       resolve(response.data)

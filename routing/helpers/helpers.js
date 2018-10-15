@@ -5,6 +5,8 @@ const getQuery = require('./getQuery')
 const groupHelpers = require('./groupHelpers')
 const miscHelpers = require('./miscHelpers')
 const bucketHelpers = require('./bucketHelpers')
+const macheHelpers = require('./macheHelpers')
+
 
 const buildHelpers = (modules) => {
   const functionKeys = {}
@@ -23,4 +25,4 @@ const buildHelpers = (modules) => {
 }
 
 
-module.exports = buildHelpers([ accountHelper, authHelper, getQuery, groupHelpers, miscHelpers, bucketHelpers])
+module.exports = buildHelpers([ accountHelper, authHelper, getQuery, groupHelpers, miscHelpers, bucketHelpers, macheHelpers])

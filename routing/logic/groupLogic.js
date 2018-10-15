@@ -100,7 +100,7 @@ logic.updateGroup = (req, res) => {
 
 logic.joinGroup = (req, res) => {
   const query = getQuery(req.body);
-  let updatedGroup = {}
+  let updatedGroup = {}, sendOnError = true;
   findGroup(query)
   .then( group => {
     const groupMembers = group.members.map( mem => mem.toString() )
@@ -110,9 +110,10 @@ logic.joinGroup = (req, res) => {
     } else if ( group.visibility.toString() === 'private' ) {
       throw new Error('user is trying to join non public group')
     } else {
-      //In this case the user is already part of the group
-      logger.notice('User is trying to join a group that they are already a part of %O', req.user);
+      //In this case the user is already part of the group, and so I want to break out of the chain
       res.send(group)
+      sendOnError = false;
+      throw new Error('User is trying to join a group that they are already a part of')
     }
   })
   .then( savedGroup => {
@@ -124,8 +125,10 @@ logic.joinGroup = (req, res) => {
   })
   .catch( e => {
     logger.error('Error in joinGroup %j %O %O', req.body, req.user, e)
-    res.status(404);
-    res.send({})
+    if ( sendOnError ) {
+      res.status(404);
+      res.send({})
+    }
   })
 }
 

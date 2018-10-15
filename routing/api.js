@@ -11,7 +11,7 @@ const isAuthenticated = helpers.isAuthenticated;
 
 /* account */
 router.get('/getUser', isAuthenticated, accountLogic.getUser);
-
+router.get('/getOpenedBuckets', isAuthenticated, accountLogic.getOpenedBuckets)
 
 
 
@@ -30,7 +30,7 @@ router.post('/createGroup', isAuthenticated, groupLogic.createGroup);
 /* buckets */
 router.post('/createBucket', isAuthenticated, bucketLogic.createBucket);
 router.post('/addMacheToBucket', isAuthenticated, bucketLogic.addMacheToBucket);
-router.post('/getBuckets')
+router.post('/getBuckets', isAuthenticated, bucketLogic.getBuckets)
 
 
 

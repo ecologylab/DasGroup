@@ -12,6 +12,23 @@ const macheSchema = mongoose.Schema({
     required: true,
     ref: 'account'
   }],
+  memberOfBuckets : [{
+    type: ObjectId,
+    required : false,
+    ref : 'bucket'
+  }],
+  users : [{
+    user : {
+      type: ObjectId,
+      required: false,
+      ref: 'account'
+    },
+    role : {
+      type: ObjectId,
+      required: false,
+      ref: 'role'
+    }
+  }],
   title : {
     type : String,
     required : true,
@@ -35,6 +52,12 @@ const macheSchema = mongoose.Schema({
     required: true,
     ref: 'element'
   }],
+  hash_key: {
+    type: String,
+    unique: true,
+    required : true,
+    default : shortId.generate
+  },
   thumbnail : {
     location : { type : String }
   },
@@ -50,14 +73,16 @@ const macheSchema = mongoose.Schema({
     required : true
   },
   default_role : {
-
+    type: ObjectId,
+    required: false,
+    ref: 'role'
   },
-  copied_from: mongoose.Schema.Types.ObjectId,
+  copied_from : {
+      type: ObjectId,
+      required: false,
+      ref: 'mache'
+    },
   hidden: { type : Boolean, default : false}
-
-
-
-
 })
 
 macheSchema.pre('save', function(next)

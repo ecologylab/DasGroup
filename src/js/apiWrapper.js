@@ -39,7 +39,7 @@ wrapper.getGroupMembers = (key, value) => {
     })
   })
 }
-//groupLocator : singular key or id { groupKey : 12312 } or { groupId : 123123}
+//groupLocator : ... bucketData
 wrapper.createBucket = (groupLocator, bucketData) => {
   let request = { groupQuery : groupLocator, bucketData : bucketData };
   return new Promise( (resolve, reject) => {
@@ -49,6 +49,33 @@ wrapper.createBucket = (groupLocator, bucketData) => {
     })
     .catch( e => {
       console.error('Error creating bucket', group, e)
+      reject(e);
+    })
+  })
+}
+
+wrapper.getOpenedBuckets = () => {
+  return new Promise( (resolve, reject) => {
+    axios.get(`${BASEPATH}a/getOpenedBuckets`)
+    .then( (response) => {
+      resolve(response.data)
+    })
+    .catch( e => {
+      console.error('Error getOpenedBuckets', group, e)
+      reject(e);
+    })
+  })
+}
+
+//bucketQuery : { bucketId/bucketKey : ... } macheQuery : { macheId/macheKey : ... }
+wrapper.addMacheToBucket = (bucketQuery, macheQuery) => {
+  return new Promise( (resolve, reject) => {
+    axios.post(`${BASEPATH}a/addMacheToBucket`, { bucketQuery : bucketQuery, macheQuery : macheQuery })
+    .then( (response) => {
+      resolve(response.data)
+    })
+    .catch( e => {
+      console.error('Error addMacheToBucket', group, e)
       reject(e);
     })
   })
@@ -108,6 +135,8 @@ wrapper.updateGroup = (modifiedGroupFields) => {
     })
   })
 }
+
+
 
 
 console.log('wrapper', wrapper, BASEPATH)

@@ -42,6 +42,20 @@ const getQuery = (request) => {
     ? query = { _id : { $in : request.bucketKeys } }
     : query = { _id : { $in : request.bucketKeys.split(',') } }
   }
+  //possible mache queries
+  else if ( request.macheId ) {
+    query = { _id : request.macheId }
+  } else if ( request.macheIds ) {
+    query = Array.isArray(request.macheIds)
+    ? query = { _id : { $in : request.macheIds } }
+    : query = { _id : { $in : request.macheIds.split(',') } }
+  } else if ( request.macheKey ) {
+    query = { key : request.macheKey }
+  } else if ( request.macheKeys ) {
+    query = Array.isArray(request.macheKeys)
+    ? query = { _id : { $in : request.macheKeys } }
+    : query = { _id : { $in : request.macheKeys.split(',') } }
+  }
   //possible user queries
   else if ( request.userId ) {
     query = { _id : request.userId }

@@ -3,6 +3,7 @@
 //It then adds this data to the seedFiles
 //It then builds a group with the owner aaron and random members
 const Account = require('../../models/account');
+const Mache = require('../../models/mache');
 const mongoose = require('mongoose');
 const jsonfile = require('jsonfile');
 const seedFile = './scripts/seed/seedData.json'
@@ -13,6 +14,8 @@ const group3Id = mongoose.Types.ObjectId();
 let randomMember = '';
 const group1Members = []; //populated during pull
 const group2Members = []; //populated during pull
+let aaronsMaches = [] //randomly selected maches that are not part of the sampled users
+let machesReferenced = [];
 //A local restored live mache backup
 mongoose.connect('mongodb://localhost/bpath', { useNewUrlParser : true }).then(
   () => { console.log("Connected. Beginning pull"); buildSeed(); },
@@ -24,23 +27,39 @@ const pullAccounts = () => {
     Account.find({}, (err, docs) => {
       if (err) { reject(err); }
       docs.forEach( (d,i) => {
-        if ( i % 20 === 0 ) {
+        if ( i % 80 === 0 ) {
+          machesReferenced = machesReferenced.concat(d.maches)
           accountData.push(d);
-          if ( i % 40 === 0 ) {
-            d.memberOf = [group1Id];
-            group1Members.push(d._id);
-          }
-          if ( i % 80 === 0 ) {
-            d.memberOf = [group2Id];
-            group2Members.push(d._id);
-          }
+        } else if ( i % 60 === 0 ) {
+          machesReferenced = machesReferenced.concat(d.maches)
+          d.memberOf = [group1Id];
+          group1Members.push(d._id);
+          accountData.push(d);
+        } else if ( i % 20 === 0 ) {
+          accountData.push(d);
+          machesReferenced = machesReferenced.concat(d.maches)
+          d.memberOf = [group2Id];
+          group2Members.push(d._id);
+        } else if ( aaronsMaches.length < 5 && d.maches.length > 1 ) {
+          let m = d.maches[0];
+          m.creator = aaronsId;
+          aaronsMaches.push(m)
         }
       })
       randomMember = accountData[group2Members.length-1];
+      machesReferenced = machesReferenced.concat(aaronsMaches)
       randomMember.memberOf = randomMember.memberOf.concat([group3Id])
       group1Members.push(aaronsId)
       group2Members.push(aaronsId)
       resolve(accountData);
+    })
+  })
+}
+const seedMaches = () => {
+  return new Promise( (resolve, reject) => {
+    Mache.find({ _id : { $in : machesReferenced } }, (err, maches) => {
+      if ( err ) { reject(err); }
+      resolve(maches);
     })
   })
 }
@@ -76,6 +95,7 @@ const createGroupSeedData = (memberIds) => {
       ]
 }
 const aaronsAccount = () => {
+  // console.log("Creating aarons account with the following maches", aaronsMaches)
   return {
     "_id" : aaronsId,
     "username": "avsphere",
@@ -85,7 +105,7 @@ const aaronsAccount = () => {
     "hash": "xxx",
     "bio": "living",
     "memberOf" : [group1Id, group2Id],
-    "maches": ["5aa0a3e3d4d998961cb73292", "5abd471d0a1634b97fd952e7"]
+    "maches": aaronsMaches
   }
 }
 const writeToFile = (data, file) => {
@@ -98,14 +118,16 @@ const writeToFile = (data, file) => {
 }
 const buildSeed = () => {
   return new Promise( (resolve, reject) => {
-    let seedData = { accounts : [aaronsAccount()], groups : [] };
+    let seedData = { accounts : [], groups : [], maches : [] };
     pullAccounts()
     .then( (pulledAccounts) => {
       seedData.accounts = seedData.accounts.concat(pulledAccounts);
+      seedData.accounts.push(aaronsAccount())
       return true;
     })
     .then( (s) => createGroupSeedData() )
-    .then( (groupData) => { seedData.groups = seedData.groups.concat(groupData); return true;})
+    .then( (groupData) => { seedData.groups = seedData.groups.concat(groupData); return seedMaches();})
+    .then( macheData => { seedData.maches = seedData.maches.concat(macheData); return true; })
     .then( (s) => writeToFile(seedData, seedFile) )
     .then( (s) => { console.log('Finished: ', s); process.exit(0); })
     .catch( (e) => reject(e) )
