@@ -40,10 +40,10 @@ const groupSchema = mongoose.Schema({
     type: String,
     required : true
   },
-  buckets : [{
+  folios : [{
     type: ObjectId,
     required : false,
-    ref : 'bucket'
+    ref : 'folio'
   }],
   created_on : {
     type: Date,

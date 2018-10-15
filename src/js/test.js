@@ -1,6 +1,7 @@
 import $ from 'jquery';
-import logic from './logic.js';
-import testRoutes from './tests/testRoutes.js'; //just for testing
+import helpers from './helpers/helpers.js';
+import testGroupCreation from './tests/testGroupCreation.js';
+import testFolioCreation from './tests/testFolioCreation.js';
 const test = {};
 
 
@@ -11,7 +12,7 @@ let user = {},
 test.init = () => {
   const userId = $('h1').attr('data-userId');
   return new Promise( (resolve, reject) => {
-    logic.getUserAndGroups(userId)
+    helpers.getUserAndGroups(userId)
     .then( userAndGroups => {
       user = userAndGroups.user;
       groups = userAndGroups.groups;
@@ -27,10 +28,8 @@ test.init = () => {
 test.tests = (userAndGroups) => {
   return new Promise( (resolve, reject) => {
     console.log("Running tests!")
-    testRoutes(userAndGroups)
-    .then( s => {
-      resolve(s);
-    })
+    testGroupCreation(userAndGroups)
+    .then( group => testFolioCreation(group) )
     .catch( e => {
       console.log("Testing failed: ", e)
       reject(e);

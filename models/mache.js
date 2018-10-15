@@ -12,10 +12,10 @@ const macheSchema = mongoose.Schema({
     required: true,
     ref: 'account'
   }],
-  memberOfBuckets : [{
+  memberOfFolios : [{
     type: ObjectId,
     required : false,
-    ref : 'bucket'
+    ref : 'folio'
   }],
   users : [{
     user : {

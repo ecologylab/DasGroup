@@ -11,9 +11,7 @@ const isAuthenticated = helpers.isAuthenticated;
 
 router.get('/', isAuthenticated, groupLogic.renderRoot);
 router.get('/group/:locator', isAuthenticated, groupLogic.renderGroup);
-router.get('/test', isAuthenticated, (req, res) => {
-  res.render('index', {user : req.user})
-})
+router.get('/test', isAuthenticated, groupLogic.renderRoot);
 
 router.get('/api', isAuthenticated, (req, res) => {
   res.render('api', {user : req.user})

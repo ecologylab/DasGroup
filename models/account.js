@@ -163,7 +163,7 @@ accountSchema.methods.getAdminOf = function(GroupDep) {
   })
 }
 
-accountSchema.methods.getOpenedBuckets = function(GroupDep, BucketDep) {
+accountSchema.methods.getOpenedFolios = function(GroupDep, FolioDep) {
   const groupIds = this.memberOf;
   return new Promise( (resolve, reject) => {
     if ( groupIds.length === 0 ) {
@@ -172,10 +172,10 @@ accountSchema.methods.getOpenedBuckets = function(GroupDep, BucketDep) {
     }
     GroupDep.find({'_id' : { $in : groupIds } } ).exec()
     //flattening [ [ids], [more ids] ]
-    .then( groups => [].concat.apply([], groups.map( g => g.buckets) ) )
-    .then( bucketIds => BucketDep.find({'_id' : { $in : bucketIds } } ).exec() )
-    .then( buckets => resolve( buckets.filter(b => b.state == 'opened') ) )
-    .catch( (e) => { logger.error('Error - Account.getOpenedBuckets %O', e); reject(e); })
+    .then( groups => [].concat.apply([], groups.map( g => g.folios) ) )
+    .then( folioIds => FolioDep.find({'_id' : { $in : folioIds } } ).exec() )
+    .then( folios => resolve( folios.filter(b => b.state == 'opened') ) )
+    .catch( (e) => { logger.error('Error - Account.getOpenedFolios %O', e); reject(e); })
   })
 }
 

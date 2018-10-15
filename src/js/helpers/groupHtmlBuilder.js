@@ -1,7 +1,6 @@
 import $ from 'jquery';
-import logic from './logic.js';
-import apiWrapper from './apiWrapper.js';
-import testRoutes from './tests/testRoutes.js'; //just for testing
+import apiWrapper from '../api/apiWrapper.js';
+import testRoutes from '../tests/testRoutes.js'; //just for testing
 import shortId from 'shortid'
 
 const builder = {};
@@ -62,7 +61,7 @@ formBuilder.createGroup = () => {
   return { html : html, handler : createHandle }
 }
 
-formBuilder.createBucket = () => {
+formBuilder.createFolio = () => {
   let itemId = 'form' + shortId.generate()
   const buildHtml = () => {
     const buildFieldHtml = (fieldName, fieldId, placeholder) => {
@@ -78,7 +77,7 @@ formBuilder.createBucket = () => {
     html += buildFieldHtml('Name', 'name') + buildFieldHtml('Description', 'description');
     html += buildFieldHtml('Visibility', 'visibility', 'public or private');
     html += buildFieldHtml('State', 'state', 'opened or closed');
-    html += `<button type="button" class="btn btn-primary">Create bucket</button>`;
+    html += `<button type="button" class="btn btn-primary">Create folio</button>`;
     html += '</div>'
     return html;
   }
@@ -86,7 +85,7 @@ formBuilder.createBucket = () => {
   let createHandle = (group) => {
     return (el) => {
       el.preventDefault();
-      const bucketData = $('#' + itemId)
+      const folioData = $('#' + itemId)
       .find('.input-group').toArray()
       .map( inputGroup => {
         const fieldKey = $(inputGroup).find('.input-group-prepend span').attr('id');
@@ -94,9 +93,9 @@ formBuilder.createBucket = () => {
         return {key : fieldKey, value : fieldValue };
       })
       .reduce( (obj, item) => Object.assign(obj, { [item.key] : item.value }, {}), {})
-      apiWrapper.createBucket({ 'groupId' : group._id }, bucketData)
-      .then( newBucket => {
-        console.table(newBucket)
+      apiWrapper.createFolio({ 'groupId' : group._id }, folioData)
+      .then( newFolio => {
+        console.table(newFolio)
         // window.location.href = `./group/${newGroup.key}`
       })
       .catch( e => console.error(e) )

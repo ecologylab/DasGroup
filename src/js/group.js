@@ -1,7 +1,7 @@
 import $ from 'jquery';
-import logic from './logic.js';
-import apiWrapper from './apiWrapper.js'
-import viewHelper from './groupViewHelper.js'
+import helpers from './helpers/helpers.js';
+import apiWrapper from './api/apiWrapper.js'
+import viewHelper from './helpers/groupviewHelper.js'
 const groupLogic = {};
 const components = [];
 
@@ -19,7 +19,7 @@ const renderChain = []
 const renderAdmin = () => {
   if ( state.isAdmin ) {
     viewHelper.renderGetMembersButton('#buttonArea', state.group);
-    let currComponents = viewHelper.renderCreateBucket('#buttonArea', state.group);
+    let currComponents = viewHelper.renderCreateFolio('#buttonArea', state.group);
     console.log("curr components ", currComponents)
   }
 }

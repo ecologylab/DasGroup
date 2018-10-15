@@ -1,10 +1,7 @@
 import axios from 'axios'
 import $ from 'jquery';
-import logic from '../logic.js';
-import apiWrapper from '../apiWrapper.js'; //just for testing
-
-const base = window.location.host.includes('localhost') ? '/' : '/g/';
-
+import helpers from '../helpers/helpers.js';
+import apiWrapper from '../api/apiWrapper.js'; //just for testing
 
 const runTests = (userAndGroups) => {
   const user = userAndGroups.user;
@@ -27,25 +24,6 @@ const runTests = (userAndGroups) => {
 
   })
 }
-
-const getGroups = (user) => {
-  return new Promise( (resolve, reject) => {
-    apiWrapper.getGroups('groupIds', user.memberOf)
-    .then( groups => {
-      if ( user.memberOf.length === groups.length) {
-        console.log("Test getGroups - passed")
-        resolve(true)
-      } else {
-        reject('Error getGroupsTest - user.memberOf does not equal the groups returned')
-      }
-    })
-    .catch( e => {
-      console.error("Error when getting groups", e)
-      reject(e);
-    })
-  })
-}
-
 const getGroupMembers = (user, groups) => {
   let groupMembersPromises = groups.map( g => apiWrapper.getGroupMembers('groupId', g._id))
   return new Promise( (resolve, reject) => {
@@ -64,6 +42,7 @@ const getGroupMembers = (user, groups) => {
     })
   })
 }
+
 const createGroup = (user) => {
   return new Promise( (resolve, reject) => {
     let group = {
@@ -85,10 +64,9 @@ const createGroup = (user) => {
   })
 }
 
-//This isnt wrapped because it should be replaced by the invite logic
 const addGroupAdmins = (groupId, newAdmins) => {
   return new Promise( (resolve, reject) => {
-    axios.post(`${base}a/addGroupAdmins`, { groupQuery : { groupId : groupId }, newAdmins : newAdmins})
+    axios.post(`${BASEPATH}a/addGroupAdmins`, { groupQuery : { groupId : groupId }, newAdmins : newAdmins})
     .then( (response) => {
       console.log("Test addGroupAdmins - passed")
       resolve(response.data)
@@ -100,16 +78,37 @@ const addGroupAdmins = (groupId, newAdmins) => {
   })
 }
 
+const getGroups = (user) => {
+  return new Promise( (resolve, reject) => {
+    apiWrapper.getGroups('groupIds', user.memberOf)
+    .then( groups => {
+      if ( user.memberOf.length === groups.length) {
+        console.log("Test getGroups - passed")
+        resolve(true)
+      } else {
+        reject('Error getGroupsTest - user.memberOf does not equal the groups returned')
+      }
+    })
+    .catch( e => {
+      console.error("Error when getting groups", e)
+      reject(e);
+    })
+  })
+}
 
-const createBucket = (groupId) => {
-  let bucketData = {
-    name : "Awesome bucket",
-    description : "Oh so awesome bucket",
+
+
+
+
+const createFolio = (groupId) => {
+  let folioData = {
+    name : "Awesome folio",
+    description : "Oh so awesome folio",
     visibility : "public",
     state : "open"
   }
   return new Promise( (resolve, reject) => {
-    axios.post(`${base}a/createBucket`, { groupQuery : { groupId : groupId }, bucketData})
+    axios.post(`${base}a/createFolio`, { groupQuery : { groupId : groupId }, folioData})
     .then( (response) => {
       console.log("Test addGroupAdmins - passed")
       resolve(response.data)

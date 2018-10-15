@@ -1,7 +1,6 @@
 import $ from 'jquery';
-import logic from './logic.js';
 import groupHtmlBuilder from './groupHtmlBuilder.js';
-import apiWrapper from './apiWrapper.js';
+import apiWrapper from '../api/apiWrapper.js';
 const viewHelper = {}
 
 const renderedComponents = []
@@ -27,12 +26,12 @@ viewHelper.renderCreateGroupForm = (appendLocation) => {
   return renderedComponents;
 }
 
-viewHelper.renderCreateBucket = (appendLocation, groupId) => {
-  let inputBucket = groupHtmlBuilder.formBuilder.createBucket();
-  let $inputBucket = $(inputBucket.html)
-  $inputBucket.find('button').on('click', inputBucket.handler(groupId))
-  $(appendLocation).append($inputBucket)
-  renderedComponents.push($inputBucket)
+viewHelper.renderCreateFolio = (appendLocation, groupId) => {
+  let inputFolio = groupHtmlBuilder.formBuilder.createFolio();
+  let $inputFolio = $(inputFolio.html)
+  $inputFolio.find('button').on('click', inputFolio.handler(groupId))
+  $(appendLocation).append($inputFolio)
+  renderedComponents.push($inputFolio)
   return renderedComponents;
 }
 

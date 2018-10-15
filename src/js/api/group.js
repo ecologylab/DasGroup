@@ -1,18 +1,5 @@
 import axios from 'axios'
-const wrapper = {}
-wrapper.getUser = (key, value) => {
-  return new Promise( (resolve, reject) => {
-    axios.get(`${BASEPATH}a/getUser?${key}=${value}`)
-    .then( (response) => {
-      resolve(response.data)
-    })
-    .catch( e => {
-      console.error('Error getUser ', key, value, e)
-      reject(e);
-    })
-  })
-}
-
+const wrapper = {};
 wrapper.getGroups = (key, value) => {
   return new Promise( (resolve, reject) => {
     axios.get(`${BASEPATH}a/getGroups?${key}=${value}`)
@@ -25,7 +12,6 @@ wrapper.getGroups = (key, value) => {
     })
   })
 }
-
 //you could just getGroups then return members, but might as well expose this api function
 wrapper.getGroupMembers = (key, value) => {
   return new Promise( (resolve, reject) => {
@@ -39,48 +25,6 @@ wrapper.getGroupMembers = (key, value) => {
     })
   })
 }
-//groupLocator : ... bucketData
-wrapper.createBucket = (groupLocator, bucketData) => {
-  let request = { groupQuery : groupLocator, bucketData : bucketData };
-  return new Promise( (resolve, reject) => {
-    axios.post(`${BASEPATH}a/createBucket`, request)
-    .then( (response) => {
-      resolve(response.data)
-    })
-    .catch( e => {
-      console.error('Error creating bucket', group, e)
-      reject(e);
-    })
-  })
-}
-
-wrapper.getOpenedBuckets = () => {
-  return new Promise( (resolve, reject) => {
-    axios.get(`${BASEPATH}a/getOpenedBuckets`)
-    .then( (response) => {
-      resolve(response.data)
-    })
-    .catch( e => {
-      console.error('Error getOpenedBuckets', group, e)
-      reject(e);
-    })
-  })
-}
-
-//bucketQuery : { bucketId/bucketKey : ... } macheQuery : { macheId/macheKey : ... }
-wrapper.addMacheToBucket = (bucketQuery, macheQuery) => {
-  return new Promise( (resolve, reject) => {
-    axios.post(`${BASEPATH}a/addMacheToBucket`, { bucketQuery : bucketQuery, macheQuery : macheQuery })
-    .then( (response) => {
-      resolve(response.data)
-    })
-    .catch( e => {
-      console.error('Error addMacheToBucket', group, e)
-      reject(e);
-    })
-  })
-}
-
 wrapper.createGroup = (group) => {
   if ( !group.hasOwnProperty('members') ) { group.members = [] }
   if ( !group.hasOwnProperty('adminIds') ) { group.adminIds = [] }
@@ -96,6 +40,7 @@ wrapper.createGroup = (group) => {
     })
   })
 }
+
 //either a singular key or id { groupKey : 12312 } or { groupId : 123123}
 wrapper.deleteGroup = (groupLocator) => {
   return new Promise( (resolve, reject) => {
@@ -109,7 +54,6 @@ wrapper.deleteGroup = (groupLocator) => {
     })
   })
 }
-
 wrapper.joinGroup = (groupLocator) => {
   return new Promise( (resolve, reject) => {
     axios.post(`${BASEPATH}a/joinGroup`, groupLocator)
@@ -135,12 +79,5 @@ wrapper.updateGroup = (modifiedGroupFields) => {
     })
   })
 }
-
-
-
-
-console.log('wrapper', wrapper, BASEPATH)
-
-// .then( (user) => axios.get(`/getGroup?groupId=${user.memberOf[0]}`) )
 
 module.exports = wrapper;

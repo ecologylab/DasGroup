@@ -1,10 +1,10 @@
-import apiWrapper from './apiWrapper.js';
-const logic = {}
+import apiWrapper from '../api/apiWrapper.js';
+const helpers = {}
 
 
 
 
-logic.getUserAndGroups = (userId, opt_groupIds) => {
+helpers.getUserAndGroups = (userId, opt_groupIds) => {
   let returnData = {},
       groupIds = opt_groupIds;
   return new Promise( (resolve, reject) => {
@@ -27,18 +27,7 @@ logic.getUserAndGroups = (userId, opt_groupIds) => {
   })
 }
 
-logic.addGroupMembers = (groupId, newMembers) => {
-  return new Promise( (resolve, reject) => {
-    axios.post(`${base}a/addGroupMembers`, { groupQuery : { groupId : groupId }, newMembers : newMembers})
-    .then( (response) => {
-      resolve(response.data)
-    })
-    .catch( e => {
-      console.error('Error addGroupMembers members ', groupId, newMembers, e)
-      reject(e);
-    })
-  })
-}
 
 
-module.exports = logic;
+
+module.exports = helpers;

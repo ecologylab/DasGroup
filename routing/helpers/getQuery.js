@@ -28,19 +28,19 @@ const getQuery = (request) => {
     ? query = { _id : { $in : request.groupKeys } }
     : query = { _id : { $in : request.groupKeys.split(',') } }
   }
-  //possible bucket queries
-  else if ( request.bucketId ) {
-    query = { _id : request.bucketId }
-  } else if ( request.bucketIds ) {
-    query = Array.isArray(request.bucketIds)
-    ? query = { _id : { $in : request.bucketIds } }
-    : query = { _id : { $in : request.bucketIds.split(',') } }
-  } else if ( request.bucketKey ) {
-    query = { key : request.bucketKey }
-  } else if ( request.bucketKeys ) {
-    query = Array.isArray(request.bucketKeys)
-    ? query = { _id : { $in : request.bucketKeys } }
-    : query = { _id : { $in : request.bucketKeys.split(',') } }
+  //possible folio queries
+  else if ( request.folioId ) {
+    query = { _id : request.folioId }
+  } else if ( request.folioIds ) {
+    query = Array.isArray(request.folioIds)
+    ? query = { _id : { $in : request.folioIds } }
+    : query = { _id : { $in : request.folioIds.split(',') } }
+  } else if ( request.folioKey ) {
+    query = { key : request.folioKey }
+  } else if ( request.folioKeys ) {
+    query = Array.isArray(request.folioKeys)
+    ? query = { _id : { $in : request.folioKeys } }
+    : query = { _id : { $in : request.folioKeys.split(',') } }
   }
   //possible mache queries
   else if ( request.macheId ) {

@@ -132,7 +132,7 @@ logic.joinGroup = (req, res) => {
   })
 }
 
-//THIS SHOULD BE REPLACED WITH INVITE GROUP MEMBERS groupQuery, newMembers [userIds]
+//Strictly for testing req.body : { groupQuery : {}, newMembers : [userId]}
 logic.addGroupMembers = (req, res) => {
   const query = getQuery(req.body.groupQuery);
   let group, userChecks, newGroupMembers;
@@ -153,7 +153,7 @@ logic.addGroupMembers = (req, res) => {
     group = updatedGroup;
     return Promise.all( newGroupMembers.map( m => helpers.addGroupToUser({ _id : m }, updatedGroup._id) ) )
   })
-  .then( updatedUsers => {console.log("addGroupMembers", group); res.send(group)} )
+  .then( updatedUsers => res.send(group) )
   .catch( e => {
     logger.error('Error in addGroupMembers %j %O %O', req.body, req.user, e)
     res.status(404);

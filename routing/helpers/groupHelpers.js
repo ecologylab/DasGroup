@@ -30,16 +30,16 @@ groupHelpers.isUserAdminOfGroup = (groupQuery, user) => {
   })
 }
 
-groupHelpers.addBucketToGroup = (groupQuery, bucketId) => {
+groupHelpers.addFolioToGroup = (groupQuery, folioId) => {
   return new Promise( (resolve, reject) => {
     findGroup(groupQuery)
     .then( group => {
-      const currentBuckets = group.buckets.map( b => b.toString() )
-      if ( currentBuckets.includes( bucketId.toString() ) ) {
-        logger.bucket('Add bucket to group called with bucket that is already in group %O %O', userQuery, groupId)
+      const currentFolios = group.folios.map( b => b.toString() )
+      if ( currentFolios.includes( folioId.toString() ) ) {
+        logger.folio('Add folio to group called with folio that is already in group %O %O', userQuery, groupId)
         resolve(group);
       } else {
-        group.buckets.push(bucketId)
+        group.folios.push(folioId)
         return group.save()
       }
     })

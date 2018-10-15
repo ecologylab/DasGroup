@@ -1,6 +1,7 @@
 import $ from 'jquery';
-import logic from './logic.js';
-import viewHelper from './groupViewHelper.js'
+import helpers from './helpers/helpers.js';
+import apiWrapper from './api/apiWrapper.js'
+import groupViewHelper from './helpers/groupviewHelper.js'
 const index = {};
 
 
@@ -10,7 +11,7 @@ let user = {},
 
 const createGroupForm = (el) => {
   console.log("in render form")
-  let ren = viewHelper.renderCreateGroupForm('#formArea');
+  let ren = groupViewHelper.renderCreateGroupForm('#formArea');
 }
 
 const setHandlers = () => {

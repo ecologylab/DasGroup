@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Schema.Types.ObjectId;
 const shortId = require('shortid');
-const bucketStates = ['opened', 'closed'] //closed means no maches can be submitted
-const bucketVisibilities = ['public', 'private'] //private means only admins can see
+const folioStates = ['opened', 'closed'] //closed means no maches can be submitted
+const folioVisibilities = ['public', 'private'] //private means only admins can see
 
-const bucketSchema = mongoose.Schema({
+const folioSchema = mongoose.Schema({
   creator : {
     type: ObjectId,
     required: true,
@@ -69,10 +69,10 @@ const bucketSchema = mongoose.Schema({
 
 })
 
-bucketSchema.pre('save', function(next)
+folioSchema.pre('save', function(next)
 {
-    if ( !bucketStates.includes(this.state) ) { this.state = 'closed'; }
-    if ( !bucketVisibilities.includes(this.visibility) ) { this.visibility = 'public'; }
+    if ( !folioStates.includes(this.state) ) { this.state = 'closed'; }
+    if ( !folioVisibilities.includes(this.visibility) ) { this.visibility = 'public'; }
     this.last_modified = new Date();
     next();
 });
@@ -80,4 +80,4 @@ bucketSchema.pre('save', function(next)
 
 
 
-module.exports = mongoose.model('Bucket', bucketSchema);
+module.exports = mongoose.model('Folio', folioSchema);

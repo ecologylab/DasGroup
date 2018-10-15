@@ -1,7 +1,7 @@
 const tokenHandler = require('../../utils/tokenHandler.js')
 const Account = require('../../models/account')
 const Group = require('../../models/group')
-const Bucket = require('../../models/bucket')
+const Folio = require('../../models/folio')
 const logger = require('../../utils/logger');
 const helpers = require('../helpers/helpers')
 const config = require('config')
@@ -22,11 +22,11 @@ logic.getUser = (req,res) => {
   })
 }
 
-logic.getOpenedBuckets = (req, res) => {
-  req.user.getOpenedBuckets(Group,Bucket)
-  .then( openBuckets => res.send(openBuckets) )
+logic.getOpenedFolios = (req, res) => {
+  req.user.getOpenedFolios(Group,Folio)
+  .then( openFolios => res.send(openFolios) )
   .catch( e => {
-    logger.error('Error in getOpenedBuckets %j %O', req.user, e)
+    logger.error('Error in getOpenedFolios %j %O', req.user, e)
     res.status(404);
     res.send([])
   })

@@ -7,8 +7,7 @@ import axios from 'axios'
 import index from './index.js';
 import group from './group.js';
 import test from './test.js';
-
-if ( window.location.pathname.includes('test') ) {
+if ( window.location.pathname.includes('test') && NODE_ENV == 'dev' ) {
   test.init()
   .then( usersAndGroups => test.tests(usersAndGroups) )
   .then( testStatus => console.log('Testing complete : ', testStatus) )

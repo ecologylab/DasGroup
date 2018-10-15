@@ -14,7 +14,6 @@ const config = require('config')
 const redis = require('redis')
 const RedisStore = require('connect-redis')(session)
 const redisClient = redis.createClient(config.redis)
-
 app.use(morgan('dev'));
 if ( process.env.NODE_ENV === 'dev' ) {
   app.use( (req,res,next) => {

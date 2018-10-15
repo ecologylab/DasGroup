@@ -1,6 +1,6 @@
 process.env.NODE_ENV = 'dev'
 const Account = require('../models/account');
-const Bucket = require('../models/bucket');
+const Folio = require('../models/folio');
 const Group = require('../models/group');
 const mongoose = require('mongoose');
 const seedFile = './scripts/seed/seedData.json';
@@ -26,7 +26,7 @@ const randomId = mongoose.Types.ObjectId();
 //
 // })
 const test = () =>  {
-  Bucket.find({}).exec()
+  Folio.find({}).exec()
   .then( b => console.log(b) )
   .catch( e => console.log(e) )
 }

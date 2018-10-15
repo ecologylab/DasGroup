@@ -3,7 +3,7 @@ process.env.NODE_ENV = 'dev'
 const Account = require('../../models/account');
 const Group = require('../../models/group');
 const Mache = require('../../models/mache');
-const Bucket = require('../../models/group');
+const Folio = require('../../models/group');
 const Role = require('../../models/role');
 const mongoose = require('mongoose');
 const seedFile = './scripts/seed/seedData.json';
@@ -18,7 +18,7 @@ const runSeed = (emptyFirst) => {
   clearCollection(Account)
   .then ( () => clearCollection(Group) )
   .then ( () => clearCollection(Mache) )
-  .then ( () => clearCollection(Bucket) )
+  .then ( () => clearCollection(Folio) )
   .then ( () => clearCollection(Role) )
   .then( () => dropIndexes(Account) )
   .then( () => dropIndexes(Group) )
