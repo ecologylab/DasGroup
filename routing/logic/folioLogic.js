@@ -1,5 +1,6 @@
 const Account = require('../../models/account')
 const Group = require('../../models/group')
+const Mache = require('../../models/mache')
 const Folio = require('../../models/folio')
 const logger = require('../../utils/logger');
 const groupLogic = require('./groupLogic');
@@ -52,8 +53,7 @@ logic.addMacheToFolio = (req, res) => {
     updatedFolio = savedFolio;
     console.log("Current Mache member of folioSubmissions: ", mache.memberOfFolios)
     mache.memberOfFolios.push(savedFolio._id)
-    mache.description = "Testing description field augment";
-    
+
     return mache.save();
   })
   .then( savedMache => { console.log("After save Mache member of: ", mache.memberOfFolios); res.send(updatedFolio) })
@@ -196,5 +196,22 @@ logic.deleteFolio = (req, res) => {
     res.send({})
   })
 }
+
+logic.testMacheSave = (req, res) => {
+  let macheId = req.body.macheId;
+  let newDescription = req.body.newDescription;
+  Mache.findOne({ _id : macheId}).then( mache => {
+    mache.description = newDescription;
+    mache.save()
+    .then( savedMache => res.send(savedMache) )
+    .catch( e => {
+      console.error("Error in testSave mache route ", e)
+      res.status(404)
+      res.send({e:e});
+    })
+  })
+}
+
+
 
 module.exports = logic;

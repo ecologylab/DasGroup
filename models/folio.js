@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Schema.Types.ObjectId;
 const shortId = require('shortid');
-const versionIncrementer = require('./versionIncrementer')
 const folioStates = ['opened', 'closed'] //closed means no maches can be submitted
 const folioVisibilities = ['public', 'private'] //private means only admins can see
 const folioSchema = mongoose.Schema({
