@@ -4,13 +4,10 @@ const shortId = require('shortid');
 const macheSchema = mongoose.Schema({
   creator : {
     type: ObjectId,
-    required: true,
     ref: 'account'
   },
   current_users : [{
-    type: ObjectId,
-    required: true,
-    ref: 'account'
+    type: mongoose.Schema.Types.Mixed,
   }],
   memberOfFolios : [{
     type: ObjectId,
@@ -27,21 +24,19 @@ const macheSchema = mongoose.Schema({
       type: ObjectId,
       required: false,
       ref: 'role'
-    }
+    },
+    roleNum : Number
   }],
   title : {
     type : String,
-    required : true,
     default : 'Untitled Mache'
   },
   description : {
     type : String,
-    required : true,
     default : ''
   },
   visibility : {
     type : String,
-    required : true,
     default : 'public',
   },
   background_color : {
@@ -49,7 +44,6 @@ const macheSchema = mongoose.Schema({
   },
   elements : [{
     type: ObjectId,
-    required: true,
     ref: 'element'
   }],
   hash_key: {
@@ -65,17 +59,20 @@ const macheSchema = mongoose.Schema({
   created_on : {
     type: Date,
     default: Date.now(),
-    required: true
   },
   last_modified: {
     type: Date,
     default: Date.now(),
-    required : true
   },
   default_role : {
-    type: ObjectId,
-    required: false,
-    ref: 'role'
+    role : {
+      type: ObjectId,
+      ref: "role"
+    },
+    roleNum : {
+      type: Number,
+      default: 3
+    }
   },
   copied_from : {
       type: ObjectId,
