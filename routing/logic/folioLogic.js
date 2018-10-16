@@ -20,12 +20,14 @@ logic.addMacheToFolio = (req, res) => {
   let mache = {}, updatedFolio = {}, sendOnError = true;
   const folioQuery = getQuery(req.body.folioQuery);
   const macheQuery = getQuery(req.body.macheQuery);
-  const validate = (folio) => {
+  const validate = (folio, mache) => {
     const folioSubmissions = folio.macheSubmissions.map( (m) => m.mache._id.toString() )
     const memberOf = req.user.memberOf.map( (groupId) => groupId.toString() )
-    const userMaches = req.user.maches.map( (macheId) => macheId.toString() )
+    //(models/mache.js) => user : [{ user : id, role : role, roleNum : int }]
+    const usersWhoCanEdit =  Array.from(mache.users.filter( u => u.roleNum == 1).map( u => u.user.toString() ) );
+    usersWhoCanEdit.push(mache.creator.toString() )
     if ( !memberOf.includes(folio.belongsTo.toString() ) ) { throw new Error('User cannot add maches to folio if they dont belong to group') }
-    if ( !userMaches.includes(mache._id.toString() ) ) { throw new Error('User cannot add a mache they are not a part of') }
+    if ( !usersWhoCanEdit.includes(req.user._id.toString() ) ) { throw new Error('User cannot add a mache they are not an editor of') }
     if ( folio.state == 'closed' ) { throw new Error('User cannot add mache to closed folio') }
     if ( folioSubmissions.includes(mache._id.toString() ) ) {
       //I want to break out of my promise chain so i am throwing an error, then handling specifically
@@ -39,7 +41,7 @@ logic.addMacheToFolio = (req, res) => {
   .then( m => { mache = m; return findFolio(folioQuery); })
   .then( folio => {
     //validate can only be true or throw an error
-    if ( validate(folio) ) {
+    if ( validate(folio, mache) ) {
       folio.macheSubmissions.push({
         mache : mache._id,
         submitter : req.user._id,
