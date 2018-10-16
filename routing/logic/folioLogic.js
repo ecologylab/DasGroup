@@ -37,6 +37,7 @@ logic.addMacheToFolio = (req, res) => {
   findMache(macheQuery)
   .then( m => { mache = m; return findFolio(folioQuery); })
   .then( folio => {
+    console.log("In folio add mache to folio, the found mache was: ", mache)
     //validate can only be true or throw an error
     if ( validate(folio) ) {
       folio.macheSubmissions.push({
@@ -49,10 +50,11 @@ logic.addMacheToFolio = (req, res) => {
   })
   .then( savedFolio => {
     updatedFolio = savedFolio;
+    console.log("Current Mache member of folioSubmissions: ", mache.memberOfFolios)
     mache.memberOfFolios.push(savedFolio._id)
     return mache.save();
   })
-  .then( savedMache => res.send(updatedFolio) )
+  .then( savedMache => { console.log("After save Mache member of: ", mache.memberOfFolios); res.send(updatedFolio) })
   .catch( e => {
     logger.error('Error in addMachesToFolio body : %O user : %O error : %O', req.body, req.user, e)
     if ( sendOnError ) {
@@ -87,7 +89,6 @@ logic.removeMacheFromFolio = (req, res) => {
     //validate can only be true or throw an error
     if ( validate(folio) ) {
       const removeIndex = folio.macheSubmissions.map( m => m.mache.toString() ).indexOf(mache._id.toString())
-      console.log("SREMOVING", folio.macheSubmissions, mache._id, removeIndex)
       folio.macheSubmissions.splice(removeIndex,1);
       return folio.save()
     }

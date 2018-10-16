@@ -43,6 +43,7 @@ const pullAccounts = () => {
         } else if ( aaronsMaches.length < 5 && d.maches.length > 1 ) {
           let m = d.maches[0];
           m.creator = aaronsId;
+          machesReferenced.push(m);
           aaronsMaches.push(m)
         }
       })
@@ -80,8 +81,8 @@ const createGroupSeedData = (memberIds) => {
             "roles.admins" : [aaronsId],
             "members" : group2Members,
             "key" : 'def',
-            "name" : "BACON",
-            "description" : 'Bad ass cronies only kneedin???!?!?! Who is this guy?!?!'
+            "name" : "MemeMasters",
+            "description" : 'lol'
           },
           {
               "_id" : group3Id,

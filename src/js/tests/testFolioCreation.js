@@ -79,14 +79,15 @@ const removeMacheFromFolio = (group, folio) => {
   return new Promise( (resolve, reject) => {
     apiWrapper.getUser('userId', group.creator)
     .then( creator => {
-      const addMachePromises = creator.maches.map( macheId => apiWrapper.removeMacheFromFolio( { folioId : folio._id }, { macheId : macheId } ) )
-      return Promise.all( addMachePromises )
+      //FIX ME -- many removes should hit retry on fail
+      //const manyRemoves = creator.maches.map( macheId => apiWrapper.removeMacheFromFolio( { folioId : folio._id }, { macheId : macheId } ) )
+      return apiWrapper.removeMacheFromFolio( {folioId : folio._id }, { macheId : creator.maches[0] })
+      // return Promise.all( addMachePromises )
     })
-    .then( updatedFolios => {
-      let folioCount = updatedFolios.length;
+    .then( updatedFolio => {
       console.log("%cTest removeMacheFromFolio - passed Logging folio after remove maches: ",  "color: blue")
-      console.table(updatedFolios[folioCount-1])
-      resolve(updatedFolios[folioCount-1])
+      console.table(updatedFolio)
+      resolve(updatedFolio)
     })
     .catch( e => {
       console.error('Error removeMacheFromFolio members ', group, folio, e)
