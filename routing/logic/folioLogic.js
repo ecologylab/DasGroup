@@ -52,6 +52,8 @@ logic.addMacheToFolio = (req, res) => {
     updatedFolio = savedFolio;
     console.log("Current Mache member of folioSubmissions: ", mache.memberOfFolios)
     mache.memberOfFolios.push(savedFolio._id)
+    mache.description = "Testing description field augment";
+    
     return mache.save();
   })
   .then( savedMache => { console.log("After save Mache member of: ", mache.memberOfFolios); res.send(updatedFolio) })
