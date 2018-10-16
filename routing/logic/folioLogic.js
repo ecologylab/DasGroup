@@ -38,7 +38,6 @@ logic.addMacheToFolio = (req, res) => {
   findMache(macheQuery)
   .then( m => { mache = m; return findFolio(folioQuery); })
   .then( folio => {
-    console.log("In folio add mache to folio, the found mache was: ", mache)
     //validate can only be true or throw an error
     if ( validate(folio) ) {
       folio.macheSubmissions.push({
@@ -51,9 +50,7 @@ logic.addMacheToFolio = (req, res) => {
   })
   .then( savedFolio => {
     updatedFolio = savedFolio;
-    console.log("Current Mache member of folioSubmissions: ", mache.memberOfFolios)
     mache.memberOfFolios.push(savedFolio._id)
-
     return mache.save();
   })
   .then( savedMache => { console.log("After save Mache member of: ", mache.memberOfFolios); res.send(updatedFolio) })
@@ -116,23 +113,16 @@ logic.removeMacheFromFolio = (req, res) => {
     }
   })
 }
-//req.body = groupQuery : {}, folioQuery : {}
+// folioQuery : {}
 logic.getFolios = (req, res) => {
   const folioQuery = getQuery(req.body.folioQuery);
-  const groupQuery = getQuery(req.body.groupQuery);
-  findGroup(groupQuery)
-  .then( group => {
-    const members = group.members.map( m => m.toString() )
-    if ( Array.isArray(group) ) { throw new Error('Get folios invalid group query'); }
-    if ( members.includes(req.user._id.toString() ) ) { return findFolio(folioQuery); }
-    else { throw new Error('User cannot get folios for group they are not a part of'); }
-  })
+  findFolio(folioQuery)
   .then( folios => {
     if ( Array.isArray(folios) ) { res.send(folios); }
     else { res.send([folios]) }
   })
-  .catch( (e) => {
-    logger.error('Error in getFolios %j %O', req.body, e)
+  .catch( e => {
+    logger.error('Error in getFolios by folioQuery %j %O', req.body, e)
     res.status(404);
     res.send([])
   })
