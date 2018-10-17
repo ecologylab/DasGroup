@@ -31,7 +31,4 @@ router.post('/removeMacheFromFolio', isAuthenticated, folioLogic.removeMacheFrom
 router.post('/getFolios', isAuthenticated, folioLogic.getFolios)
 
 
-router.post('/testMacheSave', isAuthenticated, folioLogic.testMacheSave);
-
-
 module.exports = router;

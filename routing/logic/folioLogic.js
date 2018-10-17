@@ -5,6 +5,7 @@ const Folio = require('../../models/folio')
 const logger = require('../../utils/logger');
 const groupLogic = require('./groupLogic');
 const helpers = require('../helpers/helpers')
+const RequestError = require('../../utils/errors/RequestError')
 const logic = {};
 
 const uniq = helpers.uniq;
@@ -26,14 +27,15 @@ logic.addMacheToFolio = (req, res) => {
     //(models/mache.js) => user : [{ user : id, role : role, roleNum : int }]
     const usersWhoCanEdit =  Array.from(mache.users.filter( u => u.roleNum == 1).map( u => u.user.toString() ) );
     usersWhoCanEdit.push(mache.creator.toString() )
-    if ( !memberOf.includes(folio.belongsTo.toString() ) ) { throw new Error('User cannot add maches to folio if they dont belong to group') }
-    if ( !usersWhoCanEdit.includes(req.user._id.toString() ) ) { throw new Error('User cannot add a mache they are not an editor of') }
-    if ( folio.state == 'closed' ) { throw new Error('User cannot add mache to closed folio') }
+    usersWhoCanEdit.push(req.user._id.toString() )
+    if ( !memberOf.includes(folio.belongsTo.toString() ) ) { throw new RequestError('User cannot add maches to folio if they dont belong to group', 1) }
+    if ( !usersWhoCanEdit.includes(req.user._id.toString() ) ) { throw new RequestError('User cannot add a mache they are not an editor of', 1) }
+    if ( folio.state == 'closed' ) { throw new RequestError('User cannot add mache to closed folio') }
     if ( folioSubmissions.includes(mache._id.toString() ) ) {
       //I want to break out of my promise chain so i am throwing an error, then handling specifically
       res.send(folio);
       sendOnError = false;
-      throw new Error('Mache attempted add to folio where it already existed')
+      throw new RequestError('Mache attempted add to folio where it already existed')
     }
     return true;
   }
@@ -55,11 +57,11 @@ logic.addMacheToFolio = (req, res) => {
     mache.memberOfFolios.push(savedFolio._id)
     return mache.save();
   })
-  .then( savedMache => { console.log("After save Mache member of: ", mache.memberOfFolios); res.send(updatedFolio) })
+  .then( savedMache => res.send(updatedFolio) )
   .catch( e => {
     logger.error('Error in addMachesToFolio body : %O user : %O error : %O', req.body, req.user, e)
     if ( sendOnError ) {
-      res.status(404);
+      res.status(400);
       res.send({})
     }
   })
@@ -73,9 +75,9 @@ logic.removeMacheFromFolio = (req, res) => {
     const folioSubmissions = folio.macheSubmissions.map( (m) => m.mache._id.toString() )
     const memberOf = req.user.memberOf.map( (groupId) => groupId.toString() )
     const userMaches = req.user.maches.map( (macheId) => macheId.toString() )
-    if ( !memberOf.includes(folio.belongsTo.toString() ) ) { throw new Error('User cannot remove maches to folio if they dont belong to group') }
-    if ( !userMaches.includes(mache._id.toString() ) ) { throw new Error('User cannot remove a mache they are not a part of') }
-    if ( folio.state == 'closed' ) { throw new Error('User cannot remove a mache from a closed folio') }
+    if ( !memberOf.includes(folio.belongsTo.toString() ) ) { throw new RequestError('User cannot remove maches to folio if they dont belong to group', 1) }
+    if ( !userMaches.includes(mache._id.toString() ) ) { throw new RequestError('User cannot remove a mache they are not a part of', 1) }
+    if ( folio.state == 'closed' ) { throw new RequestError('User cannot remove a mache from a closed folio') }
     if ( !folioSubmissions.includes(mache._id.toString() ) ) {
       //I want to break out of my promise chain so i am throwing an error, then handling specifically
       res.send(folio);
@@ -84,6 +86,7 @@ logic.removeMacheFromFolio = (req, res) => {
     }
     return true;
   }
+
   findMache(macheQuery)
   .then( m => { mache = m; return findFolio(folioQuery); })
   .then( folio => {
@@ -110,7 +113,7 @@ logic.removeMacheFromFolio = (req, res) => {
       res.send(req.body)
     }
     if ( sendOnError ) {
-      res.status(404);
+      res.status(400);
       res.send({})
     }
   })
@@ -125,7 +128,7 @@ logic.getFolios = (req, res) => {
   })
   .catch( e => {
     logger.error('Error in getFolios by folioQuery %j %O', req.body, e)
-    res.status(404);
+    res.status(400);
     res.send([])
   })
 };
@@ -140,7 +143,7 @@ logic.createFolio = (req, res) => {
   let createdFolio, group;
   isUserAdminOfGroup(groupQuery, req.user)
   .then( adminStatus => {
-    if ( !adminStatus.isAdmin ) { throw new Error('User is not authorized to create a folio in this group') }
+    if ( !adminStatus.isAdmin ) { throw new RequestError('User is not authorized to create a folio in this group',1) }
     group = adminStatus.group;
     const b = new Folio({
       "creator" : req.user._id,
@@ -161,7 +164,7 @@ logic.createFolio = (req, res) => {
   })
   .catch( e => {
     logger.error('Error in createFolio body : %O user : %O error : %O', req.body, req.user, e)
-    res.status(404);
+    res.status(400);
     res.send({})
   })
 }
@@ -184,23 +187,8 @@ logic.deleteFolio = (req, res) => {
   })
   .catch( e => {
     logger.error('Error in deleteFolio body : %O user : %O error : %O', req.body, req.user, e)
-    res.status(404);
+    res.status(400);
     res.send({})
-  })
-}
-
-logic.testMacheSave = (req, res) => {
-  let macheId = req.body.macheId;
-  let newDescription = req.body.newDescription;
-  Mache.findOne({ _id : macheId}).then( mache => {
-    mache.description = newDescription;
-    mache.save()
-    .then( savedMache => res.send(savedMache) )
-    .catch( e => {
-      console.error("Error in testSave mache route ", e)
-      res.status(404)
-      res.send({e:e});
-    })
   })
 }
 

@@ -1,4 +1,5 @@
 import axios from 'axios'
+import retry from '../helpers/retry'
 const wrapper = {};
 
 //groupLocator : { groupId/groupKey : ... }, folioData
@@ -43,13 +44,13 @@ wrapper.addMacheToFolio = (folioQuery, macheQuery) => {
   })
 }
 //folioQuery : { folioId/folioKey : ... } macheQuery : { macheId/macheKey : ... }
-wrapper.removeMacheFromFolio = (folioQuery, macheQuery, retryCount) => {
+wrapper.removeMacheFromFolio = (folioQuery, macheQuery) => {
+  const requestUrl = `${BASEPATH}a/removeMacheFromFolio`;
+  const requestParams = { folioQuery : folioQuery, macheQuery : macheQuery };
+  let reqFn = axios.post.bind(null, requestUrl,  requestParams);
   return new Promise( (resolve, reject) => {
-    axios.post(`${BASEPATH}a/removeMacheFromFolio`, { folioQuery : folioQuery, macheQuery : macheQuery })
+    retry(reqFn, 10)
     .then( (response) => {
-      if ( response.status === 202) {
-        console.error('version conflict in removeMacheFromFolio')
-      }
       resolve(response.data)
     })
     .catch( e => {

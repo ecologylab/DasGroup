@@ -17,7 +17,7 @@ logic.getUser = (req,res) => {
   .then( u => res.send(u) )
   .catch( e => {
     logger.error('Error in getUser %j %O', req.query, e)
-    res.status(404);
+    res.status(400);
     res.send([])
   })
 }
@@ -27,7 +27,7 @@ logic.getOpenedFolios = (req, res) => {
   .then( openFolios => res.send(openFolios) )
   .catch( e => {
     logger.error('Error in getOpenedFolios %j %O', req.user, e)
-    res.status(404);
+    res.status(400);
     res.send([])
   })
 }

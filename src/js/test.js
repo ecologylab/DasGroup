@@ -2,6 +2,7 @@ import $ from 'jquery';
 import helpers from './helpers/helpers.js';
 import testGroupCreation from './tests/testGroupCreation.js';
 import testFolioCreation from './tests/testFolioCreation.js';
+import testRetry from './tests/testRetry.js';
 const test = {};
 
 
@@ -28,10 +29,18 @@ test.init = () => {
 test.tests = (userAndGroups) => {
   return new Promise( (resolve, reject) => {
     console.log("Running tests!")
+    testRetry()
+    .then( s => {
+      console.log("Test random passed!")
+    })
+    .catch( e => {
+      console.log("Testing random failed: ", e)
+      reject(e);
+    })
     testGroupCreation(userAndGroups)
     .then( group => testFolioCreation(group) )
     .catch( e => {
-      console.log("Testing failed: ", e)
+      console.log("Testing model lifecycles failed: ", e)
       reject(e);
     })
   })

@@ -2,6 +2,7 @@ const Account = require('../../models/account')
 const Group = require('../../models/group')
 const logger = require('../../utils/logger');
 const helpers = require('../helpers/helpers')
+const RequestError = require('../../utils/errors/RequestError')
 const logic = {};
 
 const uniq = helpers.uniq;
@@ -16,7 +17,10 @@ logic.renderGroup = (req, res) => {
   let query = locator.length === 24 ? getQuery({ groupId : locator }) : getQuery({groupKey : locator})
   findGroup(query)
   .then( group => {
-    if ( group ) { res.render('group', {user : req.user, group : group }) }
+    if ( group ) {
+      req.user.currentGroup = group;
+      res.render('group', {user : req.user, group : group })
+     }
     else { res.render('error', {message : "No such group exists"} )}
   })
   .catch( (e) => {
@@ -33,6 +37,7 @@ logic.renderRoot = (req, res) => {
     findGroup(groupQuery)
     .then( groups => {
       if ( !Array.isArray(groups) ) { groups = [groups]; }
+      req.user.currentGroup = {};
       res.render('index', {user : req.user, groups : groups })
     })
     .catch( (e) => {
@@ -42,7 +47,6 @@ logic.renderRoot = (req, res) => {
     })
   }
 }
-
 
 //This getGroups differs from the Account model method in that it takes a list of groupIds or keys where the account model expects a user
 logic.getGroups = (req, res) => {
@@ -58,6 +62,7 @@ logic.getGroups = (req, res) => {
     res.send([])
   })
 };
+
 
 logic.getGroupMembers = (req, res) => {
   const query = getQuery(req.query);
@@ -75,7 +80,7 @@ logic.updateGroup = (req, res) => {
   const query = getQuery(req.body.groupQuery);
   isUserAdminOfGroup(query, req.user)
   .then( adminStatus => {
-    if ( !adminStatus.isAdmin ) { throw new Error('User is not authorized to update this group') }
+    if ( !adminStatus.isAdmin ) { throw new RequestError('User is not authorized to update this group', 1) }
     const group = adminStatus.group;
     if ( req.body.hasOwnProperty('visibility') ) {
       group.visibility = req.body.visibility;
@@ -108,12 +113,12 @@ logic.joinGroup = (req, res) => {
       group.members.push(req.user._id);
       return group.save();
     } else if ( group.visibility.toString() === 'private' ) {
-      throw new Error('user is trying to join non public group')
+      throw new RequestError('user is trying to join non public group')
     } else {
       //In this case the user is already part of the group, and so I want to break out of the chain
       res.send(group)
       sendOnError = false;
-      throw new Error('User is trying to join a group that they are already a part of')
+      throw new RequestError('User is trying to join a group that they are already a part of')
     }
   })
   .then( savedGroup => {
@@ -138,14 +143,14 @@ logic.addGroupMembers = (req, res) => {
   let group, userChecks, newGroupMembers;
   isUserAdminOfGroup(query, req.user)
   .then( adminStatus => {
-    if ( !adminStatus.isAdmin ) { throw new Error('User is not authorized to add members this group') }
+    if ( !adminStatus.isAdmin ) { throw new RequestError('User is not authorized to add members this group', 1) }
     group = adminStatus.group;
     userChecks = req.body.newMembers.map( m => helpers.checkUserExists(m) )
     newGroupMembers = uniq(group.members.concat(req.body.newMembers))
     return Promise.all(userChecks)
   })
   .then( usersExist => {
-    usersExist.forEach( c => { if ( c !== true ) { throw new Error('Cannot add nonexistant user to group') } })
+    usersExist.forEach( c => { if ( c !== true ) { throw new RequestError('Cannot add nonexistant user to group') } })
     group.members = newGroupMembers
     return group.save()
   })
@@ -167,7 +172,7 @@ logic.addGroupAdmins = (req, res) => {
   let group, userChecks, newAdmins;
   isUserAdminOfGroup(query, req.user)
   .then( adminStatus => {
-    if ( !adminStatus.isAdmin ) { throw new Error('User is not authorized to add admins this group') }
+    if ( !adminStatus.isAdmin ) { throw new RequestError('User is not authorized to add admins this group', 1) }
     group = adminStatus.group;
     userChecks = req.body.newAdmins.map( m => helpers.checkUserExists(m) )
     newAdmins = uniq(group.roles.admins.concat(req.body.newAdmins))
@@ -175,7 +180,7 @@ logic.addGroupAdmins = (req, res) => {
     return Promise.all(userChecks)
   })
   .then( usersExist => {
-    usersExist.forEach( c => { if ( c !== true ) { throw new Error('Cannot add nonexistant user to group admins') } })
+    usersExist.forEach( c => { if ( c !== true ) { throw new RequestError('Cannot add nonexistant user to group admins') } })
     group.roles.admins = newAdmins
     group.members = newMembers;
     return group.save()
@@ -197,7 +202,7 @@ logic.removeGroupAdmins = (req, res) => {
   let group, userChecks, removeAdmins;
   isUserAdminOfGroup(query, req.user)
   .then( adminStatus => {
-    if ( !adminStatus.isAdmin ) { throw new Error('User is not authorized to add admins this group') }
+    if ( !adminStatus.isAdmin ) { throw new RequestError('User is not authorized to add admins this group', 1) }
     group = adminStatus.group;
     group.roles.admins = group.roles.admins.filter( adminId => !req.body.removeAdmins.includes( adminId.toString() ) )
     return group.save()
@@ -245,7 +250,7 @@ logic.deleteGroup = (req, res) => {
   const groupQuery = getQuery(req.body);
   isUserAdminOfGroup(groupQuery, req.user)
   .then( adminStatus => {
-    if ( !adminStatus.isAdmin ) { throw new Error('User is not authorized to delete this group') }
+    if ( !adminStatus.isAdmin ) { throw new RequestError('User is not authorized to delete this group', 1) }
     Group.deleteOne(groupQuery)
     .exec()
     .then( _ => res.send({success : true}) )

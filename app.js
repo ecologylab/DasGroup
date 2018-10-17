@@ -14,6 +14,7 @@ const config = require('config')
 const redis = require('redis')
 const RedisStore = require('connect-redis')(session)
 const redisClient = redis.createClient(config.redis)
+
 app.use(morgan('dev'));
 if ( process.env.NODE_ENV === 'dev' ) {
   app.use( (req,res,next) => {
@@ -26,11 +27,6 @@ if ( process.env.NODE_ENV === 'dev' ) {
     next();
   })
 }
-// redis:
-//  {
-//      host: '192.168.122.155', //enter host used for redis server
-//      port: '6379', // port for redis server
-//  },
 app.use(cors())
 require('./passport.js')(passport);
 
@@ -48,12 +44,6 @@ app.use(session({
   saveUninitialized: false,
 }))
 
-app.get('/sessTest', (req,res) => {
-  redisClient.get(`sess:${req.session.id}`, (err, reply) => {
-    console.log("reply ", reply)
-    res.send(reply)
-  })
-})
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -70,6 +60,8 @@ app.use(passport.session() )
 
 app.use('/', require('./routing/root') );
 app.use('/a', require('./routing/api') );
+app.use('/t', require('./routing/test') );
+
 
 app.use( (req, res, next) => {
   let err = new Error('Not found');
