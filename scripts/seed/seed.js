@@ -24,8 +24,30 @@ const runSeed = (emptyFirst) => {
   .then( () => dropIndexes(Group) )
   .then( () => dropIndexes(Mache) )
   .then( () => seed() )
+  .then( () => setAaronsMaches() )
   .then( () => { console.log('Seed success!'); process.exit(0); })
   .catch( (e) => console.error('Error in seeding', e))
+}
+//This is because when I manually create the username avsphere account I populated
+//it with other peoples maches, I need to make sure these maches creator is then changed to support this
+const setAaronsMaches = () => {
+  let avspheresId = ''
+  const findMache = (macheId) => Mache.findById(macheId).exec()
+  return new Promise( (resolve, reject) => {
+    Account.findOne({ username : 'avsphere'}).exec()
+    .then( avsphere => {
+      avspheresId = avsphere._id;
+      return Promise.all( avsphere.maches.map( macheId => findMache(macheId)) )
+    })
+    .then( maches => {
+      return Promise.all(maches.map( m => {
+        m.creator = avspheresId
+        return m.save();
+      }) )
+    })
+    .then( updatedMaches => resolve(true) )
+    .catch( e => console.error('Something went wrong in setAaronsMaches', e) )
+  })
 }
 const clearCollection = (Model) => {
   return new Promise( (resolve, reject) => {

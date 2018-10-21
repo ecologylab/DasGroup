@@ -3,6 +3,8 @@ import $ from 'jquery';
 import helpers from '../helpers/helpers.js';
 import apiWrapper from '../api/apiWrapper.js'; //just for testing
 
+//storing for later use by testDeletion
+let createdGroup;
 
 const getRandomName = () => {
   function getRandomInt(max) {
@@ -20,18 +22,50 @@ const testGroupCreation = (userAndGroups) => {
   let randomMembers = groups[0].members;
   return new Promise( (resolve, reject) => {
     createGroup(getRandomName())
-    .then( newGroup => addGroupMembers(newGroup._id, randomMembers) )
+    .then( newGroup => {
+      createdGroup = newGroup;
+      return addGroupMembers(newGroup._id, randomMembers)
+    })
     .then( updatedGroup => addGroupAdmins(updatedGroup._id, randomMembers.slice(1,3) ))
-    .then( updatedGroup => {
+    .then( _ => {
       console.log("%cGroup Creation tests passed", "color: green");
-      console.log(updatedGroup)
-      resolve(updatedGroup);
+      console.log("CREATED GROUP", createdGroup)
+      resolve(createdGroup)
     })
     .catch(e => {
       console.error("Error running tests", e)
       reject(e);
     })
 
+  })
+}
+
+const leaveGroup = () => {
+  return new Promise( (resolve, reject) => {
+    apiWrapper.leaveGroup({ groupId : createdGroup._id })
+    .then( _ => {
+      console.log("%c Leave group test passed!", "color : blue" )
+      console.log("User has left")
+      resolve(true);
+    })
+    .catch( e => {
+      console.error("%cFAILED leave group", 'color : red', e)
+      reject(e);
+    })
+  })
+}
+
+const joinGroup = () => {
+  return new Promise( (resolve, reject) => {
+    apiWrapper.joinGroup({ groupId : createdGroup._id})
+    .then( _ => {
+      console.log("%c Join group test passed!", "color : blue" )
+      resolve(true);
+    })
+    .catch( e => {
+      console.error("%cFAILED join group", 'color : red', e)
+      reject(e);
+    })
   })
 }
 
@@ -84,8 +118,22 @@ const addGroupMembers = (groupId, newMembers) => {
   })
 }
 
+const testGroupDeletion = () => {
+  return new Promise( (resolve, reject) => {
+    apiWrapper.deleteGroup({ groupId : createdGroup._id})
+    .then( s => {
+      console.log("%c Test delete group passed", "color : green");
+      resolve(true)
+    })
+    .catch( e => {
+      console.error("%c Test delete group failed", "color : red")
+      reject(e)
+    })
+  })
+}
 
 
 
 
-module.exports = testGroupCreation;
+
+module.exports = { creation : testGroupCreation, deletion : testGroupDeletion };

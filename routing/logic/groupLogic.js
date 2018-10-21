@@ -15,7 +15,7 @@ const isUserAdminOfGroup = helpers.isUserAdminOfGroup;
 logic.renderGroup = (req, res) => {
   let locator = req.params.locator
   let query = locator.length === 24 ? getQuery({ groupId : locator }) : getQuery({groupKey : locator})
-  findGroup(query)
+  findGroup(query, { populate : { name : 'members', returnOnly : 'username' } })
   .then( group => {
     if ( group ) {
       req.user.currentGroup = group;
@@ -137,6 +137,29 @@ logic.joinGroup = (req, res) => {
   })
 }
 
+logic.leaveGroup = (req, res) => {
+  const query = getQuery(req.body);
+  findGroup(query)
+  .then( group => {
+    const groupIndexToRemove = group.members.indexOf(req.user._id);
+    const accountIndexToRemove = req.user.memberOf.indexOf(group._id);
+    const adminIndexToRemove = group.roles.admins.indexOf(req.user._id);
+    if ( groupIndexToRemove === -1 || accountIndexToRemove === -1) { throw new RequestError('User cannot leave group they are not a member of') }
+    if ( adminIndexToRemove !== -1 ) {
+       group.roles.admins.splice(adminIndexToRemove, 1);
+    }
+    group.members.splice(groupIndexToRemove, 1)
+    req.user.memberOf.splice(accountIndexToRemove, 1)
+    return Promise.all( [req.user.save(), group.save()] );
+  })
+  .then( updatedUserAndGroup => {
+    res.send({updatedUserAndGroup : updatedUserAndGroup})
+  })
+  .catch( e => {
+    logger.error('Error in leaveGroup %j %O %O', req.body, req.user, e)
+  })
+}
+
 //Strictly for testing req.body : { groupQuery : {}, newMembers : [userId]}
 logic.addGroupMembers = (req, res) => {
   const query = getQuery(req.body.groupQuery);
@@ -199,7 +222,7 @@ logic.addGroupAdmins = (req, res) => {
 
 logic.removeGroupAdmins = (req, res) => {
   const query = getQuery(req.body.groupQuery);
-  let group, userChecks, removeAdmins;
+  let group, removeAdmins;
   isUserAdminOfGroup(query, req.user)
   .then( adminStatus => {
     if ( !adminStatus.isAdmin ) { throw new RequestError('User is not authorized to add admins this group', 1) }
@@ -213,8 +236,24 @@ logic.removeGroupAdmins = (req, res) => {
     res.status(404);
     res.send({})
   })
+}
 
-
+logic.removeGroupMembers = (req, res) => {
+  const query = getQuery(req.body.groupQuery);
+  let group, removeUsers;
+  isUserAdminOfGroup(query, req.user)
+  .then( adminStatus => {
+    if ( !adminStatus.isAdmin ) { throw new RequestError('User is not authorized to remove users this group', 1) }
+    group = adminStatus.group;
+    group.members = group.members.filter( memberId => !req.body.removeUsers.includes( memberId.toString() ) )
+    return group.save()
+  })
+  .then( updatedGroup => res.send(updatedGroup))
+  .catch( e => {
+    logger.error('Error in removeGroupMembers %j %O %O', req.body, req.user, e)
+    res.status(404);
+    res.send({})
+  })
 }
 
 logic.createGroup = (req, res) => {
@@ -251,10 +290,9 @@ logic.deleteGroup = (req, res) => {
   isUserAdminOfGroup(groupQuery, req.user)
   .then( adminStatus => {
     if ( !adminStatus.isAdmin ) { throw new RequestError('User is not authorized to delete this group', 1) }
-    Group.deleteOne(groupQuery)
-    .exec()
-    .then( _ => res.send({success : true}) )
+    return adminStatus.group.pseudoRemove()
   })
+  .then( _ => res.send({success : true }))
   .catch( e => {
     logger.error('Error in deleteGroup body : %O user : %O error : %O', req.body, req.user, e)
     res.status(404);

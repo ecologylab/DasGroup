@@ -70,6 +70,20 @@ wrapper.joinGroup = (groupLocator) => {
   })
 }
 
+//either a singular key or id { groupKey : 12312 } or { groupId : 123123}
+wrapper.leaveGroup = (groupLocator) => {
+  return new Promise( (resolve, reject) => {
+    axios.post(`${BASEPATH}a/leaveGroup`, groupLocator)
+    .then( (response) => {
+      resolve(response.data)
+    })
+    .catch( e => {
+      console.error('Error leaving group', group, e)
+      reject(e);
+    })
+  })
+}
+
 wrapper.updateGroup = (modifiedGroupFields) => {
   return new Promise( (resolve, reject) => {
     axios.post(`${BASEPATH}a/updateGroup`, modifiedGroupFields)

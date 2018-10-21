@@ -18,6 +18,8 @@ router.get('/getGroups', isAuthenticated, groupLogic.getGroups);
 router.get('/getGroupMembers', isAuthenticated, groupLogic.getGroupMembers);
 
 router.post('/joinGroup', isAuthenticated, groupLogic.joinGroup);
+router.post('/leaveGroup', isAuthenticated, groupLogic.leaveGroup);
+
 router.post('/addGroupAdmins', isAuthenticated, groupLogic.addGroupAdmins);
 router.post('/addGroupMembers', isAuthenticated, helpers.isNotProd, groupLogic.addGroupMembers);
 
@@ -29,6 +31,6 @@ router.post('/createFolio', isAuthenticated, folioLogic.createFolio);
 router.post('/addMacheToFolio', isAuthenticated, folioLogic.addMacheToFolio);
 router.post('/removeMacheFromFolio', isAuthenticated, folioLogic.removeMacheFromFolio);
 router.post('/getFolios', isAuthenticated, folioLogic.getFolios)
-
+router.post('/deleteFolio', isAuthenticated, folioLogic.deleteFolio)
 
 module.exports = router;

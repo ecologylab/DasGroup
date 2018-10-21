@@ -1,10 +1,17 @@
 import $ from 'jquery';
 import helpers from './helpers/helpers.js';
-import testGroupCreation from './tests/testGroupCreation.js';
-import testFolioCreation from './tests/testFolioCreation.js';
+import testGroupLifeCycle from './tests/testGroupLifeCycle.js';
+import testFolioLifeCycle from './tests/testFolioLifeCycle.js';
 import testRetry from './tests/testRetry.js';
 const test = {};
 
+const delay = (n) => {
+  return new Promise( (resolve, reject) => {
+    setTimeout( () => {
+      resolve(true)
+    }, n)
+  })
+}
 
 let user = {},
     groups = {},
@@ -28,17 +35,19 @@ test.init = () => {
 
 test.tests = (userAndGroups) => {
   return new Promise( (resolve, reject) => {
-    console.log("Running tests!")
+    console.log("%cRunning tests!", "color : purple")
     testRetry()
     .then( s => {
-      console.log("Test random passed!")
+      console.log("%cTest rety passed!", "color : green")
     })
     .catch( e => {
-      console.log("Testing random failed: ", e)
+      console.log("%cTesting random failed: ", "color : red", e)
       reject(e);
     })
-    testGroupCreation(userAndGroups)
-    .then( group => testFolioCreation(group) )
+    testGroupLifeCycle.creation(userAndGroups)
+    .then( group => testFolioLifeCycle(group) )
+    .then( _ => testGroupLifeCycle.deletion() )
+    .then( _ => { console.log('%c Lifecycle tests passed!', ' color : green '); resolve(true); })
     .catch( e => {
       console.log("Testing model lifecycles failed: ", e)
       reject(e);

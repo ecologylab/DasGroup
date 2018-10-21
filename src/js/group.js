@@ -114,10 +114,10 @@ groupLogic.init = () => {
     .then( s => {
       return _pre_setRenderChain()
     })
-    .then( s => {
-      console.log("render chain " , renderChain)
-      renderChain.forEach( renderFunc => renderFunc() )
-    })
+    // .then( s => {
+    //   console.log("render chain " , renderChain)
+    //   renderChain.forEach( renderFunc => renderFunc() )
+    // })
     .then( _ => { return { user : state.user, group : state.group } })
     .catch( e => {
       console.error("Error in group init",e )

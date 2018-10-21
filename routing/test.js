@@ -13,7 +13,7 @@ const getRandomInt = (max) => Math.floor(Math.random() * Math.floor(max))
 
 
 router.post('/testRetry', (req, res) => {
-  if ( getRandomInt(15) !== 14 ) {
+  if ( getRandomInt(3) !== 2 ) {
     res.status(202);
     res.send({})
 

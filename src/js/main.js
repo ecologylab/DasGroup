@@ -21,3 +21,8 @@ if ( window.location.pathname.includes('test') && NODE_ENV == 'dev' ) {
   .then( status => console.log(status) )
   .catch( e => console.error('Error in index.init', e) )
 }
+
+$('a').on('click', function (e) {
+  e.preventDefault()
+  $(this).tab('show')
+})

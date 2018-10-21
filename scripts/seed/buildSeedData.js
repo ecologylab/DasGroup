@@ -40,9 +40,8 @@ const pullAccounts = () => {
           machesReferenced = machesReferenced.concat(d.maches)
           d.memberOf = [group2Id];
           group2Members.push(d._id);
-        } else if ( aaronsMaches.length < 5 && d.maches.length > 1 ) {
+        } else if ( aaronsMaches.length < 8 && d.maches.length > 1 ) {
           let m = d.maches[0];
-          m.creator = aaronsId;
           machesReferenced.push(m);
           aaronsMaches.push(m)
         }

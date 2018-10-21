@@ -49,12 +49,25 @@ wrapper.removeMacheFromFolio = (folioQuery, macheQuery) => {
   const requestParams = { folioQuery : folioQuery, macheQuery : macheQuery };
   let reqFn = axios.post.bind(null, requestUrl,  requestParams);
   return new Promise( (resolve, reject) => {
-    retry(reqFn, 10)
+    retry(reqFn, 5)
     .then( (response) => {
       resolve(response.data)
     })
     .catch( e => {
       console.error('Error removeMacheFromFolio', folioQuery, e)
+      reject(e);
+    })
+  })
+}
+
+wrapper.deleteFolio = (folioQuery) => {
+  return new Promise( (resolve, reject) => {
+    axios.post(`${BASEPATH}a/deleteFolio`, folioQuery)
+    .then( (response) => {
+      resolve(response.data)
+    })
+    .catch( e => {
+      console.error('Error addMacheToFolio', folioQuery, e)
       reject(e);
     })
   })

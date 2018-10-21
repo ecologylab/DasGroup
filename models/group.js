@@ -1,24 +1,25 @@
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Schema.Types.ObjectId;
+const Account = require('./account')
 const shortId = require('shortid')
 const logger = require('../utils/logger')
-const groupVisibilities = ['public', 'private'] //private means invite only
+const groupVisibilities = ['public', 'private', 'removed'] //private means invite only
 const groupSchema = mongoose.Schema({
   creator: {
     type: ObjectId,
     required : true,
-    ref : 'account'
+    ref : 'Account'
   },
   members : [{
     type: ObjectId,
     required : false,
-    ref : 'account'
+    ref : 'Account'
   }],
   roles : {
     admins : [{
       type: ObjectId,
       required : true,
-      ref : 'account'
+      ref : 'Account'
     }]
   },
   visibility: {
@@ -64,10 +65,20 @@ groupSchema.pre('save', function(next) {
   this.last_modified = new Date();
   next();
 });
-
+//Since we are pseudoRemoving this should not be called
 groupSchema.post('remove', function(deletedGroup, next) {
+  logger.notice('A remove was called on a group')
   const members = deletedGroup.members;
-  logger.notice("Deleting a group, should remove groupId from all members who are part of")
+  const deletedGroupId = deletedGroup._id;
+  Account.find({ _id : { $in : members } }).exec()
+  .then( members => {
+    members.forEach( m => {
+      const indexToRemove = m.memberOf.indexOf(deletedGroupId);
+      m.memberOf.splice(indexToRemove,1)
+      m.save();
+    })
+  })
+  .catch( e => logger.error("Error in groupSchema post remove %O", e))
   next();
 });
 
@@ -87,6 +98,11 @@ groupSchema.methods.getGroupMembers = function(AccountDependency) {
     })
   })
 }
+groupSchema.methods.pseudoRemove = function() {
+  this.visibility = 'removed';
+  return this.save();
+}
+
 
 
 module.exports = mongoose.model('Group', groupSchema);

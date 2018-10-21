@@ -27,7 +27,6 @@ logic.addMacheToFolio = (req, res) => {
     //(models/mache.js) => user : [{ user : id, role : role, roleNum : int }]
     const usersWhoCanEdit =  Array.from(mache.users.filter( u => u.roleNum == 1).map( u => u.user.toString() ) );
     usersWhoCanEdit.push(mache.creator.toString() )
-    usersWhoCanEdit.push(req.user._id.toString() )
     if ( !memberOf.includes(folio.belongsTo.toString() ) ) { throw new RequestError('User cannot add maches to folio if they dont belong to group', 1) }
     if ( !usersWhoCanEdit.includes(req.user._id.toString() ) ) { throw new RequestError('User cannot add a mache they are not an editor of', 1) }
     if ( folio.state == 'closed' ) { throw new RequestError('User cannot add mache to closed folio') }
@@ -107,18 +106,18 @@ logic.removeMacheFromFolio = (req, res) => {
   })
   .then( savedMache => res.send(updatedFolio) )
   .catch( e => {
-    logger.error('Error in removeMacheFromFolio body : %O user : %O error : %O', req.body, req.user, e)
     if ( e.name === 'VersionError' ) {
       res.status(202);
       res.send(req.body)
     }
-    if ( sendOnError ) {
+    else if ( sendOnError ) {
+      logger.error('Error in removeMacheFromFolio body : %O user : %O error : %O', req.body, req.user, e)
       res.status(400);
       res.send({})
     }
   })
 }
-// folioQuery : {}
+// Not protected by userRights folioQuery : {}
 logic.getFolios = (req, res) => {
   const folioQuery = getQuery(req.body.folioQuery);
   findFolio(folioQuery)
@@ -133,8 +132,6 @@ logic.getFolios = (req, res) => {
   })
 };
 
-
-// logic.getActiveFolios
 
 
 //req.body = { groupQuery : { groupId/key : ... }, folioData : {name,description} }
@@ -171,20 +168,19 @@ logic.createFolio = (req, res) => {
 
 logic.deleteFolio = (req, res) => {
   const folioQuery = getQuery(req.body)
-  let folioId = '';
+  let folio;
   Folio.findOne(folioQuery)
   .exec()
-  .then( folio => {
-    folioId = folio._id;
-    return getQuery({ _id : folio.belongsTo });
+  .then( folioDoc => {
+    folio = folioDoc;
+    return getQuery({ groupId : folio.belongsTo });
   })
   .then( groupQuery => isUserAdminOfGroup(groupQuery, req.user) )
   .then( adminStatus => {
     if ( !adminStatus.isAdmin ) { throw new Error('User is not authorized to delete this folio') }
-    Folio.deleteOne(folioQuery)
-    .exec()
-    .then( _ => res.send({success : true}))
+    return folio.pseudoRemove()
   })
+  .then( _ => res.send({success : true}))
   .catch( e => {
     logger.error('Error in deleteFolio body : %O user : %O error : %O', req.body, req.user, e)
     res.status(400);

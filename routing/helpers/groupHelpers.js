@@ -2,9 +2,14 @@ const logger = require('./logger')
 const Group = require('../../models/group')
 const groupHelpers = {}
 
-const findGroup = (query) => {
+const findGroup = (query, options) => {
   return new Promise( (resolve, reject) => {
-    Group.find(query).exec()
+    query.visibility = { $ne : 'removed' }
+    let queryFn = Group.find(query);
+    if ( options && options.hasOwnProperty('populate') ) {
+      queryFn = queryFn.populate(options.populate.name, options.populate.returnOnly);
+    }
+    queryFn.exec()
     .then( (group) => {
       if ( group.length === 1 ) { resolve(group[0]) }
       else if ( group.length < 1 ) { reject('No group found')}

@@ -25,8 +25,8 @@ const getQuery = (request) => {
     query = { key : request.groupKey }
   } else if ( request.groupKeys ) {
     query = Array.isArray(request.groupKeys)
-    ? query = { _id : { $in : request.groupKeys } }
-    : query = { _id : { $in : request.groupKeys.split(',') } }
+    ? query = { key : { $in : request.groupKeys } }
+    : query = { key : { $in : request.groupKeys.split(',') } }
   }
   //possible folio queries
   else if ( request.folioId ) {

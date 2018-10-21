@@ -3,6 +3,7 @@ const Folio = require('../../models/folio')
 const folioHelpers = {}
 
 const findFolio = (query) => {
+  query.visibility = { $ne : 'removed' }
   return new Promise( (resolve, reject) => {
     Folio.find(query).exec()
     .then( (folio) => {
