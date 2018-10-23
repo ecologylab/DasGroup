@@ -124,7 +124,9 @@ const displayFolio = (folio) => {
   const folioVisibility = $('#folioVisibility');
   const folioSubmissions = $('#folioSubmissions');
   const folioNotYetSubmitted = $('#folioNotYetSubmitted');
-
+  folioSubmissions.html('')
+  folioNotYetSubmitted.html('')
+  
   folioName.text(`Name : ${folio.name}`);
   folioDescription.text(`Description : ${folio.description}`);
   folioState.text(`State : ${folio.state}`);
