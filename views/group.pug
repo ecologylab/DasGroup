@@ -6,8 +6,8 @@ block content
   .wrapper
     .group_heading_wrapper
       .group_heading
-        h1 Group title
-        h5 This is a description of this group for all those wondering
+        h1 #{group.name}
+        h5 #{group.description}
     hr
     .container
       .row 
@@ -16,10 +16,10 @@ block content
             ul.nav.nav-tabs
               li.nav-item
                 a.nav-link.active(href="#")
-                  | Active
+                  | Folios
               li.nav-item
                 a.nav-link(href="#")
-                  | Not
+                  | Analytics
           .row
             .card-deck
               each folio in group.folios
@@ -35,7 +35,7 @@ block content
           ul.list-group
             each admin in group.roles.admins
               li.list-group-item.d-flex.justify-content-between.align-items-center
-                | admin
+                | #{admin.username}
                 span.badge.badge-primary.badge-pill
                   <i class="fas fa-question"></i>
           hr

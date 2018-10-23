@@ -46,7 +46,7 @@ test.tests = (userAndGroups) => {
     })
     testGroupLifeCycle.creation(userAndGroups)
     .then( group => testFolioLifeCycle(group) )
-    .then( _ => testGroupLifeCycle.deletion() )
+    //.then( _ => testGroupLifeCycle.deletion() )
     .then( _ => { console.log('%c Lifecycle tests passed!', ' color : green '); resolve(true); })
     .catch( e => {
       console.log("Testing model lifecycles failed: ", e)

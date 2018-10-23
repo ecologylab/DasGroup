@@ -59,6 +59,7 @@ app.use(passport.initialize() );
 app.use(passport.session() )
 
 app.use('/', require('./routing/root') );
+app.use('/admin', require('./routing/admin') );
 app.use('/a', require('./routing/api') );
 app.use('/t', require('./routing/test') );
 

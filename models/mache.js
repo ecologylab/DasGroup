@@ -4,7 +4,7 @@ const shortId = require('shortid');
 const macheSchema = mongoose.Schema({
   creator : {
     type: ObjectId,
-    ref: 'account'
+    ref: 'Account'
   },
   current_users : [{
     type: mongoose.Schema.Types.Mixed,
@@ -12,13 +12,13 @@ const macheSchema = mongoose.Schema({
   memberOfFolios : [{
     type: ObjectId,
     required : false,
-    ref : 'folio'
+    ref : 'Folio'
   }],
   users : [{
     user : {
       type: ObjectId,
       required: false,
-      ref: 'account'
+      ref: 'Account'
     },
     role : {
       type: ObjectId,

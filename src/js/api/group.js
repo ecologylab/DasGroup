@@ -27,6 +27,19 @@ wrapper.getGroupMembers = (key, value) => {
     })
   })
 }
+
+wrapper.getGroupAndPopulate = (groupLocator) => {
+  return new Promise( (resolve, reject) => {
+    axios.post(`${BASEPATH}a/getGroupAndPopulate`, groupLocator)
+    .then( (response) => {
+      resolve(response.data)
+    })
+    .catch( e => {
+      console.error('Error getting and populating group', groupLocator, e)
+      reject(e);
+    })
+  })
+}
 wrapper.createGroup = (group) => {
   if ( !group.hasOwnProperty('members') ) { group.members = [] }
   if ( !group.hasOwnProperty('adminIds') ) { group.adminIds = [] }
@@ -75,7 +88,6 @@ wrapper.joinGroup = (groupLocator) => {
 wrapper.leaveGroup = (groupQuery, userQuery) => {
   const params = { groupQuery : groupQuery };
   if  ( userQuery ) { params.userQuery = userQuery; }
-  console.log("Params: ", params)
   return new Promise( (resolve, reject) => {
     axios.post(`${BASEPATH}a/leaveGroup`, params)
     .then( (response) => {

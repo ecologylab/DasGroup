@@ -10,7 +10,7 @@ const folioSchema = mongoose.Schema({
   creator : {
     type: ObjectId,
     required: true,
-    ref: 'account'
+    ref: 'Account'
   },
   belongsTo: {
     type: ObjectId,
@@ -37,12 +37,12 @@ const folioSchema = mongoose.Schema({
     mache : {
       type: ObjectId,
       required : false,
-      ref : 'mache'
+      ref : 'Mache'
     },
     submitter : {
       type: ObjectId,
       required : false,
-      ref : 'account'
+      ref : 'Account'
     },
     date_submitted : {
       type: Date,

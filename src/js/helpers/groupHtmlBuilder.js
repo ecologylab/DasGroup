@@ -14,7 +14,7 @@ buttonBuilder.getMembers = () => {
     return (el) => {
       el.preventDefault;
       apiWrapper.getGroupMembers('groupKey', group.key)
-      .then( members => console.log(members) )
+      .then(console.log)
     }
   }
   return { html : html, handler : createHandle }

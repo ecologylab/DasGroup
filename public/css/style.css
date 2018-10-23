@@ -1,0 +1,26 @@
+html,
+body {
+}
+
+.wrapper {
+  margin-top: 5%;
+}
+
+.group_heading_wrapper {
+    border-style: solid;
+    border-color: red;
+}
+
+
+.group_heading {
+  text-align: center;
+}
+
+.createButtons {
+    width: 800px;
+}
+
+.groupFields {
+  max-width: 50%;
+  overflow-x: scroll;
+}

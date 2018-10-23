@@ -4,9 +4,7 @@ let basePath = '/';
 module.exports = env => {
   if ( env.NODE_ENV != 'dev' ) { basePath = '/g/'; }
   return {
-      entry: {
-      path: path.join(__dirname, 'src/js/main.js'),
-    },
+    entry: [path.join(__dirname, 'node_modules/babel-polyfill'), path.join(__dirname, 'src/js/main.js')],
     mode: env.NODE_ENV === 'production' ? 'production' : 'development',
     output: {
       path: path.resolve(__dirname, 'public/js'),

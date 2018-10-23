@@ -16,6 +16,7 @@ router.get('/getOpenedFolios', isAuthenticated, accountLogic.getOpenedFolios)
 /* group */
 router.get('/getGroups', isAuthenticated, groupLogic.getGroups);
 router.get('/getGroupMembers', isAuthenticated, groupLogic.getGroupMembers);
+router.post('/getGroupAndPopulate', isAuthenticated, groupLogic.getGroupAndPopulate);
 
 router.post('/joinGroup', isAuthenticated, groupLogic.joinGroup);
 router.post('/leaveGroup', isAuthenticated, groupLogic.leaveGroup);

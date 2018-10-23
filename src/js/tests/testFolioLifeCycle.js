@@ -42,9 +42,9 @@ const runTests = (group) => {
       return folios.filter( f => f.state == 'opened' && f.visibility == 'public')[0]
     })
     .then( chosenFolio => addMachesToFolio(group, chosenFolio) )
-    .then( updatedFolio => removeMacheFromFolio(group, updatedFolio) )
+    //.then( updatedFolio => removeMacheFromFolio(group, updatedFolio) )
     .then(delay(1000))
-    .then( _ => deleteFolios(createdFolios))
+    //.then( _ => deleteFolios(createdFolios))
     .then( _ => {
       console.log("%c Testing Folio lifecycle complete", "color : green")
       resolve(true)

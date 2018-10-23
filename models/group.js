@@ -44,7 +44,7 @@ const groupSchema = mongoose.Schema({
   folios : [{
     type: ObjectId,
     required : false,
-    ref : 'folio'
+    ref : 'Folio'
   }],
   created_on : {
     type: Date,

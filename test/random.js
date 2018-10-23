@@ -37,11 +37,9 @@ const randomId = mongoose.Types.ObjectId();
 //   })
 // }
 let group = {}
-Group.findOne({ 'key' : 'abc' }).exec()
+Group.findOne({ 'key' : '_YB6qwMv0' })
+.populate({ path : 'folios', populate : { path : 'macheSubmissions.mache' } })
+.exec()
 .then( g => {
-  group = g;
-  return Account.findOne({username : 'avsphere'});
-})
-.then( u => {
-  group.isUserAdmin(u)
+  console.log(g.folios[0].macheSubmissions);
 })

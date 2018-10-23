@@ -2,7 +2,8 @@ import $ from 'jquery';
 import helpers from './helpers/helpers.js';
 import apiWrapper from './api/apiWrapper.js'
 import viewHelper from './helpers/groupViewHelper.js'
-const groupLogic = {};
+const uniq = (a) => Array.from(new Set(a));
+const adminLogic = {};
 const components = [];
 
 const state = {
@@ -15,7 +16,6 @@ const state = {
       isMember : false
     }
 const renderChain = []
-
 const renderAdmin = () => {
   if ( state.isAdmin ) {
     viewHelper.renderGetMembersButton('#buttonArea', state.group);
@@ -25,7 +25,7 @@ const renderAdmin = () => {
 }
 
 const renderPage = () => {
-  console.log("rendering page!");
+  //do stuff
 }
 
 const renderInvite = () => {
@@ -65,9 +65,7 @@ const renderInvite = () => {
   console.log("rendering invite!")
 }
 
-groupLogic.getState = () => {
-  return state;
-}
+
 
 
 
@@ -76,39 +74,36 @@ const _pre_collect = () => {
   const collection = {}
   const promises = []
   return new Promise( (resolve, reject) => {
+    const populates = [
+      { path : 'members', select : '-hash -salt'},
+      { path : 'folios' , populate : { path : 'macheSubmissions.mache' } }
+    ]
     promises.push( apiWrapper.getUser('userId', state.userId) )
-    promises.push( apiWrapper.getUser('userId', state.userId) )
-
+    promises.push( apiWrapper.getGroupAndPopulate({ groupQuery : { groupId : state.groupId}, populates : populates }) )
+    Promise.all(promises)
+    .then( ([user, group]) => {
+      collection.user = user;
+      collection.group = group;
+      resolve(collection);
+    })
+    .catch( e => {
+      console.error("Error in _pre_collect ", e)
+    })
   })
 }
 
-const _pre_initState = () => {
-  return new Promise( (resolve, reject) => {
-    const collect = () => {
-      const promises = []
-      promises.push( apiWrapper.getUser('userId', state.userId) )
-    }
-    apiWrapper.getUser('userId', state.userId)
-    .then( u => {
-      console.log(state);
-      state.user = u;
-      if ( u.memberOf.includes(state.groupId) ) { state.isMember = true; }
-      if ( state.isMember === false && state.groupVisiblity === 'private' ) {
-        window.location.href = '/';
-      }
-      return apiWrapper.getGroups('groupId', state.groupId);
-    })
-    .then( group => {
-      group = group[0]
-      console.log(group)
-      state.group = group;
-      if ( group.roles.admins.includes(state.userId) ) {
-        state.isAdmin = true;
-      }
-      resolve(true);
-    })
-    .catch( e => console.error('Error in _pre_initState ', e))
-  })
+const _pre_initState = async () => {
+  const collection = await _pre_collect('user','group')
+  state.user = collection.user;
+  if ( collection.user.memberOf.includes(state.groupId) ) { state.isMember = true; }
+  if ( state.isMember === false && state.groupVisiblity === 'private' ) {
+    window.location.href = '/';
+  }
+  state.group = collection.group;
+  if ( collection.group.roles.admins.includes(state.userId) ) {
+    state.isAdmin = true;
+  }
+  return true;
 }
 
 const _pre_setRenderChain = () => {
@@ -121,22 +116,76 @@ const _pre_setRenderChain = () => {
   return true;
 }
 
+//obviously this is just for a proof of concept
+const displayFolio = (folio) => {
+  const folioName = $('#folioName');
+  const folioDescription = $('#folioDescription');
+  const folioState = $('#folioState');
+  const folioVisibility = $('#folioVisibility');
+  const folioSubmissions = $('#folioSubmissions');
+  const folioNotYetSubmitted = $('#folioNotYetSubmitted');
+
+  folioName.text(`Name : ${folio.name}`);
+  folioDescription.text(`Description : ${folio.description}`);
+  folioState.text(`State : ${folio.state}`);
+  folioVisibility.text(`Visiblity : ${folio.visibility}`);
+
+  folio.macheSubmissions.forEach( ({ mache }) => {
+    let html = `<li class="list-group-item"> <a href="https://livestaging.ecologylab.net/e/${mache.hash_key}">${mache.title}</a></li>`
+    folioSubmissions.append(html);
+  })
+
+  let membersWhoHaveSubmitted = uniq(folio.macheSubmissions.map( ({ mache }) => {
+    let members = mache.users.filter(user => user.roleNum == 1)
+    members.push(mache.creator);
+    return members;
+  }).flat() )
+
+  let notSubmittedMembers = state.group.members.filter( member => !membersWhoHaveSubmitted.includes(member._id) )
+
+  notSubmittedMembers.forEach( ({ username }) => {
+    let html = `<li class="list-group-item"> <a href="#">${username}</a></li>`
+    folioNotYetSubmitted.append(html);
+  })
+
+
+}
+
 const _pre_setHandlers = () => {
+
+  const setCardHandlers = () => {
+    $('#folioCards').find('.card').toArray()
+    .forEach( c => {
+      $(c).on('click', function(el) {
+        const folioId = $(this).attr('data-folio_id')
+        const folio = state.group.folios.find( f => f._id === folioId)
+        displayFolio(folio);
+
+        console.log(folio)
+      })
+    })
+  }
+  setCardHandlers()
+
+
   $('a').on('click', function (e) {
     e.preventDefault()
     $(this).tab('show')
   })
 }
 
-groupLogic.init = () => {
+
+
+
+adminLogic.init = () => {
   return new Promise( (resolve, reject) => {
     _pre_initState()
     .then( s => {
       _pre_setHandlers();
       return _pre_setRenderChain()
     })
-    .then( s => {
-      renderChain.forEach( renderFunc => renderFunc() )
+    .then( _ => {
+      renderChain.forEach( renderFn => renderFn() )
     })
     .then( _ => { return { user : state.user, group : state.group } })
     .catch( e => {
@@ -149,4 +198,4 @@ groupLogic.init = () => {
 
 
 
-module.exports = groupLogic;
+module.exports = adminLogic;

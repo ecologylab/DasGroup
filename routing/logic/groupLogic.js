@@ -18,11 +18,13 @@ logic.renderGroup = async (req, res) => {
     const collect = () => {
       const collection = {};
       return new Promise( (resolve, reject) => {
-        Group.find(query)
+        Group.findOne(query)
         .populate('members', 'username')
+        .populate('roles.admins', 'username')
+        .populate('folios', 'name state visibility')
         .exec()
         .then( group => {
-          collection.group = group[0];
+          collection.group = group;
           resolve(collection)
         })
         .catch( e => {
@@ -51,10 +53,12 @@ logic.renderGroup = async (req, res) => {
 
     const collection = await collect('group');
     const validated = await validate(collection);
-    const group = collection.group;
-
-    req.user.currentGroup = group;
-    res.render('group', {user : req.user, group : group })
+    const renderData = {
+      user :  req.user,
+      group : collection.group,
+    }
+    req.user.currentGroup = collection.group;
+    res.render('group', renderData)
   } catch ( err ) {
     logger.error('Error in renderGroup %j %O', req.query, err)
     res.status(404);
@@ -152,6 +156,56 @@ logic.getGroups = async (req, res) => {
   }
 };
 
+logic.getGroupAndPopulate = async (req, res) => {
+  try {
+    const groupQuery = getQuery(req.body.groupQuery);
+    const populates = req.body.populates;
+    const collect = () => {
+      const collection = {};
+      return new Promise( (resolve, reject) => {
+        let queryFn = Group.findOne(groupQuery)
+        populates.forEach( populateQuery => {
+          // if ( !populateQuery.hasOwnProperty('select') ) { populateQuery.select = ''; }
+          queryFn = queryFn.populate(populateQuery)
+        })
+        queryFn.exec()
+        .then( group => {
+          collection.group = group;
+          resolve(collection)
+        })
+        .catch( e => {
+          logger.error("getGroupAndPopulate collect error")
+          reject(e);
+        })
+      })
+    }
+    const validate = (collection) => {
+      return new Promise( (resolve, reject) => {
+        const groupExists = () => {
+          let successStatus = true;
+          if ( !collection.group ) {
+            successStatus = false;
+          }
+          return successStatus;
+        }
+        if ( groupExists() ) {
+          resolve(true);
+        } else {
+          logger.error("getGroupAndPopulate validate error")
+          reject('validateError - members do not exist')
+        }
+      })
+    }
+
+    const collection = await collect('group');
+    const validated = await validate(collection);
+    res.send(collection.group);
+  } catch ( err ) {
+    logger.error('Error in getGroupAndPopulate %j %O', req.query, err)
+    res.status(404);
+    res.send([])
+  }
+}
 
 
 logic.getGroupMembers = async (req, res) => {
@@ -161,7 +215,7 @@ logic.getGroupMembers = async (req, res) => {
       const collection = {};
       return new Promise( (resolve, reject) => {
         Group.find(query)
-        .populate({ path : 'members', select : '-hash -salt -google -scholar_explorer' })
+        .populate({ path : 'members', select : '-hash -salt -google -scholar_explore -password' })
         .exec()
         .then( groups => {
           if ( groups.length > 1 ) {
