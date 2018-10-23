@@ -71,14 +71,44 @@ wrapper.joinGroup = (groupLocator) => {
 }
 
 //either a singular key or id { groupKey : 12312 } or { groupId : 123123}
-wrapper.leaveGroup = (groupLocator) => {
+//IMPORTANT! if a userQuery is not supplied this removes the acting user from the group
+wrapper.leaveGroup = (groupQuery, userQuery) => {
+  const params = { groupQuery : groupQuery };
+  if  ( userQuery ) { params.userQuery = userQuery; }
+  console.log("Params: ", params)
   return new Promise( (resolve, reject) => {
-    axios.post(`${BASEPATH}a/leaveGroup`, groupLocator)
+    axios.post(`${BASEPATH}a/leaveGroup`, params)
     .then( (response) => {
       resolve(response.data)
     })
     .catch( e => {
-      console.error('Error leaving group', group, e)
+      console.error('Error leaving group', groupQuery, userQuery, e)
+      reject(e);
+    })
+  })
+}
+
+wrapper.promoteToAdmin = (groupQuery, userQuery) => {
+  return new Promise( (resolve, reject) => {
+    axios.post(`${BASEPATH}a/promoteToAdmin`, {groupQuery : groupQuery, userQuery : userQuery})
+    .then( (response) => {
+      resolve(response.data)
+    })
+    .catch( e => {
+      console.error('Error promoting user to admin', groupQuery, userQuery, e)
+      reject(e);
+    })
+  })
+}
+
+wrapper.demoteAdmin = (groupQuery, userQuery) => {
+  return new Promise( (resolve, reject) => {
+    axios.post(`${BASEPATH}a/demoteAdmin`, {groupQuery : groupQuery, userQuery : userQuery})
+    .then( (response) => {
+      resolve(response.data)
+    })
+    .catch( e => {
+      console.error('Error demoting user to admin', groupQuery, userQuery, e)
       reject(e);
     })
   })

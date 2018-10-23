@@ -5,83 +5,264 @@ const helpers = require('../helpers/helpers')
 const RequestError = require('../../utils/errors/RequestError')
 const logic = {};
 
-const uniq = helpers.uniq;
+const uniqId = helpers.uniqId;
 const getQuery = helpers.getQuery;
 const findGroup = helpers.findGroup;
 const isUserAdminOfGroup = helpers.isUserAdminOfGroup;
 
 
 
-logic.renderGroup = (req, res) => {
-  let locator = req.params.locator
-  let query = locator.length === 24 ? getQuery({ groupId : locator }) : getQuery({groupKey : locator})
-  findGroup(query, { populate : { name : 'members', returnOnly : 'username' } })
-  .then( group => {
-    if ( group ) {
-      req.user.currentGroup = group;
-      res.render('group', {user : req.user, group : group })
-     }
-    else { res.render('error', {message : "No such group exists"} )}
-  })
-  .catch( (e) => {
-    logger.error('Error in renderGroup %j %O', req.query, e)
+logic.renderGroup = async (req, res) => {
+  try {
+    const query = getQuery({groupKey : req.params.key})
+    const collect = () => {
+      const collection = {};
+      return new Promise( (resolve, reject) => {
+        Group.find(query)
+        .populate('members', 'username')
+        .exec()
+        .then( group => {
+          collection.group = group[0];
+          resolve(collection)
+        })
+        .catch( e => {
+          logger.error("renderGroup collect error")
+          reject(e);
+        })
+      })
+    }
+    const validate = (collection) => {
+      return new Promise( (resolve, reject) => {
+        const groupExists = () => {
+          let successStatus = true;
+          if ( !collection.group ) {
+            successStatus = false;
+          }
+          return successStatus;
+        }
+        if ( groupExists() ) {
+          resolve(true);
+        } else {
+          logger.error("renderGroup validate error")
+          reject('validateError - group does not exist')
+        }
+      })
+    }
+
+    const collection = await collect('group');
+    const validated = await validate(collection);
+    const group = collection.group;
+
+    req.user.currentGroup = group;
+    res.render('group', {user : req.user, group : group })
+  } catch ( err ) {
+    logger.error('Error in renderGroup %j %O', req.query, err)
     res.status(404);
     res.send([])
-  })
-}
-
-logic.renderRoot = (req, res) => {
-  if ( req.user.memberOf.length < 1 ) { res.render('index', {user : req.user, groups : [] }) }
-  else {
-    let groupQuery = getQuery({ groupIds : req.user.memberOf });
-    findGroup(groupQuery)
-    .then( groups => {
-      if ( !Array.isArray(groups) ) { groups = [groups]; }
-      req.user.currentGroup = {};
-      res.render('index', {user : req.user, groups : groups })
-    })
-    .catch( (e) => {
-      logger.error('Error in renderRoot %j %O', req.query, e)
-      res.status(404);
-      res.send([])
-    })
   }
 }
 
-//This getGroups differs from the Account model method in that it takes a list of groupIds or keys where the account model expects a user
-logic.getGroups = (req, res) => {
-  const query = getQuery(req.query);
-  findGroup(query)
-  .then( groups => {
-    if ( Array.isArray(groups) ) { res.send(groups); }
-    else { res.send([groups]) }
-  })
-  .catch( (e) => {
+logic.renderRoot = async (req, res) => {
+  if ( req.user.memberOf.length < 1 ) { res.render('index', {user : req.user, groups : [] }) }
+  try {
+    const query = getQuery({ groupIds : req.user.memberOf });
+    const collect = () => {
+      const collection = {};
+      return new Promise( (resolve, reject) => {
+        Group.find(query)
+        .exec()
+        .then( groups => {
+          collection.groups = groups;
+          resolve(collection)
+        })
+        .catch( e => {
+          logger.error("renderRoot collect error")
+          reject(e);
+        })
+      })
+    }
+    const validate = (collection) => {
+      return new Promise( (resolve, reject) => {
+        const groupsExist = () => {
+          let successStatus = true;
+          if ( !collection.groups ) {
+            successStatus = false;
+          }
+          return successStatus;
+        }
+        if ( groupsExist() ) {
+          resolve(true);
+        } else {
+          logger.error("renderRoot validate error")
+          reject('validateError - groups does not exist')
+        }
+      })
+    }
+    const collection = await collect('groups');
+    const validated = await validate(collection);
+    const groups = collection.groups;
+
+    req.user.currentGroup = {};
+    res.render('index', {user : req.user, groups : groups })
+
+  } catch ( err ) {
+    logger.error('Error in renderRoot %j %O', req.query, err)
+    res.status(404);
+    res.send([])
+  }
+}
+
+
+//first refactored
+logic.getGroups = async (req, res) => {
+  try {
+    const query = getQuery(req.query);
+    const collect = () => {
+      const promises = [];
+      const collection = {}
+      return new Promise( (resolve, reject) => {
+        promises.push( Group.find(query).exec() );
+        Promise.all(promises)
+        .then( ([ groups ]) => {
+          collection.groups = groups;
+          resolve(collection);
+        })
+        .catch(e => {
+          console.log("In the catch error block and rejecting")
+          reject(e);
+        })
+      })
+    }
+    const validate = (collection) => {
+      return new Promise( (resolve, reject) => {
+        resolve(true);
+      })
+    }
+
+    const collection = await collect('groups');
+    const validated = await validate(collection);
+
+    const groups = collection.groups;
+    res.send(groups);
+
+  } catch (error) {
     logger.error('Error in getGroups %j %O', req.query, e)
     res.status(404);
     res.send([])
-  })
+  }
 };
 
 
-logic.getGroupMembers = (req, res) => {
-  const query = getQuery(req.query);
-  findGroup(query)
-  .then( group => group.getGroupMembers(Account) )
-  .then( members => res.send(members) )
-  .catch( (e) => {
-    logger.error('Error in getGroupMembers %j %O', req.query, e)
+
+logic.getGroupMembers = async (req, res) => {
+  try {
+    const query = getQuery(req.query);
+    const collect = () => {
+      const collection = {};
+      return new Promise( (resolve, reject) => {
+        Group.find(query)
+        .populate({ path : 'members', select : '-hash -salt -google -scholar_explorer' })
+        .exec()
+        .then( groups => {
+          if ( groups.length > 1 ) {
+            collection.members = groups.map( g => {
+              let members = {}
+              members[g.key] = g.members;
+              return members;
+            });
+          } else {
+            collection.members = groups[0].members;
+          }
+          resolve(collection)
+        })
+        .catch( e => {
+          logger.error("getGroupMembers collect error")
+          reject(e);
+        })
+      })
+    }
+    const validate = (collection) => {
+      return new Promise( (resolve, reject) => {
+        const membersExist = () => {
+          let successStatus = true;
+          if ( !collection.members ) {
+            successStatus = false;
+          }
+          return successStatus;
+        }
+        if ( membersExist() ) {
+          resolve(true);
+        } else {
+          logger.error("getGroupMembers validate error")
+          reject('validateError - members do not exist')
+        }
+      })
+    }
+
+    const collection = await collect('members');
+    const validated = await validate(collection);
+
+    const members = collection.members;
+    res.send(members);
+  } catch ( err ) {
+    logger.error('Error in getGroupMembers %j %O', req.query, err)
     res.status(404);
     res.send([])
-  })
+  }
 }
 //takes a groupId/key -- only updates passed fields
-logic.updateGroup = (req, res) => {
-  const query = getQuery(req.body.groupQuery);
-  isUserAdminOfGroup(query, req.user)
-  .then( adminStatus => {
-    if ( !adminStatus.isAdmin ) { throw new RequestError('User is not authorized to update this group', 1) }
-    const group = adminStatus.group;
+
+logic.updateGroup = async (req, res) => {
+  try {
+    const query = getQuery(req.body.groupQuery);
+    const collect = () => {
+      const collection = {};
+      return new Promise( (resolve, reject) => {
+        Group.findOne(query)
+        .exec()
+        .then( group => {
+          collection.group = group;
+          resolve(collection);
+        })
+        .catch( e => {
+          logger.error("updateGroup collect error")
+          reject(e);
+        })
+      })
+    }
+    const validate = (collection) => {
+      return new Promise( (resolve, reject) => {
+        let errorMessage = '';
+        const groupExists = () => {
+          let successStatus = true;
+          if ( !collection.group ) {
+            errorMessage = 'group does not exist'
+            successStatus = false;
+          }
+          return successStatus;
+        }
+        const userIsAdmin = () => {
+          let successStatus = true;
+          if ( !collection.group.isUserAdmin(req.user) ) {
+            errorMessage = 'User is not authorized to update this group';
+            successStatus = false;
+          }
+          return successStatus;
+        }
+        if ( groupExists() && userIsAdmin() ) {
+          resolve(true);
+        } else {
+          logger.error("updateGroup validate error")
+          reject(`validateError ${errorMessage}`)
+        }
+      })
+    }
+
+    const collection = await collect('group');
+    const validated = await validate(collection);
+
+    const group = collection.group;
+
     if ( req.body.hasOwnProperty('visibility') ) {
       group.visibility = req.body.visibility;
     }
@@ -91,76 +272,470 @@ logic.updateGroup = (req, res) => {
     if ( req.body.hasOwnProperty('description') ) {
       group.description = req.body.description;
     }
-    return group.save();
-  })
-  .then( updatedGroup => res.send(updatedGroup) )
-  .catch( e => {
-    logger.error('Error in updateGroup %j %O %O', req.groupQuery, req.user, e)
+
+    const updatedGroup = await group.save()
+    res.send(updatedGroup);
+
+  } catch ( err ) {
+    logger.error('Error in updateGroup %j %O', req.query, err)
     res.status(404);
+    res.send([])
+  }
+}
+
+logic.joinGroup = async (req, res) => {
+  try {
+    const query = getQuery(req.body);
+    const collect = () => {
+      const collection = {};
+      return new Promise( (resolve, reject) => {
+        Group.findOne(query)
+        .exec()
+        .then( group => {
+          collection.group = group;
+          resolve(collection);
+        })
+        .catch( e => {
+          logger.error("joinGroup collect error")
+          reject(e);
+        })
+      })
+    }
+    const validate = (collection) => {
+      return new Promise( (resolve, reject) => {
+        let errorMessage = '';
+        const groupExists = () => {
+          let successStatus = true;
+          if ( !collection.group ) {
+            errorMessage = 'group does not exist';
+            res.status(412);
+            successStatus = false;
+          }
+          return successStatus;
+        }
+        const groupIsNotPrivate = () => {
+          let successStatus = true;
+          if ( collection.group.visibility.toString() === 'private' ) {
+            errorMessage = 'private group cannot be joined';
+            res.status(401);
+            successStatus = false;
+          }
+          return successStatus;
+        }
+        if ( groupExists() && groupIsNotPrivate() ) {
+          resolve(true);
+        } else {
+          logger.error("joinGroup validate error")
+          reject(`validateError ${errorMessage}`)
+        }
+      })
+    }
+
+    const collection = await collect('group');
+    const validated = await validate(collection);
+
+    collection.group.members.push(req.user._id)
+    collection.group.members = uniqId( collection.group.members );
+    req.user.memberOf.push(collection.group._id)
+    req.user.memberOf = uniqId(req.user.memberOf);
+
+    Promise.all( [ collection.group.save(), req.user.save() ])
+    .then( ([updatedGroup, updatedUser]) => {
+      res.send(updatedGroup);
+    })
+    .catch( e => {
+      logger.error('Error in joinGroup saves')
+      throw e;
+    })
+  } catch (err) {
+    if ( res.statusCode === 200 ) { res.status(404) }
+    logger.error('Error in joinGroup %j %O', req.body, err)
+    res.send([])
+  }
+}
+
+logic.leaveGroup = async (req, res) => {
+  try {
+    const groupQuery = getQuery(req.body.groupQuery);
+    const userQuery = req.body.userQuery ? getQuery(req.body.userQuery) : getQuery({'userId' : req.user._id});
+    const collect = () => {
+      const promises = [];
+      const collection = {}
+      return new Promise( (resolve, reject) => {
+        promises.push( Group.findOne(groupQuery).exec() );
+        promises.push( Account.findOne(userQuery).exec() );
+        Promise.all(promises)
+        .then( ([ group, user ]) => {
+          collection.group = group;
+          collection.user = user;
+          resolve(collection);
+        })
+        .catch(e => {
+          logger.error('Error in demoteAdmin collect')
+          reject(e);
+        })
+      })
+    }
+    const validate = (collection) => {
+      return new Promise( (resolve, reject) => {
+        let errorMessage = '';
+        const groupExists = () => {
+          let successStatus = true;
+          if ( !collection.group ) {
+            errorMessage = 'group does not exist';
+            res.status(412);
+            successStatus = false;
+          }
+          return successStatus;
+        }
+        const userIsMember = () => {
+          let successStatus = true;
+          if ( collection.group.members.indexOf(collection.user._id) === -1) {
+            errorMessage = 'Group does not have user as member';
+            successStatus = false;
+          }
+          if ( collection.user.memberOf.indexOf(collection.group._id) === -1) {
+            errorMessage = 'User is not a member of this group';
+            successStatus = false;
+          }
+          return successStatus;
+        }
+        const leaveInitiatorIsAdmin = () => {
+          if ( !userQuery ) { return true; }
+          //in this case a user query was passed, meaning a user is kicking out a member
+          let successStatus = true;
+          if ( collection.group.members.indexOf(req.user._id) === -1) {
+            errorMessage = 'Group does not have user as member';
+            successStatus = false;
+          }
+          if ( req.user.memberOf.indexOf(collection.group._id) === -1) {
+            errorMessage = 'User is not a member of this group';
+            successStatus = false;
+          }
+          if ( !collection.group.isUserAdmin(req.user) ) {
+            errorMessage = 'User is not authorized to remove members from this group';
+            successStatus = false;
+          }
+          return successStatus;
+        }
+        if ( groupExists() && userIsMember() && leaveInitiatorIsAdmin() ) {
+          resolve(true);
+        } else {
+          logger.error("leaveGroup validate error")
+          reject(`validateError ${errorMessage}`)
+        }
+      })
+    }
+
+    const collection = await collect('group', 'user');
+    const validated = await validate(collection);
+    const groupIndexToRemove = collection.group.members.indexOf(collection.user._id);
+    const accountIndexToRemove = collection.user.memberOf.indexOf(collection.group._id);
+    const adminIndexToRemove = collection.group.roles.admins.indexOf(collection.user._id);
+
+    if ( adminIndexToRemove !== -1 ) {
+       collection.group.roles.admins.splice(adminIndexToRemove, 1);
+    }
+    collection.group.members.splice(groupIndexToRemove, 1);
+    collection.user.memberOf.splice(accountIndexToRemove, 1);
+
+    Promise.all( [ collection.group.save(), collection.user.save() ])
+    .then( ([updatedGroup, updatedUser]) => {
+      res.send(updatedGroup);
+    })
+    .catch( e => {
+      logger.error('Error in leaveGroup saves')
+      throw e;
+    })
+  } catch (err) {
+    if ( res.statusCode === 200 ) { res.status(404) }
+    logger.error('Error in leaveGroup %j %O', req.body, err)
+    res.send([])
+  }
+}
+//req.body : groupQuery, userQuery
+logic.promoteToAdmin = async (req, res) => {
+  try {
+    const groupQuery = getQuery(req.body.groupQuery);
+    const userQuery = getQuery(req.body.userQuery);
+    const collect = () => {
+      const promises = [];
+      const collection = {}
+      return new Promise( (resolve, reject) => {
+        promises.push( Group.findOne(groupQuery).exec() );
+        promises.push( Account.findOne(userQuery).exec() );
+        Promise.all(promises)
+        .then( ([ group, user ]) => {
+          collection.group = group;
+          collection.user = user;
+          resolve(collection);
+        })
+        .catch(e => {
+          logger.error('Error in promoteToAdmin collect')
+          reject(e);
+        })
+      })
+    }
+    const validate = (collection) => {
+      return new Promise( (resolve, reject) => {
+        let errorMessage = '';
+        const groupExists = () => {
+          let successStatus = true;
+          if ( !collection.group ) {
+            errorMessage = 'group does not exist';
+            res.status(412);
+            successStatus = false;
+          }
+          return successStatus;
+        }
+        const promotingUserIsAdmin = () => {
+          let successStatus = true;
+          if ( collection.group.members.indexOf(req.user._id) === -1) {
+            errorMessage = 'Group does not have promoting user as member';
+            successStatus = false;
+          }
+          if ( req.user.memberOf.indexOf(collection.group._id) === -1) {
+            errorMessage = 'Promoting user is not a member of this group';
+            successStatus = false;
+          }
+          if ( collection.group.roles.admins.indexOf(req.user._id) === -1) {
+            errorMessage = 'Group does not have promoting user as admin';
+            successStatus = false;
+          }
+          return successStatus;
+        }
+        const newAdminChecks = () => {
+          let successStatus = true;
+          if ( collection.group.members.indexOf(collection.user._id) === -1) {
+            errorMessage = 'Group must have member before member can be promoted';
+            successStatus = false;
+          }
+          if ( collection.user.memberOf.indexOf(collection.group._id) === -1) {
+            errorMessage = 'user to be promoted is not a member of this group';
+            successStatus = false;
+          }
+          if ( collection.group.roles.admins.indexOf(collection.user._id) !== -1) {
+            errorMessage = 'Group already has this user as an admin';
+            successStatus = false;
+          }
+          return successStatus;
+        }
+        if ( groupExists() && promotingUserIsAdmin() && newAdminChecks() ) {
+          resolve(true);
+        } else {
+          logger.error("promoteToAdmin validate error")
+          reject(`validateError ${errorMessage}`)
+        }
+      })
+    }
+
+    const collection = await collect('group', 'user');
+    const validated = await validate(collection);
+
+    collection.group.roles.admins.push(collection.user._id);
+    const updatedGroup = await collection.group.save();
+
+    res.send(updatedGroup);
+  } catch (err) {
+    if ( res.statusCode === 200 ) { res.status(404) }
+    logger.error('Error in promoteToAdmin %j %O', req.body, err)
+    res.send([])
+  }
+}
+
+//req.body : groupQuery, userQuery
+logic.demoteAdmin = async (req, res) => {
+  try {
+    const groupQuery = getQuery(req.body.groupQuery);
+    const userQuery = getQuery(req.body.userQuery);
+    const collect = () => {
+      const promises = [];
+      const collection = {}
+      return new Promise( (resolve, reject) => {
+        promises.push( Group.findOne(groupQuery).exec() );
+        promises.push( Account.findOne(userQuery).exec() );
+        Promise.all(promises)
+        .then( ([ group, user ]) => {
+          collection.group = group;
+          collection.user = user;
+          resolve(collection);
+        })
+        .catch(e => {
+          logger.error('Error in demoteAdmin collect')
+          reject(e);
+        })
+      })
+    }
+    const validate = (collection) => {
+      return new Promise( (resolve, reject) => {
+        let errorMessage = '';
+        const groupExists = () => {
+          let successStatus = true;
+          if ( !collection.group ) {
+            errorMessage = 'group does not exist';
+            res.status(412);
+            successStatus = false;
+          }
+          return successStatus;
+        }
+        const demotingUserIsAdmin = () => {
+          let successStatus = true;
+          if ( collection.group.members.indexOf(req.user._id) === -1) {
+            errorMessage = 'Group does not have Demoting user as member';
+            successStatus = false;
+          }
+          if ( req.user.memberOf.indexOf(collection.group._id) === -1) {
+            errorMessage = 'Demoting user is not a member of this group';
+            successStatus = false;
+          }
+          if ( !collection.group.isUserAdmin(req.user) ) {
+            errorMessage = 'Group does not have Demoting user as admin';
+            successStatus = false;
+          }
+          return successStatus;
+        }
+        const removedAdminChecks = () => {
+          let successStatus = true;
+          if ( collection.group.members.indexOf(collection.user._id) === -1) {
+            errorMessage = 'Group must have member before member can be demoted';
+            successStatus = false;
+          }
+          if ( collection.user.memberOf.indexOf(collection.group._id) === -1) {
+            errorMessage = 'user to be demoted is not a member of this group';
+            successStatus = false;
+          }
+          if ( !collection.group.isUserAdmin(collection.user) ) {
+            errorMessage = 'Group does not have this user as an admin';
+            successStatus = false;
+          }
+          return successStatus;
+        }
+        if ( groupExists() && demotingUserIsAdmin() && removedAdminChecks() ) {
+          resolve(true);
+        } else {
+          logger.error("demoteToAdmin validate error")
+          reject(`validateError ${errorMessage}`)
+        }
+      })
+    }
+
+    const collection = await collect('group', 'user');
+    const validated = await validate(collection);
+
+    const adminIndexToRemove = collection.group.roles.admins.indexOf(collection.user._id);
+    collection.group.roles.admins.splice(adminIndexToRemove, 1);
+    const updatedGroup = await collection.group.save();
+
+    res.send(updatedGroup);
+  } catch (err) {
+    if ( res.statusCode === 200 ) { res.status(404) }
+    logger.error('Error in demoteAdmin %j %O', req.body, err)
+    res.send([])
+  }
+}
+
+
+//This function does not have a collect / validate for obvious reasons
+logic.createGroup = (req, res) => {
+  if ( !req.body.visibility || req.body.visibility !== 'public' || req.body.visibility !== 'private' ) {
+      req.body.visibility = 'public';
+  }
+  const g = new Group({
+    "creator" : req.user._id,
+    "roles.admins" : [req.user._id],
+    "members" : [req.user._id],
+    "visibility" : req.body.visibility,
+    "name" : req.body.name,
+    "description" : req.body.description
+  })
+  req.user.memberOf.push(g._id);
+  Promise.all([ g.save(), req.user.save() ])
+  .then( ([createdGroup, updatedUser]) => {
+    res.send(createdGroup);
+  })
+  .catch( e => {
+    res.status(404);
+    logger.error('Error in createGroup %O %O', req.body, e)
     res.send({})
   })
 }
 
 
+logic.deleteGroup = async (req, res) => {
+  try {
+    const query = getQuery(req.body);
+    const collect = () => {
+      const collection = {};
+      return new Promise( (resolve, reject) => {
+        Group.findOne(query)
+        .exec()
+        .then( group => {
+          collection.group = group;
+          resolve(collection);
+        })
+        .catch( e => {
+          logger.error("deleteGroup collect error")
+          reject(e);
+        })
+      })
+    }
+    const validate = (collection) => {
+      return new Promise( (resolve, reject) => {
+        let errorMessage = '';
+        const groupExists = () => {
+          let successStatus = true;
+          if ( !collection.group ) {
+            errorMessage = 'group does not exist';
+            res.status(412);
+            successStatus = false;
+          }
+          return successStatus;
+        }
+        const deletingUserIsAdmin = () => {
+          let successStatus = true;
+          if ( collection.group.members.indexOf(req.user._id) === -1) {
+            errorMessage = 'Group does not have deleting user as member';
+            successStatus = false;
+          }
+          if ( req.user.memberOf.indexOf(collection.group._id) === -1) {
+            errorMessage = 'deleting user is not a member of this group';
+            successStatus = false;
+          }
+          if ( !collection.group.isUserAdmin(req.user) ) {
+            errorMessage = 'Group does not have deleting user as admin';
+            successStatus = false;
+          }
+          return successStatus;
+        }
 
-logic.joinGroup = (req, res) => {
-  const query = getQuery(req.body);
-  let updatedGroup = {}, sendOnError = true;
-  findGroup(query)
-  .then( group => {
-    const groupMembers = group.members.map( mem => mem.toString() )
-    if ( !groupMembers.includes( req.user._id.toString() ) && group.visibility.toString() === 'public' ) {
-      group.members.push(req.user._id);
-      return group.save();
-    } else if ( group.visibility.toString() === 'private' ) {
-      throw new RequestError('user is trying to join non public group')
-    } else {
-      //In this case the user is already part of the group, and so I want to break out of the chain
-      res.send(group)
-      sendOnError = false;
-      throw new RequestError('User is trying to join a group that they are already a part of')
+        if ( groupExists() && deletingUserIsAdmin() ) {
+          resolve(true);
+        } else {
+          logger.error("deleteGroup validate error")
+          reject(`validateError ${errorMessage}`)
+        }
+      })
     }
-  })
-  .then( savedGroup => {
-    updatedGroup = savedGroup;
-    return helpers.addGroupToUser({ _id : req.user._id}, updatedGroup._id)
-  })
-  .then( updatedUser => {
-    res.send(updatedGroup);
-  })
-  .catch( e => {
-    logger.error('Error in joinGroup %j %O %O', req.body, req.user, e)
-    if ( sendOnError ) {
-      res.status(404);
-      res.send({})
-    }
-  })
+
+    const collection = await collect('group');
+    const validated = await validate(collection);
+    collection.group.pseudoRemove()
+    .then( res.send({success : true}) )
+    .catch( e => {
+      logger.error('Error in deleteGroup remove')
+      throw e;
+    })
+  } catch (err) {
+    if ( res.statusCode === 200 ) { res.status(404) }
+    logger.error('Error in deleteGroup %j %O', req.body, err)
+    res.send([])
+  }
 }
 
-logic.leaveGroup = (req, res) => {
-  const query = getQuery(req.body);
-  findGroup(query)
-  .then( group => {
-    const groupIndexToRemove = group.members.indexOf(req.user._id);
-    const accountIndexToRemove = req.user.memberOf.indexOf(group._id);
-    const adminIndexToRemove = group.roles.admins.indexOf(req.user._id);
-    if ( groupIndexToRemove === -1 || accountIndexToRemove === -1) { throw new RequestError('User cannot leave group they are not a member of') }
-    if ( adminIndexToRemove !== -1 ) {
-       group.roles.admins.splice(adminIndexToRemove, 1);
-    }
-    group.members.splice(groupIndexToRemove, 1)
-    req.user.memberOf.splice(accountIndexToRemove, 1)
-    return Promise.all( [req.user.save(), group.save()] );
-  })
-  .then( updatedUserAndGroup => {
-    res.send({updatedUserAndGroup : updatedUserAndGroup})
-  })
-  .catch( e => {
-    logger.error('Error in leaveGroup %j %O %O', req.body, req.user, e)
-  })
-}
 
-//Strictly for testing req.body : { groupQuery : {}, newMembers : [userId]}
+//Strictly for testing
+
+
 logic.addGroupMembers = (req, res) => {
   const query = getQuery(req.body.groupQuery);
   let group, userChecks, newGroupMembers;
@@ -169,7 +744,7 @@ logic.addGroupMembers = (req, res) => {
     if ( !adminStatus.isAdmin ) { throw new RequestError('User is not authorized to add members this group', 1) }
     group = adminStatus.group;
     userChecks = req.body.newMembers.map( m => helpers.checkUserExists(m) )
-    newGroupMembers = uniq(group.members.concat(req.body.newMembers))
+    newGroupMembers = uniqId(group.members.concat(req.body.newMembers))
     return Promise.all(userChecks)
   })
   .then( usersExist => {
@@ -189,54 +764,6 @@ logic.addGroupMembers = (req, res) => {
   })
 }
 
-//NOT TESTED groupQuery, newAdmins [userIds]
-logic.addGroupAdmins = (req, res) => {
-  const query = getQuery(req.body.groupQuery);
-  let group, userChecks, newAdmins;
-  isUserAdminOfGroup(query, req.user)
-  .then( adminStatus => {
-    if ( !adminStatus.isAdmin ) { throw new RequestError('User is not authorized to add admins this group', 1) }
-    group = adminStatus.group;
-    userChecks = req.body.newAdmins.map( m => helpers.checkUserExists(m) )
-    newAdmins = uniq(group.roles.admins.concat(req.body.newAdmins))
-    newMembers = uniq(group.members.concat(req.body.newAdmins))
-    return Promise.all(userChecks)
-  })
-  .then( usersExist => {
-    usersExist.forEach( c => { if ( c !== true ) { throw new RequestError('Cannot add nonexistant user to group admins') } })
-    group.roles.admins = newAdmins
-    group.members = newMembers;
-    return group.save()
-  })
-  .then( updatedGroup => {
-    group = updatedGroup;
-    return Promise.all( newAdmins.map( m => helpers.addGroupToUser({ _id : m }, updatedGroup._id) ) )
-  })
-  .then( updatedUsers => res.send(group) )
-  .catch( e => {
-    logger.error('Error in addGroupAdmins %j %O %O', req.body, req.user, e)
-    res.status(404);
-    res.send({})
-  })
-}
-
-logic.removeGroupAdmins = (req, res) => {
-  const query = getQuery(req.body.groupQuery);
-  let group, removeAdmins;
-  isUserAdminOfGroup(query, req.user)
-  .then( adminStatus => {
-    if ( !adminStatus.isAdmin ) { throw new RequestError('User is not authorized to add admins this group', 1) }
-    group = adminStatus.group;
-    group.roles.admins = group.roles.admins.filter( adminId => !req.body.removeAdmins.includes( adminId.toString() ) )
-    return group.save()
-  })
-  .then( updatedGroup => res.send(updatedGroup))
-  .catch( e => {
-    logger.error('Error in removeGroupAdmins %j %O %O', req.body, req.user, e)
-    res.status(404);
-    res.send({})
-  })
-}
 
 logic.removeGroupMembers = (req, res) => {
   const query = getQuery(req.body.groupQuery);
@@ -256,52 +783,5 @@ logic.removeGroupMembers = (req, res) => {
   })
 }
 
-logic.createGroup = (req, res) => {
-  let createdGroup = {}
-  req.body.members.push(req.user._id.toString());
-  req.body.adminIds.push(req.user._id.toString());
-  if ( req.body.visibility !== 'public' || req.body.visibility !== 'private' ) { req.body.visibility = 'public' }
-  const g = new Group({
-    "creator" : req.user._id,
-    "roles.admins" : uniq(req.body.adminIds),
-    "members" : uniq(req.body.members),
-    "visibility" : req.body.visibility,
-    "name" : req.body.name,
-    "description" : req.body.description
-  })
-  g.save()
-  .then( newGroup => {
-    createdGroup = newGroup;
-    return helpers.addGroupToUser({ _id : req.user._id}, newGroup._id)
-  })
-  .then( updatedUser => {
-    res.send(createdGroup)
-  })
-  .catch( e => {
-    res.status(404);
-    logger.error('Error in createGroup %O %O', req.body, e)
-    res.send({})
-  })
-}
-
-
-logic.deleteGroup = (req, res) => {
-  const groupQuery = getQuery(req.body);
-  isUserAdminOfGroup(groupQuery, req.user)
-  .then( adminStatus => {
-    if ( !adminStatus.isAdmin ) { throw new RequestError('User is not authorized to delete this group', 1) }
-    return adminStatus.group.pseudoRemove()
-  })
-  .then( _ => res.send({success : true }))
-  .catch( e => {
-    logger.error('Error in deleteGroup body : %O user : %O error : %O', req.body, req.user, e)
-    res.status(404);
-    res.send({})
-  })
-}
-
-
-
-logic.isUserAdminOfGroup = isUserAdminOfGroup;
 logic.findGroup = findGroup;
 module.exports = logic;

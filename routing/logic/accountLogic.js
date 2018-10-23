@@ -22,6 +22,9 @@ logic.getUser = (req,res) => {
   })
 }
 
+
+
+
 logic.getOpenedFolios = (req, res) => {
   req.user.getOpenedFolios(Group,Folio)
   .then( openFolios => res.send(openFolios) )

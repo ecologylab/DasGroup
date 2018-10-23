@@ -82,6 +82,11 @@ groupSchema.post('remove', function(deletedGroup, next) {
   next();
 });
 
+groupSchema.methods.isUserAdmin = function(user) {
+  if ( this.roles.admins.indexOf(user._id) === -1 ) { return false; }
+  else { return true; }
+}
+
 groupSchema.methods.getGroupMembers = function(AccountDependency) {
   let members = this.members;
   return new Promise( (resolve, reject) => {

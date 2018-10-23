@@ -37,7 +37,7 @@ const wrapper = buildHelpers([
 
 
 
-console.log('wrapper', wrapper, BASEPATH)
+window.wrapper = wrapper;
 
 // .then( (user) => axios.get(`/getGroup?groupId=${user.memberOf[0]}`) )
 

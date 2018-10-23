@@ -35,6 +35,7 @@ groupHelpers.isUserAdminOfGroup = (groupQuery, user) => {
   })
 }
 
+
 groupHelpers.addFolioToGroup = (groupQuery, folioId) => {
   return new Promise( (resolve, reject) => {
     findGroup(groupQuery)

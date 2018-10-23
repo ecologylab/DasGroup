@@ -92,14 +92,15 @@ const createGroup = (name) => {
 
 const addGroupAdmins = (groupId, newAdmins) => {
   return new Promise( (resolve, reject) => {
-    axios.post(`${BASEPATH}a/addGroupAdmins`, { groupQuery : { groupId : groupId }, newAdmins : newAdmins})
-    .then( (response) => {
-      console.log("%c Test addGroupAdmins - passed",  "color: blue")
-      resolve(response.data)
+    let promotions = newAdmins.map( adminId => apiWrapper.promoteToAdmin({ groupId : groupId }, { 'userId' : adminId}) )
+    Promise.all(promotions)
+    .then( resolves => {
+      console.log("%cTest addGroupMembers - passed",  "color: green")
+      resolve(true);
     })
     .catch( e => {
-      console.error('Error addGroupAdmins members ', groupId, newAdmins, e)
-      reject(e);
+      console.error("%c Test delete group failed", "color : red")
+      reject(e)
     })
   })
 }

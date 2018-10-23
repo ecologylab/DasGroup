@@ -20,7 +20,8 @@ router.get('/getGroupMembers', isAuthenticated, groupLogic.getGroupMembers);
 router.post('/joinGroup', isAuthenticated, groupLogic.joinGroup);
 router.post('/leaveGroup', isAuthenticated, groupLogic.leaveGroup);
 
-router.post('/addGroupAdmins', isAuthenticated, groupLogic.addGroupAdmins);
+router.post('/promoteToAdmin', isAuthenticated, groupLogic.promoteToAdmin);
+router.post('/demoteAdmin', isAuthenticated, groupLogic.demoteAdmin);
 router.post('/addGroupMembers', isAuthenticated, helpers.isNotProd, groupLogic.addGroupMembers);
 
 router.post('/deleteGroup', isAuthenticated, groupLogic.deleteGroup);

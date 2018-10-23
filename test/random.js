@@ -39,13 +39,9 @@ const randomId = mongoose.Types.ObjectId();
 let group = {}
 Group.findOne({ 'key' : 'abc' }).exec()
 .then( g => {
-  g.visibility = 'removed';
-  return g.save();
+  group = g;
+  return Account.findOne({username : 'avsphere'});
 })
-.then( _ => helpers.findGroup(helpers.getQuery({ groupKeys : 'efg' })) )
-.then( groups => {
-  console.log("Found groups " , groups)
-})
-.catch( e => {
-  console.log("hmm", e);
+.then( u => {
+  group.isUserAdmin(u)
 })

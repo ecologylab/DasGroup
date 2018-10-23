@@ -22,7 +22,7 @@ router.post('/testRetry', (req, res) => {
   }
 })
 
-
+router.post('/joinGroupTest', isAuthenticated, () => {});
 router.get('/sessTest', (req,res) => {
   redisClient.get(`sess:${req.session.id}`, (err, reply) => {
     console.log("reply ", reply)

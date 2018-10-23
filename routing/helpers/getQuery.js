@@ -66,6 +66,7 @@ const getQuery = (request) => {
   } else {
     throw new Error('Invalid query type in getQuery')
   }
+  query.visibility = { $ne : 'removed' };
   return query;
 }
 
