@@ -9,13 +9,21 @@ block content
         .col
           h1 Member of
         .col
-          button#createNewGroup.btn.btn-primary(type='button') Create New Group
+          button#createNewGroup.btn.btn-primary(type='button') Create New Group #{resourceBasePath}
       br
       br
       #formArea
       br
+      h2 Member of
       .groupList
         ul.list-group
-          each group in groups
+          each group in memberOf
             li.list-group-item 
               a(href=resourceBasePath + 'group/' + group.key) #{group.name}
+      br
+      h2 Admin of
+      .groupList
+        ul.list-group
+          each group in adminOf
+            li.list-group-item 
+              a(href=resourceBasePath + 'admin/' + group.key) #{group.name}

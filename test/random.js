@@ -36,10 +36,24 @@ const randomId = mongoose.Types.ObjectId();
 //     })
 //   })
 // }
-let group = {}
-Group.findOne({ 'key' : '_YB6qwMv0' })
-.populate({ path : 'folios', populate : { path : 'macheSubmissions.mache' } })
-.exec()
-.then( g => {
-  console.log(g.folios[0].macheSubmissions);
-})
+// let group = {}
+// Group.findOne({ 'key' : '_YB6qwMv0' })
+// .populate({ path : 'folios', populate : { path : 'macheSubmissions.mache' } })
+// .exec()
+// .then( g => {
+//   console.log(g.folios[0].macheSubmissions);
+// })
+
+
+const test = async () => {
+  let userToAdd = await Account.findOne({username : "carson.campbell4"}).exec()
+  let m = await Mache.findOne({ hash_key : 'T1Rnf9Ke7F'}).exec()
+  m.users.push({
+    user : userToAdd._id,
+    roleNum : 1
+  })
+  let saved = await m.save()
+  console.log(saved, userToAdd)
+  process.exit(0)
+}
+test();

@@ -17,6 +17,7 @@ authHelpers.isAuthenticated = (req, res, next) => {
   }
 }
 
+
 if ( process.env.NODE_ENV === 'dev' ) {
   authHelpers.isAuthenticated = (req, res, next) => {
     if ( !req.hasOwnProperty('user') ) {
@@ -39,6 +40,7 @@ if ( process.env.NODE_ENV === 'dev' ) {
     }
   }
 }
+
 
 
 module.exports = authHelpers;

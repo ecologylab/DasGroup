@@ -4,11 +4,10 @@ body {
 
 .wrapper {
   margin-top: 5%;
+  margin-left: 5%;
 }
 
 .group_heading_wrapper {
-    border-style: solid;
-    border-color: red;
 }
 
 

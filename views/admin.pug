@@ -41,29 +41,32 @@ block content
                   .submissions 
                     .row
                       .col
-                        h3 Folios Submitted
-                        ul.list-group#folioSubmissions
+                        h3 Maches Submitted
+                        ul.list-group#macheSubmissions
 
                       .col
+                        h3 Members who have submitted
+                        ul.list-group#usersSubmitted
+                      .col
                         h3 Members who have not submitted
-                        ul.list-group#folioNotYetSubmitted
+                        ul.list-group#usersnotSubmitted
             
         .col-4
           h4(style="text-align:center") Admins
-          ul.list-group
+          ul.list-group#admins
             each admin in group.roles.admins
-              li.list-group-item.d-flex.justify-content-between.align-items-center
+              li.list-group-item.d-flex.justify-content-between.align-items-center(data-user_id=admin._id)
                 | #{admin.username}
                 span.badge.badge-primary.badge-pill
-                  <i class="fas fa-question"></i>
+                  <i class="fas fa-arrow-circle-down"></i>
           hr
           h4(style="text-align:center") Members
-          ul.list-group
+          ul.list-group#members
             each member in group.members
-              li.list-group-item.d-flex.justify-content-between.align-items-center
+              li.list-group-item.d-flex.justify-content-between.align-items-center(data-user_id=member._id)
                 | #{member.username}
                 span.badge.badge-primary.badge-pill
-                  <i class="fas fa-question"></i>
+                  <i class="fas fa-arrow-circle-up"></i>
     #buttonArea
   
   

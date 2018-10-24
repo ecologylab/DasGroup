@@ -32,19 +32,31 @@ logic.renderAdmin = async (req, res) => {
       })
     }
     const validate = (collection) => {
+      let errorMessage = '';
       return new Promise( (resolve, reject) => {
         const groupExists = () => {
           let successStatus = true;
           if ( !collection.group ) {
+            errorMessage = 'group does not exist'
             successStatus = false;
           }
           return successStatus;
         }
-        if ( groupExists() ) {
+        const userIsAdminOfGroup = () => {
+          let successStatus = true;
+          //in collect i populate admins
+          const admins = collection.group.roles.admins.map( a => a._id.toString() )
+          if ( admins.indexOf(req.user._id.toString() ) === -1 ) {
+            errorMessage = 'user is not admin of group'
+            successStatus = false;
+          }
+          return successStatus;
+        }
+        if ( groupExists() && userIsAdminOfGroup() ) {
           resolve(true);
         } else {
           logger.error("renderAdmin validate error")
-          reject('validateError - group does not exist')
+          reject(`validateError ${errorMessage}`)
         }
       })
     }
@@ -60,7 +72,7 @@ logic.renderAdmin = async (req, res) => {
   } catch ( err ) {
     logger.error('Error in renderAdmin %j %O', req.query, err)
     res.status(404);
-    res.send([])
+    res.redirect('/')
   }
 }
 

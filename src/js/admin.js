@@ -24,49 +24,6 @@ const renderAdmin = () => {
   }
 }
 
-const renderPage = () => {
-  //do stuff
-}
-
-const renderInvite = () => {
-  $('.wrapper').empty();
-  const buildAndAppendModal = () => {
-    let html = `<div class="modal fade" id="joinGroupModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Join Group: ${state.group.name}</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div class="modal-body">
-                You are currently not part of ${state.group.name}. Click join to join!
-              </div>
-              <div class="modal-footer">
-                <button id='modal_acceptInvite' type="button" class="btn btn-primary">Join</button>
-                <button id='modal_declineInvite' type="button" class="btn btn-secondary" data-dismiss="modal">No Way</button>
-              </div>
-            </div>
-          </div>
-        </div>`
-    $('.wrapper').append(html)
-  }
-  buildAndAppendModal()
-  $('#modal_declineInvite').on('click', () => { window.location.href = '/' })
-  $('#modal_acceptInvite').on('click', () => {
-    apiWrapper.joinGroup({groupId : state.groupId })
-    .then( s => {
-      window.location.href = `/?joined=${state.group.name}`;
-    })
-    .catch(e => console.error("Error accepting group invite", e))
-  })
-  $('#joinGroupModal').modal({})
-  console.log("rendering invite!")
-}
-
-
-
 
 
 
@@ -108,7 +65,7 @@ const _pre_initState = async () => {
 
 const _pre_setRenderChain = () => {
   if ( state.isMember === true ) {
-    renderChain.push(renderPage);
+    // renderChain.push(renderPage); //in the future perhaps this is needed
     if ( state.isAdmin === true ) { renderChain.push(renderAdmin); }
   } else if (state.groupVisiblity !== 'private' ) {
     renderChain.push(renderInvite)
@@ -116,17 +73,19 @@ const _pre_setRenderChain = () => {
   return true;
 }
 
-//obviously this is just for a proof of concept
+//these next few functions should be organized accordingly. placing here for the proof of concept and to help ajit
 const displayFolio = (folio) => {
   const folioName = $('#folioName');
   const folioDescription = $('#folioDescription');
   const folioState = $('#folioState');
   const folioVisibility = $('#folioVisibility');
-  const folioSubmissions = $('#folioSubmissions');
-  const folioNotYetSubmitted = $('#folioNotYetSubmitted');
-  folioSubmissions.html('')
-  folioNotYetSubmitted.html('')
-  
+  const macheSubmissions = $('#macheSubmissions');
+  const usersSubmitted = $('#usersSubmitted');
+  const usersNotSubmitted = $('#usersnotSubmitted');
+  macheSubmissions.html('')
+  macheSubmissions.html('')
+  usersNotSubmitted.html('')
+
   folioName.text(`Name : ${folio.name}`);
   folioDescription.text(`Description : ${folio.description}`);
   folioState.text(`State : ${folio.state}`);
@@ -134,26 +93,83 @@ const displayFolio = (folio) => {
 
   folio.macheSubmissions.forEach( ({ mache }) => {
     let html = `<li class="list-group-item"> <a href="https://livestaging.ecologylab.net/e/${mache.hash_key}">${mache.title}</a></li>`
-    folioSubmissions.append(html);
+    macheSubmissions.append(html);
   })
 
   let membersWhoHaveSubmitted = uniq(folio.macheSubmissions.map( ({ mache }) => {
     let members = mache.users.filter(user => user.roleNum == 1)
-    members.push(mache.creator);
+    //so that the map doesnt need to cast
+    members.push({ user : mache.creator})
     return members;
-  }).flat() )
+  }).flat().map( macheUser => macheUser.user ) )
 
+  membersWhoHaveSubmitted.forEach( (memberId) => {
+    let user = state.group.members.find(m => m._id == memberId)
+    let html = `<li class="list-group-item"> <a href="#">${user.username}</a></li>`
+    usersSubmitted.append(html);
+  })
   let notSubmittedMembers = state.group.members.filter( member => !membersWhoHaveSubmitted.includes(member._id) )
 
   notSubmittedMembers.forEach( ({ username }) => {
     let html = `<li class="list-group-item"> <a href="#">${username}</a></li>`
-    folioNotYetSubmitted.append(html);
+    usersNotSubmitted.append(html);
   })
 
 
 }
 
+const demoteAdmin = function(el) {
+  const li = $(this).parent()
+  const span = $(this);
+  const adminId = li.attr('data-user_id')
+  apiWrapper.demoteAdmin({ groupKey : state.group.key}, { userId : adminId })
+  .then( updatedGroup => {
+    span.off();
+    span.on('click', promoteToAdmin )
+  })
+  .catch( e => {
+    //demote failed so need paint backwards
+    li.find('i').removeClass('fa-arrow-circle-up').addClass('fa-arrow-circle-down')
+    $('#admins').append(li)
+    console.error("Error demoting admin ", e)
+  })
+  $('#members').append(li)
+  li.find('i').removeClass('fa-arrow-circle-down').addClass('fa-arrow-circle-up')
+  console.log(li);
+}
+
+const promoteToAdmin = function(el) {
+  const li = $(this).parent()
+  const span = $(this);
+  const memberId = li.attr('data-user_id')
+  apiWrapper.promoteToAdmin({ groupKey : state.group.key}, { userId : memberId })
+  .then( updatedGroup => {
+    span.off();
+    span.on('click', demoteAdmin )
+  })
+  .catch( e => {
+    li.find('i').removeClass('fa-arrow-circle-down').addClass('fa-arrow-circle-up')
+    $('#admins').append(li)
+    console.error("Error promoting to admin ", e)
+  })
+  $('#admins').append(li)
+  li.find('i').removeClass('fa-arrow-circle-up').addClass('fa-arrow-circle-down')
+}
+
 const _pre_setHandlers = () => {
+
+  const setPromoteHandlers = () => {
+    $('#admins').find('li').toArray()
+    .map( li => $(li).find('span') )
+    .forEach( demoteSpan => {
+      demoteSpan.on('click', demoteAdmin )
+    })
+    $('#members').find('li').toArray()
+    .map( li => $(li).find('span') )
+    .forEach( promoteSpan => {
+      promoteSpan.on('click', promoteToAdmin )
+    })
+  }
 
   const setCardHandlers = () => {
     $('#folioCards').find('.card').toArray()
@@ -162,13 +178,11 @@ const _pre_setHandlers = () => {
         const folioId = $(this).attr('data-folio_id')
         const folio = state.group.folios.find( f => f._id === folioId)
         displayFolio(folio);
-
-        console.log(folio)
       })
     })
   }
-  setCardHandlers()
-
+  setCardHandlers();
+  setPromoteHandlers();
 
   $('a').on('click', function (e) {
     e.preventDefault()
@@ -177,13 +191,24 @@ const _pre_setHandlers = () => {
 }
 
 
+const removeAdminsFromMembers = () => {
+  const adminIds = $('#admins').find('li').toArray().map( li => $(li).attr('data-user_id') )
+  $('#members').find('li').toArray()
+  .forEach( li => {
+    const memberId = $(li).attr('data-user_id')
+    if ( adminIds.includes(memberId) ) {
+      $(li).remove()
+    }
+  })
 
+}
 
 adminLogic.init = () => {
   return new Promise( (resolve, reject) => {
     _pre_initState()
     .then( s => {
       _pre_setHandlers();
+      removeAdminsFromMembers();
       return _pre_setRenderChain()
     })
     .then( _ => {

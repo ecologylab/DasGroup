@@ -57,7 +57,7 @@ logic.renderGroup = async (req, res) => {
       user :  req.user,
       group : collection.group,
     }
-    req.user.currentGroup = collection.group;
+    req.user.currentGroup = collection.group._id;
     res.render('group', renderData)
   } catch ( err ) {
     logger.error('Error in renderGroup %j %O', req.query, err)
@@ -67,7 +67,7 @@ logic.renderGroup = async (req, res) => {
 }
 
 logic.renderRoot = async (req, res) => {
-  if ( req.user.memberOf.length < 1 ) { res.render('index', {user : req.user, groups : [] }) }
+  if ( req.user.memberOf.length < 1 ) { res.render('index', {user : req.user, memberOf : [], adminOf : [] }) }
   try {
     const query = getQuery({ groupIds : req.user.memberOf });
     const collect = () => {
@@ -105,9 +105,9 @@ logic.renderRoot = async (req, res) => {
     const collection = await collect('groups');
     const validated = await validate(collection);
     const groups = collection.groups;
-
-    req.user.currentGroup = {};
-    res.render('index', {user : req.user, groups : groups })
+    const adminOf = collection.groups.filter( g => g.roles.admins.indexOf(req.user._id) !== -1 )
+    req.user.currentGroup = '';
+    res.render('index', {user : req.user, memberOf : groups, adminOf : adminOf })
 
   } catch ( err ) {
     logger.error('Error in renderRoot %j %O', req.query, err)
