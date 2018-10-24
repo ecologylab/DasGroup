@@ -105,8 +105,10 @@ const displayFolio = (folio) => {
   if ( membersWhoHaveSubmitted.length > 0 ) {
     membersWhoHaveSubmitted.forEach( (memberId) => {
       let user = state.group.members.find(m => m._id == memberId)
-      let html = `<li class="list-group-item"> <a href="#">${user.username}</a></li>`
-      usersSubmitted.append(html);
+      if ( user ) {
+        let html = `<li class="list-group-item"> <a href="#">${user.username}</a></li>`
+        usersSubmitted.append(html);
+      }
     })
   }
   let notSubmittedMembers = state.group.members.filter( member => !membersWhoHaveSubmitted.includes(member._id) )
