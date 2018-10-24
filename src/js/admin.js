@@ -102,18 +102,21 @@ const displayFolio = (folio) => {
     members.push({ user : mache.creator})
     return members;
   }).flat().map( macheUser => macheUser.user ) )
-
-  membersWhoHaveSubmitted.forEach( (memberId) => {
-    let user = state.group.members.find(m => m._id == memberId)
-    let html = `<li class="list-group-item"> <a href="#">${user.username}</a></li>`
-    usersSubmitted.append(html);
-  })
+  if ( membersWhoHaveSubmitted.length > 0 ) {
+    membersWhoHaveSubmitted.forEach( (memberId) => {
+      let user = state.group.members.find(m => m._id == memberId)
+      let html = `<li class="list-group-item"> <a href="#">${user.username}</a></li>`
+      usersSubmitted.append(html);
+    })
+  }
   let notSubmittedMembers = state.group.members.filter( member => !membersWhoHaveSubmitted.includes(member._id) )
+  if ( notSubmittedMembers.length > 0 ) {
+    notSubmittedMembers.forEach( ({ username }) => {
+      let html = `<li class="list-group-item"> <a href="#">${username}</a></li>`
+      usersNotSubmitted.append(html);
+    })
+  }
 
-  notSubmittedMembers.forEach( ({ username }) => {
-    let html = `<li class="list-group-item"> <a href="#">${username}</a></li>`
-    usersNotSubmitted.append(html);
-  })
 
 
 }
