@@ -32,7 +32,7 @@ if ( process.env.NODE_ENV === 'dev' ) {
         })
       })
       .catch( e => {
-        logger.error("Auth error %O", e)
+        logger.error("Dev Auth error %O", e)
         res.redirect(redirect);
       })
     } else {

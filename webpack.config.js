@@ -2,7 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 let basePath = '/';
 module.exports = env => {
-  if ( env.NODE_ENV != 'dev' ) { basePath = '/g/'; }
+  if ( env.NODE_ENV != 'dev' ) { basePath = '/g/'; console.log(`Webpack basepath ${basePath}`); }
   return {
     entry: [path.join(__dirname, 'node_modules/babel-polyfill'), path.join(__dirname, 'src/js/main.js')],
     mode: env.NODE_ENV === 'production' ? 'production' : 'development',
