@@ -7,7 +7,7 @@ import group from './group.js';
 import admin from './admin.js';
 import test from './test.js';
 
-if ( window.location.pathname.includes('test') && NODE_ENV == 'dev' ) {
+if ( window.location.pathname.includes('test') && NODE_ENV != 'prod' && NODE_ENV != 'production') {
   test.init()
   .then( usersAndGroups => test.tests(usersAndGroups) )
   .then( testStatus => console.log('Testing complete : ', testStatus) )

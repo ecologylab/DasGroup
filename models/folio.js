@@ -5,7 +5,7 @@ const Group = require('./group')
 const Mache = require('./mache')
 const logger = require('../utils/logger')
 const folioStates = ['opened', 'closed', 'removed'] //closed means no maches can be submitted
-const folioVisibilities = ['transparent', 'public', 'private'] //transparent menas users can see contents, private means only admins can see
+const folioVisibilities = ['memberOnly', 'adminOnly', 'everyone']
 const folioSchema = mongoose.Schema({
   creator : {
     type: ObjectId,
@@ -20,8 +20,13 @@ const folioSchema = mongoose.Schema({
   visibility: {
     type: String,
     required : true,
-    default : 'public'
+    default : 'memberOnly'
   },
+  transparent : {
+    type: Boolean,
+    required : true,
+    default : true
+  }
   state : {
     type : String,
     require : true,
@@ -78,7 +83,6 @@ folioSchema.post('remove', function(deletedFolio, next) {
   Group.findOne({ _id : deletedFolio.belongsTo }).exec()
   .then( group => {
     const indexToRemove = group.folios.indexOf(deletedFolio._id)
-    console.log("group bef", group.folios.length)
     group.folios.splice(indexToRemove, 1);
     return group.save();
   })
@@ -107,7 +111,7 @@ folioSchema.methods.pseudoRemove = function() {
 folioSchema.pre('save', function(next)
 {
     if ( !folioStates.includes(this.state) ) { this.state = 'closed'; }
-    if ( !folioVisibilities.includes(this.visibility) ) { this.visibility = 'public'; }
+    if ( !folioVisibilities.includes(this.visibility) ) { this.visibility = 'memberOnly'; }
     this.last_modified = new Date();
     next();
 });

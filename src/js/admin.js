@@ -83,7 +83,7 @@ const displayFolio = (folio) => {
   const usersSubmitted = $('#usersSubmitted');
   const usersNotSubmitted = $('#usersnotSubmitted');
   macheSubmissions.html('')
-  macheSubmissions.html('')
+  usersSubmitted.html('')
   usersNotSubmitted.html('')
 
   folioName.text(`Name : ${folio.name}`);

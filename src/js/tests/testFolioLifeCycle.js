@@ -7,19 +7,19 @@ let folioData = [
   {
     name : "Awesome folio",
     description : "Oh so awesome folio",
-    visibility : "public",
+    visibility : "memberOnly",
     state : "opened"
   },
   {
     name : "Colorful folio",
     description : "The colors, oh the colors",
-    visibility : "private",
+    visibility : "adminOnly",
     state : "opened"
   },
   {
     name : "Beautiful but closed folio",
     description : "Oh so closed folio",
-    visibility : "private",
+    visibility : "everyone",
     state : "closed"
   }
 ]
@@ -39,7 +39,7 @@ const runTests = (group) => {
     Promise.all(folioCreationPromises)
     .then( folios => {
       createdFolios = folios;
-      return folios.filter( f => f.state == 'opened' && f.visibility == 'public')[0]
+      return folios.filter( f => f.state == 'opened' && f.visibility == 'memberOnly')[0]
     })
     .then( chosenFolio => addMachesToFolio(group, chosenFolio) )
     //.then( updatedFolio => removeMacheFromFolio(group, updatedFolio) )
