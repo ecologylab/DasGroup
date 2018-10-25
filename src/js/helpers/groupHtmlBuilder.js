@@ -34,7 +34,7 @@ formBuilder.createGroup = () => {
     }
     let html = `<div id=${itemId}>`
     html += buildFieldHtml('Name', 'name') + buildFieldHtml('Description', 'description');
-    html += buildFieldHtml('Visibility', 'visibility', 'public or private')
+    html += buildFieldHtml('Visibility', 'visibility', 'memberOnly, adminOnly, everyone')
     html += `<button type="button" class="btn btn-primary">Create group</button>`;
     html += '</div>'
     return html;

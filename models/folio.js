@@ -25,7 +25,7 @@ const folioSchema = mongoose.Schema({
   transparent : {
     type: Boolean,
     required : true,
-    default : true
+    default : false
   },
   state : {
     type : String,
