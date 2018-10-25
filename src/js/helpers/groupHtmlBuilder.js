@@ -75,8 +75,8 @@ formBuilder.createFolio = () => {
     }
     let html = `<div id=${itemId}>`
     html += buildFieldHtml('Name', 'name') + buildFieldHtml('Description', 'description');
-    html += buildFieldHtml('Visibility', 'visibility', 'public or private');
-    html += buildFieldHtml('State', 'state', 'memberOnly, adminOnly, everyone');
+    html += buildFieldHtml('Visibility', 'visibility', 'memberOnly, adminOnly, everyone');
+    html += buildFieldHtml('State', 'state', 'opened or closed');
     html += `<button type="button" class="btn btn-primary">Create folio</button>`;
     html += '</div>'
     return html;

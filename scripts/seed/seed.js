@@ -28,20 +28,19 @@ const runSeed = (emptyFirst) => {
   .then( () => { console.log('Seed success!'); process.exit(0); })
   .catch( (e) => console.error('Error in seeding', e))
 }
-//This is because when I manually create the username avsphere account I populated
-//it with other peoples maches, I need to make sure these maches creator is then changed to support this
+//This is using the dev user set in the config
 const setAaronsMaches = () => {
-  let avspheresId = ''
+  let devUserId = ''
   const findMache = (macheId) => Mache.findById(macheId).exec()
   return new Promise( (resolve, reject) => {
-    Account.findOne({ username : 'avsphere'}).exec()
-    .then( avsphere => {
-      avspheresId = avsphere._id;
-      return Promise.all( avsphere.maches.map( macheId => findMache(macheId)) )
+    Account.findOne({ username : config.developmentUsername }).exec()
+    .then( devUser => {
+      devUserId = devUser._id;
+      return Promise.all( devUser.maches.map( macheId => findMache(macheId)) )
     })
     .then( maches => {
       return Promise.all(maches.map( m => {
-        m.creator = avspheresId
+        m.creator = devUserId
         return m.save();
       }) )
     })

@@ -94,9 +94,9 @@ const displayFolio = (folio) => {
   folio.macheSubmissions.forEach( ({ mache }) => {
     let macheUrl = '#';
     if ( NODE_ENV === 'production' ) {
-      macheUrl = `https://livestaging.ecologylab.net/e/${mache.hash_key}`
-    } else {
       macheUrl = `https://livemache.ecologylab.net/e/${mache.hash_key}`
+    } else if ( NODE_ENV === 'staging') {
+      macheUrl = `https://livestaging.ecologylab.net/e/${mache.hash_key}`
     }
     let html = `<li class="list-group-item"> <a href="${macheUrl}">${mache.title}</a></li>`
     macheSubmissions.append(html);

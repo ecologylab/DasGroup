@@ -1,3 +1,4 @@
+process.env.NODE_ENV = 'dev'
 //This connects to an instance of a recovered live mache db -> Account does exist in old live mache, not groups
 //It then pulls 1/20th of the users
 //It then adds this data to the seedFiles
@@ -6,25 +7,26 @@ const Account = require('../../models/account');
 const Mache = require('../../models/mache');
 const mongoose = require('mongoose');
 const jsonfile = require('jsonfile');
+const config = require('config')
 const seedFile = './scripts/seed/seedData.json'
-const aaronsId = mongoose.Types.ObjectId();
+const devUserId = mongoose.Types.ObjectId();
 const group1Id = mongoose.Types.ObjectId();
 const group2Id = mongoose.Types.ObjectId();
 const group3Id = mongoose.Types.ObjectId();
 let randomMember = '';
 const group1Members = []; //populated during pull
 const group2Members = []; //populated during pull
-let aaronsMaches = [] //randomly selected maches that are not part of the sampled users
+let devUserMaches = [] //randomly selected maches that are not part of the sampled users
 let machesReferenced = [];
-//A local restored live mache backup
-mongoose.connect('mongodb://localhost/bpath', { useNewUrlParser : true }).then(
+//A restored live mache backup
+mongoose.connect(config.database.devSeedDb, { useNewUrlParser : true }).then(
   () => { console.log("Connected. Beginning pull"); buildSeed(); },
   err => { console.log("ERROR - Database connection failed")}
 )
 const pullAccounts = () => {
   let accountData = [];
   return new Promise( (resolve, reject) => {
-    Account.find({}, (err, docs) => {:
+    Account.find({}, (err, docs) => {
       if (err) { reject(err); }
       docs.forEach( (d,i) => {
         if ( i % 80 === 0 ) {
@@ -40,17 +42,17 @@ const pullAccounts = () => {
           machesReferenced = machesReferenced.concat(d.maches)
           d.memberOf = [group2Id];
           group2Members.push(d._id);
-        } else if ( aaronsMaches.length < 8 && d.maches.length > 1 ) {
+        } else if ( devUserMaches.length < 8 && d.maches.length > 1 ) {
           let m = d.maches[0];
           machesReferenced.push(m);
-          aaronsMaches.push(m)
+          devUserMaches.push(m)
         }
       })
       randomMember = accountData[group2Members.length-1];
-      machesReferenced = machesReferenced.concat(aaronsMaches)
+      machesReferenced = machesReferenced.concat(devUserMaches)
       randomMember.memberOf = randomMember.memberOf.concat([group3Id])
-      group1Members.push(aaronsId)
-      group2Members.push(aaronsId)
+      group1Members.push(devUserId)
+      group2Members.push(devUserId)
       resolve(accountData);
     })
   })
@@ -67,8 +69,8 @@ const createGroupSeedData = (memberIds) => {
   return [
       {
           "_id" : group1Id,
-          "creator" : aaronsId,
-          "roles.admins" : [aaronsId],
+          "creator" : devUserId,
+          "roles.admins" : [devUserId],
           "members" : group1Members,
           "key" : 'abc',
           "name" : "##420Swag",
@@ -76,8 +78,8 @@ const createGroupSeedData = (memberIds) => {
         },
         {
             "_id" : group2Id,
-            "creator" : aaronsId,
-            "roles.admins" : [aaronsId],
+            "creator" : devUserId,
+            "roles.admins" : [devUserId],
             "members" : group2Members,
             "key" : 'def',
             "name" : "MemeMasters",
@@ -94,18 +96,18 @@ const createGroupSeedData = (memberIds) => {
             }
       ]
 }
-const aaronsAccount = () => {
-  // console.log("Creating aarons account with the following maches", aaronsMaches)
+const devUserAccount = () => {
+  // console.log("Creating aarons account with the following maches", devUserMaches)
   return {
-    "_id" : aaronsId,
-    "username": "avsphere",
+    "_id" : devUserId,
+    "username": config.developmentUsername,
     "password": "xxx",
-    "email": "avsp.here@tamu.edu",
+    "email": "DasGroupDevUser@tamu.edu",
     "salt": "xxx",
     "hash": "xxx",
     "bio": "living",
     "memberOf" : [group1Id, group2Id],
-    "maches": aaronsMaches
+    "maches": devUserMaches
   }
 }
 const writeToFile = (data, file) => {
@@ -122,7 +124,7 @@ const buildSeed = () => {
     pullAccounts()
     .then( (pulledAccounts) => {
       seedData.accounts = seedData.accounts.concat(pulledAccounts);
-      seedData.accounts.push(aaronsAccount())
+      seedData.accounts.push(devUserAccount())
       return true;
     })
     .then( (s) => createGroupSeedData() )
