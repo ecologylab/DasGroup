@@ -24,7 +24,7 @@ mongoose.connect('mongodb://localhost/bpath', { useNewUrlParser : true }).then(
 const pullAccounts = () => {
   let accountData = [];
   return new Promise( (resolve, reject) => {
-    Account.find({}, (err, docs) => {
+    Account.find({}, (err, docs) => {:
       if (err) { reject(err); }
       docs.forEach( (d,i) => {
         if ( i % 80 === 0 ) {
