@@ -32,7 +32,7 @@ handler.on('push', function (event) {
   console.log('Received a push event for %s to %s',
     event.payload.repository.name,
     event.payload.ref)
-    const buildPath = './scripts/hook/build.sh';
+    const buildPath = './scripts/hook/buildStaging.sh';
     runner(`sh ${buildPath}`, (err, response) => {
       if ( err ) { console.log("Error! ", err) }
       else {
@@ -50,8 +50,8 @@ handler.on('issues', function (event) {
     event.payload.issue.title)
 })
 
-console.log(buildPath)
 const buildPath = './scripts/hook/build.sh';
+console.log(buildPath)
 runner(`sh ${buildPath}`, (err, response) => {
   if ( err ) { console.log("Error! ", err) }
   else {
