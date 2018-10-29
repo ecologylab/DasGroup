@@ -50,7 +50,7 @@ handler.on('issues', function (event) {
     event.payload.issue.title)
 })
 
-const buildPath = './scripts/hook/build.sh';
+const buildPath = './scripts/hook/buildStaging.sh';
 console.log(buildPath)
 runner(`sh ${buildPath}`, (err, response) => {
   if ( err ) { console.log("Error! ", err) }
