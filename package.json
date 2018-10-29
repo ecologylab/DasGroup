@@ -43,6 +43,7 @@
     "dotenv": "^6.0.0",
     "express": "^4.16.3",
     "express-session": "^1.15.6",
+    "github-webhook-handler": "^0.7.1",
     "jquery": "^3.3.1",
     "jsonwebtoken": "^8.3.0",
     "moment": "^2.22.2",
