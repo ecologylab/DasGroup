@@ -91,6 +91,8 @@ const displayFolio = (folio) => {
   folioState.text(`State : ${folio.state}`);
   folioVisibility.text(`Visiblity : ${folio.visibility}`);
 
+  let html = "";
+  let num_filled = 0;
   folio.macheSubmissions.forEach( (submission) => {
     let macheUrl = '#';
     if ( NODE_ENV === 'production' ) {
@@ -100,8 +102,11 @@ const displayFolio = (folio) => {
     }
     apiWrapper.getUser('userId', submission.submitter).then(u => {
       let username = u.username;
-      let html = `<tr><td> <a href="${macheUrl}">${submission.mache.title}</a></td><td>${submission.date_submitted}</td><td>${username}</td></tr>`
-      macheSubmissions.append(html);
+      html += `<tr><td> <a href="${macheUrl}">${submission.mache.title}</a></td><td>${submission.date_submitted}</td><td>${username}</td></tr>`
+      num_filled++;
+      if (num_filled == folio.macheSubmissions.length) {
+        macheSubmissions.append(html);
+      }
     })
   })
 
@@ -131,7 +136,6 @@ const displayFolio = (folio) => {
 
 
 }
-
 
 const demoteAdmin = function(el) {
   const li = $(this).parent()
