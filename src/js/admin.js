@@ -132,6 +132,7 @@ const displayFolio = (folio) => {
 
 }
 
+
 const demoteAdmin = function(el) {
   const li = $(this).parent()
   const span = $(this);
