@@ -91,15 +91,18 @@ const displayFolio = (folio) => {
   folioState.text(`State : ${folio.state}`);
   folioVisibility.text(`Visiblity : ${folio.visibility}`);
 
-  folio.macheSubmissions.forEach( ({ mache }) => {
+  folio.macheSubmissions.forEach( (submission) => {
     let macheUrl = '#';
     if ( NODE_ENV === 'production' ) {
-      macheUrl = `https://livemache.ecologylab.net/e/${mache.hash_key}`
+      macheUrl = `https://livemache.ecologylab.net/e/${submission.mache.hash_key}`
     } else if ( NODE_ENV === 'staging') {
-      macheUrl = `https://livestaging.ecologylab.net/e/${mache.hash_key}`
+      macheUrl = `https://livestaging.ecologylab.net/e/${submission.mache.hash_key}`
     }
-    let html = `<li class="list-group-item"> <a href="${macheUrl}">${mache.title}</a></li>`
-    macheSubmissions.append(html);
+    apiWrapper.getUser('userId', submission.submitter).then(u => {
+      let username = u.username;
+      let html = `<tr><td> <a href="${macheUrl}">${submission.mache.title}</a></td><td>${submission.date_submitted}</td><td>${username}</td></tr>`
+      macheSubmissions.append(html);
+    })
   })
 
   let membersWhoHaveSubmitted = uniq(folio.macheSubmissions.map( ({ mache }) => {
