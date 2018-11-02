@@ -91,22 +91,28 @@ const displayFolio = (folio) => {
   folioState.text(`State : ${folio.state}`);
   folioVisibility.text(`Visiblity : ${folio.visibility}`);
 
-  let html = "";
-  let num_filled = 0;
+  const userPromises = [];
+  let usernames = {};
   folio.macheSubmissions.forEach( (submission) => {
-    let macheUrl = '#';
-    if ( NODE_ENV === 'production' ) {
-      macheUrl = `https://livemache.ecologylab.net/e/${submission.mache.hash_key}`
-    } else if ( NODE_ENV === 'staging') {
-      macheUrl = `https://livestaging.ecologylab.net/e/${submission.mache.hash_key}`
-    }
-    apiWrapper.getUser('userId', submission.submitter).then(u => {
-      let username = u.username;
-      html += `<tr><td> <a href="${macheUrl}">${submission.mache.title}</a></td><td>${submission.date_submitted}</td><td>${username}</td></tr>`
-      num_filled++;
-      if (num_filled == folio.macheSubmissions.length) {
-        macheSubmissions.append(html);
+    userPromises.push(apiWrapper.getUser('userId', submission.submitter))
+  })
+  Promise.all(userPromises).then( users => {
+    users.forEach( u => {
+      let uid = u._id;
+      if (!(uid in usernames)) {
+        usernames[uid] = u.username;
       }
+    })
+
+    folio.macheSubmissions.forEach( (submission) => {
+      let macheUrl = '#';
+      if ( NODE_ENV === 'production' ) {
+        macheUrl = `https://livemache.ecologylab.net/e/${submission.mache.hash_key}`
+      } else if ( NODE_ENV === 'staging') {
+        macheUrl = `https://livestaging.ecologylab.net/e/${submission.mache.hash_key}`
+      }
+      let html = `<tr><td> <a href="${macheUrl}">${submission.mache.title}</a></td><td>${submission.date_submitted}</td><td>${usernames[submission.submitter]}</td></tr>`
+      macheSubmissions.append(html);
     })
   })
 
