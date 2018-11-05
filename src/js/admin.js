@@ -90,21 +90,31 @@ const displayFolio = (folio) => {
   folioName.text(`Name : ${folio.name}`);
   folioDescription.text(`Description : ${folio.description}`);
 
-  let stateIcon = ``;
+  // styles for state and visibility icons
+  let unselectedStyle = 'style="color: lightgrey; padding: 4px"'
+  let stateSelectedStyle = 'style="color: #fab005; padding: 4px"'
+  let visSelectedStyle = 'style="color: Dodgerblue; padding: 4px"'
+
+  let stateIcon = '';
+  let openIconClass = 'class="fas fa-lock-open"'
+  let closeIconClass = 'class="fas fa-lock"'
   if (folio.state === 'opened') {
-    stateIcon = `<i class="fas fa-lock-open"></i>`
+    stateIcon = '<i ' + openIconClass + stateSelectedStyle + '></i>' + '<i ' + closeIconClass + unselectedStyle + '></i>';
   } else if (folio.state === 'closed') {
-    stateIcon = `<i class="fas fa-lock"></i>`
+    stateIcon = '<i ' + closeIconClass + stateSelectedStyle + '></i>' + '<i ' + openIconClass + unselectedStyle + '></i>';
   }
   folioState.append(`<span>State : ` + stateIcon + `</span>`);
 
-  let visibilityIcon = ``;
+  let visibilityIcon = '';
+  let adminIconClass = 'class="fas fa-cogs"'
+  let memberIconClass = 'class="fas fa-user-friends"'
+  let everyoneIconClass = 'class="fas fa-globe-americas"'
   if (folio.visibility === 'adminOnly') {
-    visibilityIcon = `<i class="fas fa-cogs"></i>`
+    visibilityIcon = '<i ' + adminIconClass + visSelectedStyle + '></i>' + '<i ' + memberIconClass + unselectedStyle + '></i>' + '<i ' + everyoneIconClass + unselectedStyle + '></i>';
   } else if (folio.visibility === 'memberOnly') {
-    visibilityIcon = `<i class="fas fa-user-friends"></i>`
+    visibilityIcon = '<i ' + memberIconClass + visSelectedStyle + '></i>' + '<i ' + adminIconClass + unselectedStyle + '></i>' + '<i ' + everyoneIconClass + unselectedStyle + '></i>';
   } else if (folio.visibility === 'everyone') {
-    visibilityIcon = `<i class="fas fa-globe-americas"></i>`
+    visibilityIcon = '<i ' + everyoneIconClass + visSelectedStyle + '></i>' + '<i ' + adminIconClass + unselectedStyle + '></i>' + '<i ' + memberIconClass + unselectedStyle + '></i>';
   }
   folioVisibility.append(`<span>Visibility : ` + visibilityIcon + `</span>`);
 
