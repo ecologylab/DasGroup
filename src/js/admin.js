@@ -83,6 +83,7 @@ const displayFolio = (folio) => {
   const usersSubmitted = $('#usersSubmitted');
   const usersNotSubmitted = $('#usersnotSubmitted');
   folioState.html('')
+  folioVisibility.html('')
   macheSubmissions.html('')
   usersSubmitted.html('')
   usersNotSubmitted.html('')
