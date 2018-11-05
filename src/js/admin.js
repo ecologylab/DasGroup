@@ -82,14 +82,31 @@ const displayFolio = (folio) => {
   const macheSubmissions = $('#macheSubmissions');
   const usersSubmitted = $('#usersSubmitted');
   const usersNotSubmitted = $('#usersnotSubmitted');
+  folioState.html('')
   macheSubmissions.html('')
   usersSubmitted.html('')
   usersNotSubmitted.html('')
 
   folioName.text(`Name : ${folio.name}`);
   folioDescription.text(`Description : ${folio.description}`);
-  folioState.text(`State : ${folio.state}`);
-  folioVisibility.text(`Visiblity : ${folio.visibility}`);
+
+  let stateIcon = ``;
+  if (folio.state === 'opened') {
+    stateIcon = `<i class="fas fa-lock-open"></i>`
+  } else if (folio.state === 'closed') {
+    stateIcon = `<i class="fas fa-lock"></i>`
+  }
+  folioState.append(`<span>State : ` + stateIcon + `</span>`);
+
+  let visibilityIcon = ``;
+  if (folio.visibility === 'adminOnly') {
+    visibilityIcon = `<i class="fas fa-cogs"></i>`
+  } else if (folio.visibility === 'memberOnly') {
+    visibilityIcon = `<i class="fas fa-user-friends"></i>`
+  } else if (folio.visibility === 'everyone') {
+    visibilityIcon = `<i class="fas fa-globe-americas"></i>`
+  }
+  folioVisibility.append(`<span>Visibility : ` + visibilityIcon + `</span>`);
 
   const userPromises = [];
   let usernames = {};
