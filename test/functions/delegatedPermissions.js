@@ -19,45 +19,14 @@ mongoose.connect(config.database.connectionString, { useNewUrlParser : true }).t
 )
 const randomId = mongoose.Types.ObjectId();
 
-//
-// helpers.findGroup({ key : 'abc'})
-// .then( group => {
-//   const members = group.members;
-//   const randomMember = members[0];
-//   console.log(members.includes(randomMember))
-//
-// })
-// const setAaronsMaches = () => {
-//   const findMache = (macheId) => Mache.findById(macheId).exec()
-//   return new Promise( (resolve, reject) => {
-//     Account.findOne({ username : 'avsphere'}).exec()
-//     .then( avsphere => Promise.all( avsphere.maches.map( macheId => findMache(macheId)) ))
-//     .then( maches => {
-//       console.log("maches", maches)
-//     })
-//   })
-// }
-// let group = {}
-// Group.findOne({ 'key' : '_YB6qwMv0' })
-// .populate({ path : 'folios', populate : { path : 'macheSubmissions.mache' } })
-// .exec()
-// .then( g => {
-//   console.log(g.folios[0].macheSubmissions);
-// })
 
 
-const test1 = async () => {
-  let groupLocator = { groupKey : 'abc' }
-  let g = await Group.find({ key : 'abc'} ).populate('folios').exec()
-  console.log(g);
-}
 
 
-const test2 = async () => {
+const getDelegatedPermissions = async () => {
   let user = await Account.findOne({username : "avsphere"}).populate('maches').exec()
   let delegationData = await helpers.getDelegatedPermissions(user.maches[0], user);
   console.log(delegationData)
   process.exit(0);
 }
-
-test1();
+getDelegatedPermissions();

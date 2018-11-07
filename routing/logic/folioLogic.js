@@ -16,10 +16,10 @@ const findMache = helpers.findMache;
 const isUserAdminOfGroup = helpers.isUserAdminOfGroup;
 
 
-//req.body = { folioQuery : { folioId/key : ... }, macheQuery : { macheId/key : ... }
+//req.body = { folioLocator : { folioId/key : ... }, macheLocator : { macheId/key : ... }
 logic.addMacheToFolio = async (req, res) => {
-  const folioQuery = getQuery(req.body.folioQuery);
-  const macheQuery = getQuery(req.body.macheQuery);
+  const folioQuery = getQuery(req.body.folioLocator);
+  const macheQuery = getQuery(req.body.macheLocator);
   try {
     const collect = () => {
       const promises = [];
@@ -119,8 +119,8 @@ logic.addMacheToFolio = async (req, res) => {
 
 //req.body = { folioQuery : { folioId/key : ... }, macheQuery : { macheId/key : ... }
 logic.removeMacheFromFolio = async (req, res) => {
-  const folioQuery = getQuery(req.body.folioQuery);
-  const macheQuery = getQuery(req.body.macheQuery);
+  const folioQuery = getQuery(req.body.folioLocator);
+  const macheQuery = getQuery(req.body.macheLocator);
   try {
     const collect = () => {
       const promises = [];
@@ -221,62 +221,98 @@ logic.removeMacheFromFolio = async (req, res) => {
 
 }
 
+logic.updateFolio = async (req, res) => {
+  console.log(req.body.folioLocator)
+  const folioQuery = getQuery(req.body.folioLocator);
+  const folioData = req.body.folioData;
+  try {
+    const collect = () => {
+      const collection = {};
+      return new Promise( (resolve, reject) => {
+        Folio.findOne(folioQuery)
+        .exec()
+        .then( folio => {
+          collection.folio = folio;
+          return Group.findOne( getQuery({ groupId : folio.belongsTo }) ).exec()
+        })
+        .then( group => {
+          collection.group = group;
+          resolve(collection);
+        })
+        .catch( e => {
+          logger.error("updateFolio collect error")
+          reject(e);
+        })
+      })
+    }
+    const validate = (collection) => {
+      return new Promise( (resolve, reject) => {
+        let errorMessage = '';
+        const folioAndGroupExists = () => {
+          let successStatus = true;
+          if ( !collection.folio && !collection.group ) {
+            errorMessage = 'folio or group does not exist';
+            res.status(412);
+            successStatus = false;
+          }
+          return successStatus;
+        }
+        const updatingUserisAdmin = () => {
+          let successStatus = true;
+          if ( collection.group.members.indexOf(req.user._id) === -1) {
+            errorMessage = 'Group does not have updating user as member';
+            successStatus = false;
+          }
+          if ( req.user.memberOf.indexOf(collection.group._id) === -1) {
+            errorMessage = 'updating user is not a member of this group';
+            successStatus = false;
+          }
+          if ( !collection.group.isUserAdmin(req.user) ) {
+            errorMessage = 'Group does not have updating user as admin';
+            successStatus = false;
+          }
+          return successStatus;
+        }
 
+        if ( folioAndGroupExists() && updatingUserisAdmin() ) {
+          resolve(true);
+        } else {
+          logger.error("deleteGroup validate error")
+          reject(`validateError ${errorMessage}`)
+        }
+      })
+    }
 
-// logic.removeMacheFromFolio = (req, res) => {
-//   let mache = {}, updatedFolio = {}, sendOnError = true;
-//   const folioQuery = getQuery(req.body.folioQuery);
-//   const macheQuery = getQuery(req.body.macheQuery);
-//   const validate = (folio) => {
-//     const folioSubmissions = folio.macheSubmissions.map( (m) => m.mache._id.toString() )
-//     const memberOf = req.user.memberOf.map( (groupId) => groupId.toString() )
-//     const userMaches = req.user.maches.map( (macheId) => macheId.toString() )
-//     if ( !memberOf.includes(folio.belongsTo.toString() ) ) { throw new RequestError('User cannot remove maches to folio if they dont belong to group', 1) }
-//     if ( !userMaches.includes(mache._id.toString() ) ) { throw new RequestError('User cannot remove a mache they are not a part of', 1) }
-//     if ( folio.state == 'closed' ) { throw new RequestError('User cannot remove a mache from a closed folio') }
-//     if ( !folioSubmissions.includes(mache._id.toString() ) ) {
-//       //I want to break out of my promise chain so i am throwing an error, then handling specifically
-//       res.send(folio);
-//       sendOnError = false;
-//       throw new Error('Cannot remove a mache from a folio if it is not in the folio')
-//     }
-//     return true;
-//   }
-//
-//   findMache(macheQuery)
-//   .then( m => { mache = m; return findFolio(folioQuery); })
-//   .then( folio => {
-//     //validate can only be true or throw an error
-//     if ( validate(folio) ) {
-//       const removeIndex = folio.macheSubmissions.map( m => m.mache.toString() ).indexOf(mache._id.toString())
-//       folio.macheSubmissions.splice(removeIndex,1);
-//       return folio.save()
-//     }
-//   })
-//   .then( savedFolio => {
-//     updatedFolio = savedFolio;
-//     const updatedMacheMemberOf = mache.memberOfFolios
-//     .map( mId => mId.toString() )
-//     .filter( mId => mId != mache._id.toString() )
-//     mache.memberOfFolios = updatedMacheMemberOf;
-//     return mache.save();
-//   })
-//   .then( savedMache => res.send(updatedFolio) )
-//   .catch( e => {
-//     if ( e.name === 'VersionError' ) {
-//       res.status(202);
-//       res.send(req.body)
-//     }
-//     else if ( sendOnError ) {
-//       logger.error('Error in removeMacheFromFolio body : %O user : %O error : %O', req.body, req.user, e)
-//       res.status(400);
-//       res.send({})
-//     }
-//   })
-// }
+    const collection = await collect('folio', 'group');
+    const validated = await validate(collection);
+
+    if ( folioData.hasOwnProperty('visibility') ) {
+      collection.folio.visibility = folioData.visibility;
+    }
+    if ( folioData.hasOwnProperty('transparent') ) {
+      collection.folio.transparent = folioData.transparent;
+    }
+    if ( folioData.hasOwnProperty('state') ) {
+      collection.folio.state = folioData.state;
+    }
+    if ( folioData.hasOwnProperty('permissionSettings') ) {
+      collection.folio.permissionSettings = folioData.permissionSettings;
+    }
+
+    let updatedFolio = await collection.folio.save();
+
+    res.send(updatedFolio);
+  } catch (err) {
+    if ( res.statusCode === 200 ) { res.status(404) }
+    logger.error('Error in updateFolio %j %O', req.body, err)
+    res.send([])
+  }
+
+}
+
 // Not protected by userRights folioQuery : {}
 logic.getFolios = (req, res) => {
-  const folioQuery = getQuery(req.body.folioQuery);
+  const folioQuery = getQuery(req.body.folioLocator);
   findFolio(folioQuery)
   .then( folios => {
     if ( Array.isArray(folios) ) { res.send(folios); }
@@ -293,7 +329,7 @@ logic.getFolios = (req, res) => {
 
 //req.body = { groupQuery : { groupId/key : ... }, folioData : {name,description} }
 logic.createFolio = (req, res) => {
-  const groupQuery = getQuery(req.body.groupQuery);
+  const groupQuery = getQuery(req.body.groupLocator);
   let createdFolio, group;
   isUserAdminOfGroup(groupQuery, req.user)
   .then( adminStatus => {

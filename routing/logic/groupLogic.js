@@ -21,7 +21,7 @@ logic.renderGroup = async (req, res) => {
         Group.findOne(query)
         .populate('members', 'username')
         .populate('roles.admins', 'username')
-        .populate('folios', 'name state visibility')
+        .populate({ path : 'folios' , populate : { path : 'macheSubmissions.mache' } })
         .exec()
         .then( group => {
           collection.group = group;
@@ -53,6 +53,7 @@ logic.renderGroup = async (req, res) => {
 
     const collection = await collect('group');
     const validated = await validate(collection);
+    collection.group.folios = helpers.filterFoliosByPermissions(collection.group.folios, req.user);
     const renderData = {
       user :  req.user,
       group : collection.group,
@@ -156,28 +157,18 @@ logic.getGroups = async (req, res) => {
   }
 };
 
-logic.getGroupAndPopulate = async (req, res) => {
+//This is by nature an extremley powerful function and has been done a little differently
+logic.getDeepGroup = async (req, res) => {
   try {
-    const groupQuery = getQuery(req.body.groupQuery);
-    const populates = req.body.populates;
-    const collect = () => {
+    const groupQuery = getQuery(req.body.groupLocator);
+    const collect = async () => {
+      const populates = [
+        { path : 'folios' , populate : { path : 'macheSubmissions.mache' } },
+        { path : 'members', select :  '-hash -salt -password -google'},
+      ]
       const collection = {};
-      return new Promise( (resolve, reject) => {
-        let queryFn = Group.findOne(groupQuery)
-        populates.forEach( populateQuery => {
-          // if ( !populateQuery.hasOwnProperty('select') ) { populateQuery.select = ''; }
-          queryFn = queryFn.populate(populateQuery)
-        })
-        queryFn.exec()
-        .then( group => {
-          collection.group = group;
-          resolve(collection)
-        })
-        .catch( e => {
-          logger.error("getGroupAndPopulate collect error")
-          reject(e);
-        })
-      })
+      collection.group = await helpers.groupPopulate(groupQuery, populates)
+      return collection;
     }
     const validate = (collection) => {
       return new Promise( (resolve, reject) => {
@@ -191,17 +182,25 @@ logic.getGroupAndPopulate = async (req, res) => {
         if ( groupExists() ) {
           resolve(true);
         } else {
-          logger.error("getGroupAndPopulate validate error")
-          reject('validateError - members do not exist')
+          logger.error("getDeepGroup validate error")
+          reject('validateError - groups do not exist')
         }
       })
     }
+    //filters the folios for non admins
+
+
+
 
     const collection = await collect('group');
     const validated = await validate(collection);
+    if ( !collection.group.isUserAdmin(req.user) ) {
+      collection.group.folios = helpers.filterFoliosByPermissions(collection.group.folios, req.user)
+     }
+
     res.send(collection.group);
   } catch ( err ) {
-    logger.error('Error in getGroupAndPopulate %j %O', req.query, err)
+    logger.error('Error in getDeepGroup %j %O', req.query, err)
     res.status(404);
     res.send([])
   }
@@ -215,7 +214,7 @@ logic.getGroupMembers = async (req, res) => {
       const collection = {};
       return new Promise( (resolve, reject) => {
         Group.find(query)
-        .populate({ path : 'members', select : '-hash -salt -google -scholar_explore -password' })
+        .populate({ path : 'members', select : '-hash -salt -google -scholar_explore -password -google' })
         .exec()
         .then( groups => {
           if ( groups.length > 1 ) {
@@ -268,7 +267,7 @@ logic.getGroupMembers = async (req, res) => {
 
 logic.updateGroup = async (req, res) => {
   try {
-    const query = getQuery(req.body.groupQuery);
+    const query = getQuery(req.body.groupLocator);
     const collect = () => {
       const collection = {};
       return new Promise( (resolve, reject) => {
@@ -410,8 +409,8 @@ logic.joinGroup = async (req, res) => {
 
 logic.leaveGroup = async (req, res) => {
   try {
-    const groupQuery = getQuery(req.body.groupQuery);
-    const userQuery = req.body.userQuery ? getQuery(req.body.userQuery) : getQuery({'userId' : req.user._id});
+    const groupQuery = getQuery(req.body.groupLocator);
+    const userQuery = req.body.userLocator ? getQuery(req.body.userLocator) : getQuery({'userId' : req.user._id});
     const collect = () => {
       const promises = [];
       const collection = {}
@@ -510,8 +509,8 @@ logic.leaveGroup = async (req, res) => {
 //req.body : groupQuery, userQuery
 logic.promoteToAdmin = async (req, res) => {
   try {
-    const groupQuery = getQuery(req.body.groupQuery);
-    const userQuery = getQuery(req.body.userQuery);
+    const groupQuery = getQuery(req.body.groupLocator);
+    const userQuery = getQuery(req.body.userLocator);
     const collect = () => {
       const promises = [];
       const collection = {}
@@ -600,8 +599,8 @@ logic.promoteToAdmin = async (req, res) => {
 //req.body : groupQuery, userQuery
 logic.demoteAdmin = async (req, res) => {
   try {
-    const groupQuery = getQuery(req.body.groupQuery);
-    const userQuery = getQuery(req.body.userQuery);
+    const groupQuery = getQuery(req.body.groupLocator);
+    const userQuery = getQuery(req.body.userLocator);
     const collect = () => {
       const promises = [];
       const collection = {}
@@ -786,12 +785,9 @@ logic.deleteGroup = async (req, res) => {
   }
 }
 
-
 //Strictly for testing
-
-
 logic.addGroupMembers = (req, res) => {
-  const query = getQuery(req.body.groupQuery);
+  const query = getQuery(req.body.groupLocator);
   let group, userChecks, newGroupMembers;
   isUserAdminOfGroup(query, req.user)
   .then( adminStatus => {
@@ -817,10 +813,8 @@ logic.addGroupMembers = (req, res) => {
     res.send({})
   })
 }
-
-
 logic.removeGroupMembers = (req, res) => {
-  const query = getQuery(req.body.groupQuery);
+  const query = getQuery(req.body.groupLocator);
   let group, removeUsers;
   isUserAdminOfGroup(query, req.user)
   .then( adminStatus => {

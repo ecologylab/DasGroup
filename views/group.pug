@@ -17,35 +17,41 @@ block content
               li.nav-item
                 a.nav-link.active(href="#")
                   | Folios
-              li.nav-item
-                a.nav-link(href="#")
-                  | Analytics
-          .row
-            .card-deck
-              each folio in group.folios
-                .card.bg-light.mb-3.folioCard(style="min-width:25%")
-                  .card-header
-                    | Header
-                  .card-body
-                    .card-title Oh yea i like it
-                    .card-text Oh yuea text
-            
+            .container
+              .row
+                h4(style="text-align:center") Folios
+                .container.folios
+                  .card-deck#folioCards
+                    each folio in group.folios
+                      .card.bg-light.mb-3.folioCard(style="min-width:25%; cursor: pointer;" data-folio_id = folio._id, )
+                        .card-header
+                          | #{folio.name}
+                        .card-body
+                          .card-title State : #{folio.state} 
+                          .card-text Submission Count : #{folio.macheSubmissions.length}
+              .row
+                .container
+                  h3#folioName
+                  h4#folioDescription
+                  h4#folioState
+                  h4#folioVisibility
+                  .submissions 
+                    .row
+                      .col
+                        h3 Maches Submitted
+                        ul.list-group#macheSubmissions
         .col-4
           h4(style="text-align:center") Admins
           ul.list-group
             each admin in group.roles.admins
               li.list-group-item.d-flex.justify-content-between.align-items-center
                 | #{admin.username}
-                span.badge.badge-primary.badge-pill
-                  <i class="fas fa-question"></i>
           hr
           h4(style="text-align:center") Members
           ul.list-group
             each member in group.members
               li.list-group-item.d-flex.justify-content-between.align-items-center
                 | #{member.username}
-                span.badge.badge-primary.badge-pill
-                  <i class="fas fa-question"></i>
     #buttonArea
   
   

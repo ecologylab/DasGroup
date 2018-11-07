@@ -35,5 +35,35 @@ viewHelper.renderCreateFolio = (appendLocation, groupId) => {
   return renderedComponents;
 }
 
+//This is waiting replacement
+viewHelper.displayFolio = (folio) => {
+  const folioName = $('#folioName');
+  const folioDescription = $('#folioDescription');
+  const folioState = $('#folioState');
+  const folioVisibility = $('#folioVisibility');
+  const macheSubmissions = $('#macheSubmissions');
+  const usersSubmitted = $('#usersSubmitted');
+  const usersNotSubmitted = $('#usersnotSubmitted');
+  macheSubmissions.html('')
+  folioName.text(`Name : ${folio.name}`);
+  folioDescription.text(`Description : ${folio.description}`);
+  folioState.text(`State : ${folio.state}`);
+  folioVisibility.text(`Visiblity : ${folio.visibility}`);
+
+  folio.macheSubmissions.forEach( ({ mache, date_submitted }) => {
+    let macheUrl = '#';
+    if ( NODE_ENV === 'production' ) {
+      macheUrl = `https://livemache.ecologylab.net/e/${mache.hash_key}`
+    } else if ( NODE_ENV === 'staging') {
+      macheUrl = `https://livestaging.ecologylab.net/e/${mache.hash_key}`
+    }
+    let subDate = new Date(date_submitted).toDateString()
+    let html = `<li class="list-group-item"> <a href="${macheUrl}">${mache.title}</a> <span style="float:right;"> ${subDate} </span> </li>`
+    macheSubmissions.append(html);
+  })
+
+
+}
+
 
 module.exports = viewHelper;

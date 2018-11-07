@@ -6,7 +6,7 @@ import retry from '../helpers/retry.js'
 
 const testRetry = (userAndGroups) => {
   return new Promise( (resolve, reject) => {
-    let reqFn = axios.post.bind(null, `${BASEPATH}/t/testRetry`, { data : true })
+    let reqFn = axios.post.bind(null, `${BASEPATH}t/testRetry`, { data : true })
     retry(reqFn, 100, 20)
     .then( d => {
       console.log('%cRetry Test success!', "color: green", d)

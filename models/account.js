@@ -41,22 +41,22 @@ const accountSchema = mongoose.Schema({
   following : [{
     type: ObjectId,
     required : false,
-    ref : 'account'
+    ref : 'Account'
   }],
   followers : [{
     type: ObjectId,
     required : false,
-    ref : 'account'
+    ref : 'Account'
   }],
   maches : [{
     type: ObjectId,
     required : false,
-    ref : 'mache'
+    ref : 'Mache'
   }],
   memberOf : [{
     type: ObjectId,
     required : false,
-    ref : 'group'
+    ref : 'Group'
   }],
   scholar_explorer: {
     user_id : { type: String, required: false },

@@ -4,7 +4,7 @@ const wrapper = {};
 
 //groupLocator : { groupId/groupKey : ... }, folioData
 wrapper.createFolio = (groupLocator, folioData) => {
-  let request = { groupQuery : groupLocator, folioData : folioData };
+  let request = { groupLocator : groupLocator, folioData : folioData };
   return new Promise( (resolve, reject) => {
     axios.post(`${BASEPATH}a/createFolio`, request)
     .then( (response) => {
@@ -12,6 +12,20 @@ wrapper.createFolio = (groupLocator, folioData) => {
     })
     .catch( e => {
       console.error('Error creating folio', groupLocator, e)
+      reject(e);
+    })
+  })
+}
+
+wrapper.updateFolio = (folioLocator, folioData) => {
+  let request = { folioLocator : folioLocator, folioData : folioData };
+  return new Promise( (resolve, reject) => {
+    axios.post(`${BASEPATH}a/updateFolio`, request)
+    .then( (response) => {
+      resolve(response.data)
+    })
+    .catch( e => {
+      console.error('Error updating folio', groupLocator, e)
       reject(e);
     })
   })
@@ -30,23 +44,23 @@ wrapper.getOpenedFolios = () => {
   })
 }
 
-//folioQuery : { folioId/folioKey : ... } macheQuery : { macheId/macheKey : ... }
-wrapper.addMacheToFolio = (folioQuery, macheQuery) => {
+//folioLocator : { folioId/folioKey : ... } macheLocator : { macheId/macheKey : ... }
+wrapper.addMacheToFolio = (folioLocator, macheLocator) => {
   return new Promise( (resolve, reject) => {
-    axios.post(`${BASEPATH}a/addMacheToFolio`, { folioQuery : folioQuery, macheQuery : macheQuery })
+    axios.post(`${BASEPATH}a/addMacheToFolio`, { folioLocator : folioLocator, macheLocator : macheLocator })
     .then( (response) => {
       resolve(response.data)
     })
     .catch( e => {
-      console.error('Error addMacheToFolio', folioQuery, e)
+      console.error('Error addMacheToFolio', folioLocator, e)
       reject(e);
     })
   })
 }
-//folioQuery : { folioId/folioKey : ... } macheQuery : { macheId/macheKey : ... }
-wrapper.removeMacheFromFolio = (folioQuery, macheQuery) => {
+//folioLocator : { folioId/folioKey : ... } macheLocator : { macheId/macheKey : ... }
+wrapper.removeMacheFromFolio = (folioLocator, macheLocator) => {
   const requestUrl = `${BASEPATH}a/removeMacheFromFolio`;
-  const requestParams = { folioQuery : folioQuery, macheQuery : macheQuery };
+  const requestParams = { folioLocator : folioLocator, macheLocator : macheLocator };
   let reqFn = axios.post.bind(null, requestUrl,  requestParams);
   return new Promise( (resolve, reject) => {
     retry(reqFn, 5)
@@ -54,20 +68,20 @@ wrapper.removeMacheFromFolio = (folioQuery, macheQuery) => {
       resolve(response.data)
     })
     .catch( e => {
-      console.error('Error removeMacheFromFolio', folioQuery, e)
+      console.error('Error removeMacheFromFolio', folioLocator, e)
       reject(e);
     })
   })
 }
 
-wrapper.deleteFolio = (folioQuery) => {
+wrapper.deleteFolio = (folioLocator) => {
   return new Promise( (resolve, reject) => {
-    axios.post(`${BASEPATH}a/deleteFolio`, folioQuery)
+    axios.post(`${BASEPATH}a/deleteFolio`, folioLocator)
     .then( (response) => {
       resolve(response.data)
     })
     .catch( e => {
-      console.error('Error addMacheToFolio', folioQuery, e)
+      console.error('Error addMacheToFolio', folioLocator, e)
       reject(e);
     })
   })

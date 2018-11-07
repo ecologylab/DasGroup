@@ -16,20 +16,21 @@ router.get('/getOpenedFolios', isAuthenticated, accountLogic.getOpenedFolios)
 /* group */
 router.get('/getGroups', isAuthenticated, groupLogic.getGroups);
 router.get('/getGroupMembers', isAuthenticated, groupLogic.getGroupMembers);
-router.post('/getGroupAndPopulate', isAuthenticated, groupLogic.getGroupAndPopulate);
+router.post('/getDeepGroup', isAuthenticated, groupLogic.getDeepGroup);
 
 router.post('/joinGroup', isAuthenticated, groupLogic.joinGroup);
 router.post('/leaveGroup', isAuthenticated, groupLogic.leaveGroup);
 
 router.post('/promoteToAdmin', isAuthenticated, groupLogic.promoteToAdmin);
 router.post('/demoteAdmin', isAuthenticated, groupLogic.demoteAdmin);
-router.post('/addGroupMembers', isAuthenticated, helpers.isNotProd, groupLogic.addGroupMembers);
+
 
 router.post('/deleteGroup', isAuthenticated, groupLogic.deleteGroup);
 router.post('/createGroup', isAuthenticated, groupLogic.createGroup);
 
 /* folios */
 router.post('/createFolio', isAuthenticated, folioLogic.createFolio);
+router.post('/updateFolio', isAuthenticated, folioLogic.updateFolio);
 router.post('/addMacheToFolio', isAuthenticated, folioLogic.addMacheToFolio);
 router.post('/removeMacheFromFolio', isAuthenticated, folioLogic.removeMacheFromFolio);
 router.post('/getFolios', isAuthenticated, folioLogic.getFolios)

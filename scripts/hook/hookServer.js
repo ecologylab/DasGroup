@@ -4,7 +4,7 @@ process.env.NODE_ENV = 'hook'
 const config = require('config')
 const http = require('http')
 const createHandler = require('github-webhook-handler')
-const handler = createHandler({ path: config.hook.path, secret: '...' })
+const handler = createHandler({ path: config.hook.path, secret: config.hook.path })
 const exec = require('child_process').exec;
 const currPath = path.join(__dirname, '/scripts/hook');
 

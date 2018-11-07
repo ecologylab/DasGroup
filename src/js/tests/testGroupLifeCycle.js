@@ -107,10 +107,10 @@ const addGroupAdmins = (groupId, newAdmins) => {
 
 const addGroupMembers = (groupId, newMembers) => {
   return new Promise( (resolve, reject) => {
-    axios.post(`${BASEPATH}a/addGroupMembers`, { groupQuery : { groupId : groupId }, newMembers : newMembers})
+    apiWrapper.addGroupMembers({ groupId : groupId }, newMembers)
     .then( (response) => {
       console.log("%cTest addGroupMembers - passed",  "color: green")
-      resolve(response.data)
+      resolve(response)
     })
     .catch( e => {
       console.error('Error addGroupAdmins members ', groupId, newMembers, e)
