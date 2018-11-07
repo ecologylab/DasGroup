@@ -79,24 +79,66 @@ const displayFolio = (folio) => {
   const macheSubmissions = $('#macheSubmissions');
   const usersSubmitted = $('#usersSubmitted');
   const usersNotSubmitted = $('#usersnotSubmitted');
+  folioState.html('')
+  folioVisibility.html('')
   macheSubmissions.html('')
   usersSubmitted.html('')
   usersNotSubmitted.html('')
 
   folioName.text(`Name : ${folio.name}`);
   folioDescription.text(`Description : ${folio.description}`);
-  folioState.text(`State : ${folio.state}`);
-  folioVisibility.text(`Visiblity : ${folio.visibility}`);
 
-  folio.macheSubmissions.forEach( ({ mache }) => {
-    let macheUrl = '#';
-    if ( NODE_ENV === 'production' ) {
-      macheUrl = `https://livemache.ecologylab.net/e/${mache.hash_key}`
-    } else if ( NODE_ENV === 'staging') {
-      macheUrl = `https://livestaging.ecologylab.net/e/${mache.hash_key}`
-    }
-    let html = `<li class="list-group-item"> <a href="${macheUrl}">${mache.title}</a></li>`
-    macheSubmissions.append(html);
+  // styles for state and visibility icons
+  let unselectedStyle = 'style="color: lightgrey; padding: 4px"'
+  let stateSelectedStyle = 'style="color: #fab005; padding: 4px"'
+  let visSelectedStyle = 'style="color: Dodgerblue; padding: 4px"'
+
+  let stateIcon = '';
+  let openIconClass = 'class="fas fa-lock-open"'
+  let closeIconClass = 'class="fas fa-lock"'
+  if (folio.state === 'opened') {
+    stateIcon = '<i ' + openIconClass + stateSelectedStyle + '></i>' + '<i ' + closeIconClass + unselectedStyle + '></i>';
+  } else if (folio.state === 'closed') {
+    stateIcon = '<i ' + closeIconClass + stateSelectedStyle + '></i>' + '<i ' + openIconClass + unselectedStyle + '></i>';
+  }
+  folioState.append(`<span>State : ` + stateIcon + `</span>`);
+
+  let visibilityIcon = '';
+  let adminIconClass = 'class="fas fa-cogs"'
+  let memberIconClass = 'class="fas fa-user-friends"'
+  let everyoneIconClass = 'class="fas fa-globe-americas"'
+  if (folio.visibility === 'adminOnly') {
+    visibilityIcon = '<i ' + adminIconClass + visSelectedStyle + '></i>' + '<i ' + memberIconClass + unselectedStyle + '></i>' + '<i ' + everyoneIconClass + unselectedStyle + '></i>';
+  } else if (folio.visibility === 'memberOnly') {
+    visibilityIcon = '<i ' + memberIconClass + visSelectedStyle + '></i>' + '<i ' + adminIconClass + unselectedStyle + '></i>' + '<i ' + everyoneIconClass + unselectedStyle + '></i>';
+  } else if (folio.visibility === 'everyone') {
+    visibilityIcon = '<i ' + everyoneIconClass + visSelectedStyle + '></i>' + '<i ' + adminIconClass + unselectedStyle + '></i>' + '<i ' + memberIconClass + unselectedStyle + '></i>';
+  }
+  folioVisibility.append(`<span>Visibility : ` + visibilityIcon + `</span>`);
+
+  const userPromises = [];
+  let usernames = {};
+  folio.macheSubmissions.forEach( (submission) => {
+    userPromises.push(apiWrapper.getUser('userId', submission.submitter))
+  })
+  Promise.all(userPromises).then( users => {
+    users.forEach( u => {
+      let uid = u._id;
+      if (!(uid in usernames)) {
+        usernames[uid] = u.username;
+      }
+    })
+
+    folio.macheSubmissions.forEach( (submission) => {
+      let macheUrl = '#';
+      if ( NODE_ENV === 'production' ) {
+        macheUrl = `https://livemache.ecologylab.net/e/${submission.mache.hash_key}`
+      } else if ( NODE_ENV === 'staging') {
+        macheUrl = `https://livestaging.ecologylab.net/e/${submission.mache.hash_key}`
+      }
+      let html = `<tr><td> <a href="${macheUrl}">${submission.mache.title}</a></td><td>${submission.date_submitted}</td><td>${usernames[submission.submitter]}</td></tr>`
+      macheSubmissions.append(html);
+    })
   })
 
   let membersWhoHaveSubmitted = uniq(folio.macheSubmissions.map( ({ mache }) => {
@@ -125,7 +167,6 @@ const displayFolio = (folio) => {
 
 
 }
-
 
 const demoteAdmin = function(el) {
   const li = $(this).parent()
