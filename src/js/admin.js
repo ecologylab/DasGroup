@@ -139,7 +139,12 @@ const displayFolio = (folio) => {
       } else if ( NODE_ENV === 'staging') {
         macheUrl = `https://livestaging.ecologylab.net/e/${submission.mache.hash_key}`
       }
-      let html = `<tr><td> <a href="${macheUrl}">${submission.mache.title}</a></td><td>${submission.date_submitted}</td><td>${usernames[submission.submitter]}</td></tr>`
+      let date_submitted = new Date(submission.date_submitted);
+      let hours = formatDateComponent(date_submitted.getHours());
+      let minutes = formatDateComponent(date_submitted.getMinutes());
+      let seconds = formatDateComponent(date_submitted.getSeconds());
+      date_submitted = date_submitted.toDateString() + " " + hours + ":" + minutes + ":"+ seconds;
+      let html = `<tr><td> <a href="${macheUrl}">${submission.mache.title}</a></td><td>${date_submitted}</td><td>${usernames[submission.submitter]}</td></tr>`
       macheSubmissions.append(html);
     })
   })
@@ -169,6 +174,10 @@ const displayFolio = (folio) => {
 
 
 
+}
+
+const formatDateComponent = function(val) {
+  return (val < 10) ? "0" + val : val.toString();
 }
 
 const demoteAdmin = function(el) {
