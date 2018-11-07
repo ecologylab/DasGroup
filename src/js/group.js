@@ -16,13 +16,6 @@ const state = {
     }
 const renderChain = []
 
-const renderAdmin = () => {
-  if ( state.isAdmin ) {
-    viewHelper.renderGetMembersButton('#buttonArea', state.group);
-    let currComponents = viewHelper.renderCreateFolio('#buttonArea', state.group);
-    console.log("curr components ", currComponents)
-  }
-}
 
 const renderPage = () => {
   console.log("rendering page!");
@@ -77,44 +70,36 @@ const _pre_collect = () => {
   const promises = []
   return new Promise( (resolve, reject) => {
     promises.push( apiWrapper.getUser('userId', state.userId) )
-    promises.push( apiWrapper.getUser('userId', state.userId) )
-
+    promises.push( apiWrapper.getDeepGroup( { groupId : state.groupId} ) )
+    Promise.all(promises)
+    .then( ([user, group]) => {
+      collection.user = user;
+      collection.group = group;
+      console.log("Collection", collection)
+      resolve(collection);
+    })
+    .catch( e => {
+      console.error("Error in _pre_collect ", e)
+    })
   })
 }
 
-const _pre_initState = () => {
-  return new Promise( (resolve, reject) => {
-    const collect = () => {
-      const promises = []
-      promises.push( apiWrapper.getUser('userId', state.userId) )
-    }
-    apiWrapper.getUser('userId', state.userId)
-    .then( u => {
-      console.log(state);
-      state.user = u;
-      if ( u.memberOf.includes(state.groupId) ) { state.isMember = true; }
-      if ( state.isMember === false && state.groupVisiblity === 'private' ) {
-        window.location.href = '/';
-      }
-      return apiWrapper.getGroups('groupId', state.groupId);
-    })
-    .then( group => {
-      group = group[0]
-      console.log(group)
-      state.group = group;
-      if ( group.roles.admins.includes(state.userId) ) {
-        state.isAdmin = true;
-      }
-      resolve(true);
-    })
-    .catch( e => console.error('Error in _pre_initState ', e))
-  })
+
+
+const _pre_initState = async () => {
+  const collection = await _pre_collect('user','group')
+  state.user = collection.user;
+  if ( collection.user.memberOf.includes(state.groupId) ) { state.isMember = true; }
+  if ( state.isMember === false && state.groupVisiblity === 'private' ) {
+    window.location.href = '/';
+  }
+  state.group = collection.group;
+  return true;
 }
 
 const _pre_setRenderChain = () => {
   if ( state.isMember === true ) {
     renderChain.push(renderPage);
-    if ( state.isAdmin === true ) { renderChain.push(renderAdmin); }
   } else if (state.groupVisiblity !== 'private' ) {
     renderChain.push(renderInvite)
   }
@@ -122,28 +107,31 @@ const _pre_setRenderChain = () => {
 }
 
 const _pre_setHandlers = () => {
-  $('a').on('click', function (e) {
-    e.preventDefault()
-    $(this).tab('show')
-  })
+  const setCardHandlers = () => {
+    $('#folioCards').find('.card').toArray()
+    .forEach( c => {
+      $(c).on('click', function(el) {
+        const folioId = $(this).attr('data-folio_id')
+        const folio = state.group.folios.find( f => f._id == folioId )
+        viewHelper.displayFolio(folio);
+      })
+    })
+  }
+  setCardHandlers();
 }
 
-groupLogic.init = () => {
-  return new Promise( (resolve, reject) => {
-    _pre_initState()
-    .then( s => {
-      _pre_setHandlers();
-      return _pre_setRenderChain()
-    })
-    .then( s => {
-      renderChain.forEach( renderFunc => renderFunc() )
-    })
-    .then( _ => { return { user : state.user, group : state.group } })
-    .catch( e => {
-      console.error("Error in group init",e )
-      reject(e);
-    })
-  })
+
+groupLogic.init = async () => {
+  try {
+    await _pre_initState()
+    _pre_setHandlers()
+    _pre_setRenderChain()
+    renderChain.forEach( renderTask => renderTask() )
+    return { user : state.user, group : state.group }
+  } catch (error) {
+    console.error("error in groupLogic.init ", e)
+  }
+
 }
 
 

@@ -4,6 +4,29 @@ const Account = require('./account')
 const shortId = require('shortid')
 const logger = require('../utils/logger')
 const groupVisibilities = ['public', 'private', 'removed'] //private means invite only
+
+const groupTypes = [
+  {
+    name : 'basic',
+    settings : {
+      folioSettings : {
+        visibility : 'memberOnly',
+        transparent : true,
+        state : 'opened'
+      }
+    }
+  },
+  {
+    name : 'classroom',
+    settings : {
+      folioSettings : {
+        visibility : 'memberOnly',
+        transparent : false,
+        state : 'closed'
+      }
+    }
+  }
+]
 const groupSchema = mongoose.Schema({
   creator: {
     type: ObjectId,
@@ -21,6 +44,16 @@ const groupSchema = mongoose.Schema({
       required : true,
       ref : 'Account'
     }]
+  },
+  type : {
+    name : { type: String, required : false, default : 'basic'},
+    settings : {
+      folioCreationSettings : {
+        visibility : { type : String, default : "memberOnly" },
+        transparent : { type : Boolean, default : true },
+        state : { type : String, default : "opened" }
+      }
+    }
   },
   visibility: {
     type: String,
@@ -62,6 +95,7 @@ const groupSchema = mongoose.Schema({
 
 groupSchema.pre('save', function(next) {
   if ( !groupVisibilities.includes(this.visibility) ) { this.visibility = 'public'; }
+  if ( !groupTypes.map(t => t.name).includes(this.type) ) { this.type = groupTypes.find(t => t.name === 'basic') }
   this.last_modified = new Date();
   next();
 });

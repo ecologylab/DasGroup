@@ -19,6 +19,9 @@ const group2Members = []; //populated during pull
 let devUserMaches = [] //randomly selected maches that are not part of the sampled users
 let machesReferenced = [];
 //A restored live mache backup
+function getRandomInt(max) {
+  return Math.floor(Math.random() * Math.floor(max));
+}
 mongoose.connect(config.database.devSeedDb, { useNewUrlParser : true }).then(
   () => { console.log("Connected. Beginning pull"); buildSeed(); },
   err => { console.log("ERROR - Database connection failed")}
@@ -57,10 +60,18 @@ const pullAccounts = () => {
     })
   })
 }
+
 const seedMaches = () => {
   return new Promise( (resolve, reject) => {
     Mache.find({ _id : { $in : machesReferenced } }, (err, maches) => {
       if ( err ) { reject(err); }
+      maches.filter( m => devUserMaches.map(m => m.toString() ).indexOf(m._id.toString() ) != -1)
+      .forEach( devUsersMache => {
+        devUsersMache.users.push({
+          user : group1Members[getRandomInt(group1Members.length-1) ]._id,
+          roleNum : 1
+        })
+      })
       resolve(maches);
     })
   })

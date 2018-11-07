@@ -1,5 +1,6 @@
 const logger = require('./logger')
 const Folio = require('../../models/folio')
+const macheHelpers = require('./macheHelpers')
 const folioHelpers = {}
 
 const findFolio = (query) => {
@@ -20,7 +21,23 @@ const findFolio = (query) => {
 
 
 
-
+folioHelpers.filterFoliosByPermissions = (folios, user, isUserAdmin) => {
+  const filterOutAdminOnlys = (folios) => folios.filter( f => f.visibility !== 'adminOnly')
+  const filterFolioSubmissionsByPermissions = (folios) => {
+    let filteredFolios = folios.map( f => {
+      if ( f.transparent !== true ) {
+        f.macheSubmissions = f.macheSubmissions.filter( sub => macheHelpers.isUserPartOfMache(sub.mache, user) )
+      }
+      return f;
+    })
+    return filteredFolios;
+  }
+  if ( !isUserAdmin ) {
+    folios = filterOutAdminOnlys(folios);
+  }
+  folios = filterFolioSubmissionsByPermissions(folios);
+  return folios;
+}
 
 
 

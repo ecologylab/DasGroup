@@ -22,6 +22,25 @@ const findGroup = (query, options) => {
   })
 }
 
+//This function is too powerful to be exposed directly
+groupHelpers.groupPopulate = (groupQuery, populates, opts) => {
+  return new Promise( (resolve, reject) => {
+    let queryFn = Group.find(groupQuery)
+    populates.forEach( populateQuery => {
+      queryFn = queryFn.populate(populateQuery)
+    })
+    queryFn.exec()
+    .then( groups => {
+      if ( groups.length == 1) { resolve(groups[0]) }
+      else { resolve(groups) }
+    })
+    .catch( e => {
+      logger.error("groupPopulate collect error")
+      reject(e);
+    })
+  })
+}
+
 groupHelpers.isUserAdminOfGroup = (groupQuery, user) => {
   return new Promise( (resolve, reject) => {
     Promise.all( [ findGroup(groupQuery), user.getAdminOf(Group) ])
@@ -53,6 +72,7 @@ groupHelpers.addFolioToGroup = (groupQuery, folioId) => {
     .catch( e => { reject(e); })
   })
 }
+
 
 groupHelpers.findGroup = findGroup;
 module.exports = groupHelpers

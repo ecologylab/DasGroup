@@ -23,5 +23,4 @@ router.get('/api', isAuthenticated, (req, res) => {
 
 
 
-
 module.exports = router;

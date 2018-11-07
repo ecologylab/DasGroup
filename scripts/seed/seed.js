@@ -3,12 +3,14 @@ process.env.NODE_ENV = 'dev'
 const Account = require('../../models/account');
 const Group = require('../../models/group');
 const Mache = require('../../models/mache');
-const Folio = require('../../models/group');
+const Folio = require('../../models/folio');
 const Role = require('../../models/role');
 const mongoose = require('mongoose');
-const seedFile = './scripts/seed/seedData.json';
 const jsonfile = require('jsonfile');
 const config = require('config')
+const seedFolios = require('./folioSeed')
+const seedFile = './scripts/seed/seedData.json';
+
 mongoose.connect(config.database.connectionString, { useNewUrlParser : true }).then(
   () => { console.log("Connected and seeding!"); runSeed(true); },
   err => { console.log("ERROR - Database connection failed")}
@@ -86,8 +88,12 @@ const seed = () => {
         let newMache = new Mache(m);
         savePromises.push(newMache.save() )
       })
+
       Promise.all( savePromises )
-      .then( (saves) => resolve(true) )
+      .then( async (saves) => {
+        await seedFolios()
+        resolve(true);
+      })
       .catch( (err) => reject(err) )
     })
     .catch(err => reject(err))

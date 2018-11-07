@@ -28,9 +28,9 @@ wrapper.getGroupMembers = (key, value) => {
   })
 }
 
-wrapper.getGroupAndPopulate = (groupLocator) => {
+wrapper.getDeepGroup = (groupLocator) => {
   return new Promise( (resolve, reject) => {
-    axios.post(`${BASEPATH}a/getGroupAndPopulate`, groupLocator)
+    axios.post(`${BASEPATH}a/getDeepGroup`, { groupLocator : groupLocator})
     .then( (response) => {
       resolve(response.data)
     })
@@ -84,43 +84,43 @@ wrapper.joinGroup = (groupLocator) => {
 }
 
 //either a singular key or id { groupKey : 12312 } or { groupId : 123123}
-//IMPORTANT! if a userQuery is not supplied this removes the acting user from the group
-wrapper.leaveGroup = (groupQuery, userQuery) => {
-  const params = { groupQuery : groupQuery };
-  if  ( userQuery ) { params.userQuery = userQuery; }
+//IMPORTANT! if a userLocator is not supplied this removes the acting user from the group
+wrapper.leaveGroup = (groupLocator, userLocator) => {
+  const params = { groupLocator : groupLocator };
+  if  ( userLocator ) { params.userLocator = userLocator; }
   return new Promise( (resolve, reject) => {
     axios.post(`${BASEPATH}a/leaveGroup`, params)
     .then( (response) => {
       resolve(response.data)
     })
     .catch( e => {
-      console.error('Error leaving group', groupQuery, userQuery, e)
+      console.error('Error leaving group', groupLocator, userLocator, e)
       reject(e);
     })
   })
 }
 
-wrapper.promoteToAdmin = (groupQuery, userQuery) => {
+wrapper.promoteToAdmin = (groupLocator, userLocator) => {
   return new Promise( (resolve, reject) => {
-    axios.post(`${BASEPATH}a/promoteToAdmin`, {groupQuery : groupQuery, userQuery : userQuery})
+    axios.post(`${BASEPATH}a/promoteToAdmin`, {groupLocator : groupLocator, userLocator : userLocator})
     .then( (response) => {
       resolve(response.data)
     })
     .catch( e => {
-      console.error('Error promoting user to admin', groupQuery, userQuery, e)
+      console.error('Error promoting user to admin', groupLocator, userLocator, e)
       reject(e);
     })
   })
 }
 
-wrapper.demoteAdmin = (groupQuery, userQuery) => {
+wrapper.demoteAdmin = (groupLocator, userLocator) => {
   return new Promise( (resolve, reject) => {
-    axios.post(`${BASEPATH}a/demoteAdmin`, {groupQuery : groupQuery, userQuery : userQuery})
+    axios.post(`${BASEPATH}a/demoteAdmin`, {groupLocator : groupLocator, userLocator : userLocator})
     .then( (response) => {
       resolve(response.data)
     })
     .catch( e => {
-      console.error('Error demoting user to admin', groupQuery, userQuery, e)
+      console.error('Error demoting user to admin', groupLocator, userLocator, e)
       reject(e);
     })
   })

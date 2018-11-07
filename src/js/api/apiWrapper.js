@@ -1,6 +1,7 @@
 const accountWrappers = require('./account')
 const groupWrappers = require('./group')
 const folioWrappers = require('./folio')
+const testWrappers = require('./test')
 
 
 
@@ -19,7 +20,7 @@ const buildHelpers = (modules) => {
   return helper;
 }
 const wrapper = buildHelpers([
-  accountWrappers, groupWrappers, folioWrappers
+  accountWrappers, groupWrappers, folioWrappers, testWrappers
 ])
 
 
@@ -38,7 +39,4 @@ const wrapper = buildHelpers([
 
 
 window.wrapper = wrapper;
-
-// .then( (user) => axios.get(`/getGroup?groupId=${user.memberOf[0]}`) )
-
 module.exports = wrapper;

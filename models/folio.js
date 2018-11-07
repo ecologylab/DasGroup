@@ -17,6 +17,14 @@ const folioSchema = mongoose.Schema({
     required : true,
     ref : 'group'
   },
+  permissionSettings : {
+    adminPermissions : {
+      machePermissionDelegation : { type : String, default : "editor" }
+    },
+    memberPermissions : {
+      machePermissionDelegation : { type : String, default : "none" }
+    }
+  },
   visibility: {
     type: String,
     required : true,

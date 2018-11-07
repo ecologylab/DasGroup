@@ -31,16 +31,13 @@ const _pre_collect = () => {
   const collection = {}
   const promises = []
   return new Promise( (resolve, reject) => {
-    const populates = [
-      { path : 'members', select : '-hash -salt'},
-      { path : 'folios' , populate : { path : 'macheSubmissions.mache' } }
-    ]
     promises.push( apiWrapper.getUser('userId', state.userId) )
-    promises.push( apiWrapper.getGroupAndPopulate({ groupQuery : { groupId : state.groupId}, populates : populates }) )
+    promises.push( apiWrapper.getDeepGroup( { groupId : state.groupId} ) )
     Promise.all(promises)
     .then( ([user, group]) => {
       collection.user = user;
       collection.group = group;
+      console.log("Collection", collection)
       resolve(collection);
     })
     .catch( e => {
