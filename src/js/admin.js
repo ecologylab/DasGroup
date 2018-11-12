@@ -87,34 +87,8 @@ const displayFolio = (folio) => {
 
   folioName.text(`Name : ${folio.name}`);
   folioDescription.text(`Description : ${folio.description}`);
-
-  // styles for state and visibility icons
-  let unselectedStyle = 'style="color: lightgrey; padding: 4px"'
-  let stateSelectedStyle = 'style="color: #fab005; padding: 4px"'
-  let visSelectedStyle = 'style="color: Dodgerblue; padding: 4px"'
-
-  let stateIcon = '';
-  let openIconClass = 'class="fas fa-lock-open"'
-  let closeIconClass = 'class="fas fa-lock"'
-  if (folio.state === 'opened') {
-    stateIcon = '<i ' + openIconClass + stateSelectedStyle + '></i>' + '<i ' + closeIconClass + unselectedStyle + '></i>';
-  } else if (folio.state === 'closed') {
-    stateIcon = '<i ' + closeIconClass + stateSelectedStyle + '></i>' + '<i ' + openIconClass + unselectedStyle + '></i>';
-  }
-  folioState.append(`<span>State : ` + stateIcon + `</span>`);
-
-  let visibilityIcon = '';
-  let adminIconClass = 'class="fas fa-cogs"'
-  let memberIconClass = 'class="fas fa-user-friends"'
-  let everyoneIconClass = 'class="fas fa-globe-americas"'
-  if (folio.visibility === 'adminOnly') {
-    visibilityIcon = '<i ' + adminIconClass + visSelectedStyle + '></i>' + '<i ' + memberIconClass + unselectedStyle + '></i>' + '<i ' + everyoneIconClass + unselectedStyle + '></i>';
-  } else if (folio.visibility === 'memberOnly') {
-    visibilityIcon = '<i ' + memberIconClass + visSelectedStyle + '></i>' + '<i ' + adminIconClass + unselectedStyle + '></i>' + '<i ' + everyoneIconClass + unselectedStyle + '></i>';
-  } else if (folio.visibility === 'everyone') {
-    visibilityIcon = '<i ' + everyoneIconClass + visSelectedStyle + '></i>' + '<i ' + adminIconClass + unselectedStyle + '></i>' + '<i ' + memberIconClass + unselectedStyle + '></i>';
-  }
-  folioVisibility.append(`<span>Visibility : ` + visibilityIcon + `</span>`);
+  folioState.append(getFolioStateHtml(folio.state, folio._id));
+  folioVisibility.append(getFolioVisibilityHtml(folio.visibility, folio._id));
 
   const userPromises = [];
   let usernames = {};
@@ -136,11 +110,7 @@ const displayFolio = (folio) => {
       } else if ( NODE_ENV === 'staging') {
         macheUrl = `https://livestaging.ecologylab.net/e/${submission.mache.hash_key}`
       }
-      let date_submitted = new Date(submission.date_submitted);
-      let hours = formatDateComponent(date_submitted.getHours());
-      let minutes = formatDateComponent(date_submitted.getMinutes());
-      let seconds = formatDateComponent(date_submitted.getSeconds());
-      date_submitted = date_submitted.toDateString() + " " + hours + ":" + minutes + ":"+ seconds;
+      let date_submitted = formatDate(new Date(submission.date_submitted));
       let html = `<tr><td> <a href="${macheUrl}">${submission.mache.title}</a></td><td>${date_submitted}</td><td>${usernames[submission.submitter]}</td></tr>`
       macheSubmissions.append(html);
     })
@@ -168,13 +138,95 @@ const displayFolio = (folio) => {
       usersNotSubmitted.append(html);
     })
   }
-
-
-
 }
 
-const formatDateComponent = function(val) {
-  return (val < 10) ? "0" + val : val.toString();
+const getFolioStateHtml = function(state, id) {
+  let openIconClass = 'class="fas fa-lock-open"';
+  let closeIconClass = 'class="fas fa-lock"'
+  let unselectedStyle = 'style="color: lightgrey; padding: 4px"'
+  let selectedStyle = 'style="color: #fab005; padding: 4px"'
+
+  let openIcon = '<i ' + openIconClass +
+                    ((state === 'opened')? selectedStyle : unselectedStyle) + 'state="opened"' + '></i>';
+  let closeIcon = '<i ' + closeIconClass +
+                    ((state === 'closed')? selectedStyle : unselectedStyle) + 'state="closed"' + '></i>';
+
+  return `<span data-folio_id="${id}" data-curr_state="${state}">State : ` + openIcon + closeIcon + `</span>`;
+}
+
+const getFolioVisibilityHtml = function(visibility, id) {
+  let adminIconClass = 'class="fas fa-cogs"';
+  let memberIconClass = 'class="fas fa-user-friends"';
+  let everyoneIconClass = 'class="fas fa-globe-americas"';
+  let unselectedStyle = 'style="color: lightgrey; padding: 4px"'
+  let selectedStyle = 'style="color: Dodgerblue; padding: 4px"'
+
+  let adminIcon = '<i ' + adminIconClass +
+                    ((visibility === 'adminOnly')? selectedStyle : unselectedStyle) + 'visibility="adminOnly"' + '></i>';
+  let memberIcon = '<i ' + memberIconClass +
+                    ((visibility === 'memberOnly')? selectedStyle : unselectedStyle) + 'visibility="memberOnly"' + '></i>';
+  let everyoneIcon = '<i ' + everyoneIconClass +
+                    ((visibility === 'everyone')? selectedStyle : unselectedStyle) + 'visibility="everyone"' + '></i>';
+
+  return `<span data-folio_id="${id}" data-curr_visibility="${visibility}">Visibility : ` + adminIcon + memberIcon + everyoneIcon + `</span>`;
+}
+
+const formatDate = function(date) {
+  const formatDateComponent = function(val) {
+    return (val < 10) ? "0" + val : val.toString();
+  }
+  let hours = formatDateComponent(date.getHours());
+  let minutes = formatDateComponent(date.getMinutes());
+  let seconds = formatDateComponent(date.getSeconds());
+  return date.toDateString() + " " + hours + ":" + minutes + ":"+ seconds;
+}
+
+const updateState = function(event) {
+  const ispan = $(this).parent();
+  const folioId = $(ispan).attr('data-folio_id');
+  const currState = $(ispan).attr('data-curr_state');
+  const newState = $(this).attr('state');
+  apiWrapper.updateFolio({ folioId : folioId }, { state: newState})
+  .then( updatedFolio => {
+    console.log(updatedFolio);
+  })
+  .catch( e => {
+    // failed so need paint backwards
+    $(ispan).find('i').toArray()
+    .forEach( i => {
+      ($(i).attr('state') === currState)? $(i).css('color', '#fab005') : $(i).css('color', 'lightgrey');
+    })
+    console.error("Error updating state ", e)
+  })
+  $(ispan).find('i').toArray()
+  .forEach( i => {
+    $(i).css('color', 'lightgrey');
+  })
+  $(this).css('color', '#fab005');
+}
+
+const updateVisibility = function(event) {
+  const ispan = $(this).parent();
+  const folioId = $(ispan).attr('data-folio_id');
+  const currVisibility = $(ispan).attr('data-curr_visibility');
+  const newVisibility = $(this).attr('visibility');
+  apiWrapper.updateFolio({ folioId : folioId }, { visibility : newVisibility})
+  .then( updatedFolio => {
+    console.log(updatedFolio);
+  })
+  .catch( e => {
+    // failed so need paint backwards
+    $(ispan).find('i').toArray()
+    .forEach( i => {
+      ($(i).attr('visibility') === currVisibility)? $(i).css('color', 'Dodgerblue') : $(i).css('color', 'lightgrey');
+    })
+    console.error("Error updating visibility ", e)
+  })
+  $(ispan).find('i').toArray()
+  .forEach( i => {
+    $(i).css('color', 'lightgrey');
+  })
+  $(this).css('color', 'Dodgerblue')
 }
 
 const demoteAdmin = function(el) {
@@ -208,7 +260,7 @@ const promoteToAdmin = function(el) {
   })
   .catch( e => {
     li.find('i').removeClass('fa-arrow-circle-down').addClass('fa-arrow-circle-up')
-    $('#admins').append(li)
+    $('#members').append(li)
     console.error("Error promoting to admin ", e)
   })
   $('#admins').append(li)
@@ -237,7 +289,23 @@ const _pre_setHandlers = () => {
         const folioId = $(this).attr('data-folio_id')
         const folio = state.group.folios.find( f => f._id === folioId)
         displayFolio(folio);
+        setStateHandlers();
+        setVisibilityHandlers();
       })
+    })
+  }
+
+  const setStateHandlers = () => {
+    $('#folioState').find('i').toArray()
+    .forEach( i => {
+      $(i).on('click', updateState)
+    })
+  }
+
+  const setVisibilityHandlers = () => {
+    $('#folioVisibility').find('i').toArray()
+    .forEach( i => {
+      $(i).on('click', updateVisibility)
     })
   }
   setCardHandlers();
