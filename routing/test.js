@@ -38,7 +38,7 @@ router.get('/sessTest', (req,res) => {
   })
 })
 
-router.get('/mail', (req,res) => {
+router.get('/mail', helpers.isNotProd, (req,res) => {
   mailer.sendMail({
     from: config.nodemailer.username,
     to : req.query.to,

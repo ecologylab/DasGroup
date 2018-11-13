@@ -25,7 +25,6 @@ const addMacheToFolioShotgun = async (groupLocator) => {
     .populate({ path : 'folios' , populate : { path : 'macheSubmissions.mache' } })
     .exec()
     groups.forEach( group => {
-      console.log(group)
       group.members.forEach( member => {
         member.maches.forEach( mache => {
           const randomFolioIndex = getRandomInt(group.folios.length)
@@ -39,7 +38,6 @@ const addMacheToFolioShotgun = async (groupLocator) => {
       })
       saves = saves.concat( group.folios.map( f => f.save() ) )
     })
-
     Promise.all(saves)
     .then(_ => { return true; })
     .catch(e => console.error(e) )
