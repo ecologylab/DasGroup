@@ -27,12 +27,12 @@ const addMacheToFolioShotgun = async (groupLocator) => {
     groups.forEach( group => {
       group.members.forEach( member => {
         member.maches.forEach( mache => {
-          const randomFolioIndex = getRandomInt(group.folios.length)
-          const randFolio = group.folios[randomFolioIndex]
-          randFolio.macheSubmissions.push({
-            mache : mache._id,
-            submitter : member._id,
-            date_submitted : Date.now()
+          group.folios.forEach( folio => {
+            folio.macheSubmissions.push({
+              mache : mache._id,
+              submitter : member._id,
+              date_submitted : Date.now()
+            })
           })
         })
       })

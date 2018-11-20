@@ -46,18 +46,10 @@ const randomId = mongoose.Types.ObjectId();
 // })
 
 
-const test1 = async () => {
-  let groupLocator = { groupKey : 'abc' }
-  let g = await Group.find({ key : 'abc'} ).populate('folios').exec()
-  console.log(g);
-}
-
-
-const test2 = async () => {
+const test = async () => {
   let user = await Account.findOne({username : "avsphere"}).populate('maches').exec()
-  let delegationData = await helpers.getDelegatedPermissions(user.maches[0], user);
-  console.log(delegationData)
+  console.log(user.maches);
   process.exit(0);
 }
 
-test1();
+test();

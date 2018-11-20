@@ -5,6 +5,8 @@ process.env.NODE_ENV = 'dev'
 //It then builds a group with the owner aaron and random members
 const Account = require('../../models/account');
 const Mache = require('../../models/mache');
+const Element = require('../../models/element');
+const Clipping = require('../../models/clipping');
 const mongoose = require('mongoose');
 const jsonfile = require('jsonfile');
 const config = require('config')
@@ -61,7 +63,9 @@ const pullAccounts = () => {
   })
 }
 
-const seedMaches = () => {
+
+
+const pullMaches = () => {
   return new Promise( (resolve, reject) => {
     Mache.find({ _id : { $in : machesReferenced } }, (err, maches) => {
       if ( err ) { reject(err); }
@@ -129,21 +133,69 @@ const writeToFile = (data, file) => {
     })
   })
 }
-const buildSeed = () => {
-  return new Promise( (resolve, reject) => {
-    let seedData = { accounts : [], groups : [], maches : [] };
-    pullAccounts()
-    .then( (pulledAccounts) => {
-      seedData.accounts = seedData.accounts.concat(pulledAccounts);
-      seedData.accounts.push(devUserAccount())
-      return true;
-    })
-    .then( (s) => createGroupSeedData() )
-    .then( (groupData) => { seedData.groups = seedData.groups.concat(groupData); return seedMaches();})
-    .then( macheData => { seedData.maches = seedData.maches.concat(macheData); return true; })
-    .then( (s) => writeToFile(seedData, seedFile) )
-    .then( (s) => { console.log('Finished: ', s); process.exit(0); })
-    .catch( (e) => reject(e) )
-  })
 
+const pullElements = async (macheData) => {
+  let elementIds = []
+  console.log("IN MACHE DATA", macheData.length)
+  macheData.forEach( m => {
+    elementIds = elementIds.concat(m.elements)
+  })
+  let elements = await Element.find({ _id : { $in : elementIds } }).exec()
+  return elements;
 }
+
+const pullClippings = async ( elementData ) => {
+  let clippingIds = []
+  elementData.forEach( element => {
+    clippingIds.push(element.clipping)
+  })
+  let clippings = await Clipping.find({ _id : { $in : clippingIds } }).exec()
+  clippings.forEach( c => {
+    let clippingJson = c.toJSON()
+    if ( clippingJson.remoteLocation  ) {
+      console.log(clippingJson)
+    }
+  })
+}
+
+
+const buildSeed = async () => {
+  try {
+    const seedData = { accounts : [], groups : [], maches : [] };
+    const accountData = await pullAccounts();
+    const groupData = await createGroupSeedData();
+    const macheData = await pullMaches();
+    const elementData = await pullElements(macheData);
+    const clippingData = await pullClippings( elementData );
+    // seedData.accounts = seedData.accounts.concat(accountData).concat( [devUserAccount()] );
+    // seedData.groups = seedData.groups.concat(groupData);
+    // seedData.maches = seedData.maches.concat(macheData);
+    // await writeToFile(seedData, seedFile)
+    console.log('Finished building seed data!');
+    process.exit(0);
+
+  } catch ( e ) {
+    console.error("Build seed data failed!", e);
+    process.exit(0);
+  }
+}
+
+// const buildSeed = async () => {
+//   try {
+//     const seedData = { accounts : [], groups : [], maches : [] };
+//     const accountData = await pullAccounts();
+//     const groupData = await createGroupSeedData();
+//     const macheData = await pullMaches();
+//     const elementData = await pullElements(macheData);
+//     seedData.accounts = seedData.accounts.concat(accountData).concat( [devUserAccount()] );
+//     seedData.groups = seedData.groups.concat(groupData);
+//     seedData.maches = seedData.maches.concat(macheData);
+//     await writeToFile(seedData, seedFile)
+//     console.log('Finished building seed data!');
+//     process.exit(0);
+//
+//   } catch ( e ) {
+//     console.error("Build seed data failed!", e);
+//     process.exit(0);
+//   }
+// }
