@@ -5,10 +5,7 @@ const { filterFoliosByPermissions } = require('./folioHelpers')
 const { getQuery } = require('./getQuery')
 
 
-miscHelpers.uniq = (a) => {
-
-  return Array.from(new Set(a));
-}
+miscHelpers.uniq = (a) => Array.from(new Set(a));
 
 miscHelpers.uniqId = (a) => {
   a = a.map(a => a.toString() )

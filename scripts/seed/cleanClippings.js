@@ -2,36 +2,90 @@ process.env.NODE_ENV = 'dev'
 const config = require('config')
 const mongoose = require('mongoose');
 const axios = require('axios');
+const jsonFile = require('jsonfile')
 const Clipping = require('../../models/clipping');
+const path = require('path')
 const fs = require('fs')
 
 mongoose.connect(config.database.devSeedDb, { useNewUrlParser : true }).then(
-  () => { console.log("Connected. Beginning pull"); pullClippingUrls(); },
+  () => { console.log("Connected. Beginning pull"); run(); },
   err => { console.log("ERROR - Database connection failed")}
 )
 
-const pullClippingUrls = async () => {
-  let clippings = await Clipping.find({}).limit(1000).exec()
+
+function getRandomInt(max) {
+  return Math.floor(Math.random() * Math.floor(max));
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+let failedClippings = 0;
+const checkImageClipping = (imageClipping) => {
+  const requestUrl = `https://livemache.ecologylab.net${imageClipping.localLocation}`;
+  return new Promise( (resolve, reject) => {
+    axios.get( requestUrl )
+    .then( res => resolve( { success : imageClipping } ) )
+    .catch( e => {
+      failedClippings++;
+      resolve({ fail : imageClipping, url : requestUrl })
+    })
+  })
+}
+
+
+const testClippings = async () => {
+  let clippings = await Clipping.find({}).select('-semantics').limit(1000).exec()
   try {
-    const requestUrls = clippings
+    const imageClippingChecks = clippings
     .map( c => c.toObject() )
     .filter( c => c['remoteLocation'] && c['localLocation'] )
-    .map( imageClipping => `https://livemache.ecologylab.net${imageClipping.localLocation}` )
-    console.log(`Found ${requestUrls.length} image clippings that have a local and remote path`)
+    .map( async( imageClipping,i  ) => {
+      if ( i % 1000  == 0 ) { console.log(`Tested ${i} clippings. FailedClippings : ${failedClippings}`)}
+      await sleep(getRandomInt(1000))
+      return await checkImageClipping(imageClipping)
+    })
 
-    const requestStatuses = await Promise.all(
-      requestUrls
-      .map( req => axios.get(req)
-      .then( res => { return { success : res.config.url } })
-      .catch( e => { return { fail : req } } ) )
-    )
+    // console.log(`Found ${requestUrls.length} image clippings that have a local and remote path`)
 
-    console.log(requestStatuses)
+    const requestStatuses = await Promise.all(imageClippingChecks)
+    await jsonFile.writeFile( path.join(__dirname, `clippingRequestStatus.json`), requestStatuses)
 
-
-
+    console.log('Write success')
+    return requestStatuses;
   } catch ( e ) {
     console.log("Pull clipping fail", e)
   }
+}
 
+
+
+const analyzeResults = async() => {
+  const jsonData = await jsonFile.readFile( path.join(__dirname, 'seedData/clippingRequestStatus.json') )
+  let testing = []
+  let i = 0;
+  let j = 0;
+  jsonData.forEach( testResult => {
+     if ( testResult.hasOwnProperty('fail') ) {
+       testResult.fail.remoteLocation = '';
+       i++
+       // console.log(testResult)
+       testing.push(testResult);
+     } else {
+       j++;
+       testing.push(testResult);
+     }
+  })
+  console.log('Failures', i);
+  console.log('success', j);
+  await jsonFile.writeFile( path.join(__dirname, 'seedData/clippingRequestStatusNODATASTRING.json'), testing)
+  return true
+}
+
+const run = async () => {
+  await testClippings()
+  // await analyzeResults()
+  console.log("Complete!")
+  process.exit(0);
 }

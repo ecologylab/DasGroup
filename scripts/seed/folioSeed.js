@@ -6,7 +6,7 @@ const Mache = require('../../models/mache');
 const Folio = require('../../models/folio');
 const Role = require('../../models/role');
 const mongoose = require('mongoose');
-const seedFile = './scripts/seed/seedData.json';
+const seedFile = './scripts/seed/seedData/seedData.json';
 const jsonfile = require('jsonfile');
 const config = require('config')
 

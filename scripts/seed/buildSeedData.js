@@ -10,7 +10,7 @@ const Clipping = require('../../models/clipping');
 const mongoose = require('mongoose');
 const jsonfile = require('jsonfile');
 const config = require('config')
-const seedFile = './scripts/seed/seedData.json'
+const seedFile = './scripts/seed/seedData/seedData.json'
 const devUserId = mongoose.Types.ObjectId();
 const group1Id = mongoose.Types.ObjectId();
 const group2Id = mongoose.Types.ObjectId();
@@ -144,33 +144,37 @@ const pullElements = async (macheData) => {
   return elements;
 }
 
-const pullClippings = async ( elementData ) => {
+const pullClippings = async (elementData) => {
   let clippingIds = []
   elementData.forEach( element => {
     clippingIds.push(element.clipping)
   })
   let clippings = await Clipping.find({ _id : { $in : clippingIds } }).exec()
-  clippings.forEach( c => {
-    let clippingJson = c.toJSON()
-    if ( clippingJson.remoteLocation  ) {
-      console.log(clippingJson)
+  let reducedClippings = clippings.map( clipping => {
+    let oClipping = clipping.toObject();
+    if ( oClipping['remoteLocation'] ) {
+      oClipping.remoteLocation = '';
     }
+    return oClipping;
   })
+  return reducedClippings;
 }
 
 
 const buildSeed = async () => {
   try {
-    const seedData = { accounts : [], groups : [], maches : [] };
+    const seedData = { accounts : [], groups : [], maches : [], elements : [], clippings : [] };
     const accountData = await pullAccounts();
     const groupData = await createGroupSeedData();
     const macheData = await pullMaches();
     const elementData = await pullElements(macheData);
     const clippingData = await pullClippings( elementData );
-    // seedData.accounts = seedData.accounts.concat(accountData).concat( [devUserAccount()] );
-    // seedData.groups = seedData.groups.concat(groupData);
-    // seedData.maches = seedData.maches.concat(macheData);
-    // await writeToFile(seedData, seedFile)
+    seedData.accounts = seedData.accounts.concat(accountData).concat( [devUserAccount()] );
+    seedData.groups = seedData.groups.concat(groupData);
+    seedData.maches = seedData.maches.concat(macheData);
+    seedData.elements = seedData.elements.concat(elementData);
+    seedData.clippings = seedData.clippings.concat(clippingData);
+    await writeToFile(seedData, seedFile)
     console.log('Finished building seed data!');
     process.exit(0);
 

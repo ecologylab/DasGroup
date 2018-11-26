@@ -4,12 +4,14 @@ const Account = require('../../models/account');
 const Group = require('../../models/group');
 const Mache = require('../../models/mache');
 const Folio = require('../../models/folio');
+const Clipping = require('../../models/clipping');
+const Element = require('../../models/element');
 const Role = require('../../models/role');
 const mongoose = require('mongoose');
 const jsonfile = require('jsonfile');
 const config = require('config')
 const seedFolios = require('./folioSeed')
-const seedFile = './scripts/seed/seedData.json';
+const seedFile = './scripts/seed/seedData/seedData.json';
 
 mongoose.connect(config.database.connectionString, { useNewUrlParser : true }).then(
   () => { console.log("Connected and seeding!"); runSeed(true); },
@@ -22,6 +24,8 @@ const runSeed = (emptyFirst) => {
   .then ( () => clearCollection(Mache) )
   .then ( () => clearCollection(Folio) )
   .then ( () => clearCollection(Role) )
+  .then ( () => clearCollection(Clipping) )
+  .then ( () => clearCollection(Element) )
   .then( () => dropIndexes(Account) )
   .then( () => dropIndexes(Group) )
   .then( () => dropIndexes(Mache) )
@@ -72,7 +76,9 @@ const seed = () => {
     .then( (data) => {
       let accounts = data.accounts,
           groups = data.groups,
-          maches = data.maches;
+          maches = data.maches,
+          elements = data.elements,
+          clippings = data.clippings;
       let savePromises = [];
       accounts.forEach( (a) => {
         let newAcc = new Account(a);
@@ -88,6 +94,14 @@ const seed = () => {
         let newMache = new Mache(m);
         savePromises.push(newMache.save() )
       })
+      elements.forEach( (e) => {
+        let newEl = new Element(e);
+        savePromises.push(newEl.save() )
+      })
+      clippings.forEach( (c) => {
+        let newClip = new Clipping(c);
+        savePromises.push(newClip.save() )
+      })
 
       Promise.all( savePromises )
       .then( async (saves) => {
@@ -98,5 +112,4 @@ const seed = () => {
     })
     .catch(err => reject(err))
   })
-
 }

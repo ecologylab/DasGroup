@@ -44,7 +44,7 @@ const macheSchema = mongoose.Schema({
   },
   elements : [{
     type: ObjectId,
-    ref: 'element'
+    ref: 'Element'
   }],
   hash_key: {
     type: String,
