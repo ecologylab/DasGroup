@@ -43,3 +43,5 @@ environ.env
 
 cert.crt
 key.pem
+
+scripts/seed/seedData/

@@ -17,36 +17,6 @@ const findMache = helpers.findMache;
 const isUserAdminOfGroup = helpers.isUserAdminOfGroup;
 
 
-const addMacheToFolioShotgun = async (groupLocator) => {
-  try {
-    let saves = [];
-    const groups = await Group.find( getQuery(groupLocator) )
-    .populate({path : 'members', populate : { path : 'maches' } })
-    .populate({ path : 'folios' , populate : { path : 'macheSubmissions.mache' } })
-    .exec()
-    groups.forEach( group => {
-      group.members.forEach( member => {
-        member.maches.forEach( mache => {
-          group.folios.forEach( folio => {
-            folio.macheSubmissions.push({
-              mache : mache._id,
-              submitter : member._id,
-              date_submitted : Date.now()
-            })
-          })
-        })
-      })
-      saves = saves.concat( group.folios.map( f => f.save() ) )
-    })
-    Promise.all(saves)
-    .then(_ => { return true; })
-    .catch(e => console.error(e) )
-  }
-  catch  ( e ) {
-    console.log(e);
-  }
-
-}
 
 logic.addMachesToFolios = async (req, res) => {
   try {
@@ -59,5 +29,4 @@ logic.addMachesToFolios = async (req, res) => {
   }
 }
 
-logic.addMacheToFolioShotgun = addMacheToFolioShotgun;
 module.exports = logic;

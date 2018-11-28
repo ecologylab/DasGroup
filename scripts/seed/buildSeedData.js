@@ -11,120 +11,89 @@ const mongoose = require('mongoose');
 const jsonfile = require('jsonfile');
 const config = require('config')
 const seedFile = './scripts/seed/seedData/seedData.json'
-const devUserId = mongoose.Types.ObjectId();
-const group1Id = mongoose.Types.ObjectId();
-const group2Id = mongoose.Types.ObjectId();
-const group3Id = mongoose.Types.ObjectId();
-let randomMember = '';
-const group1Members = []; //populated during pull
-const group2Members = []; //populated during pull
-let devUserMaches = [] //randomly selected maches that are not part of the sampled users
-let machesReferenced = [];
-//A restored live mache backup
-function getRandomInt(max) {
-  return Math.floor(Math.random() * Math.floor(max));
-}
+
+const getRandomInt = (max) => Math.floor( Math.random() * Math.floor(max) )
 mongoose.connect(config.database.devSeedDb, { useNewUrlParser : true }).then(
   () => { console.log("Connected. Beginning pull"); buildSeed(); },
   err => { console.log("ERROR - Database connection failed")}
 )
-const pullAccounts = () => {
-  let accountData = [];
-  return new Promise( (resolve, reject) => {
-    Account.find({}, (err, docs) => {
-      if (err) { reject(err); }
-      docs.forEach( (d,i) => {
-        if ( i % 80 === 0 ) {
-          machesReferenced = machesReferenced.concat(d.maches)
-          accountData.push(d);
-        } else if ( i % 60 === 0 ) {
-          machesReferenced = machesReferenced.concat(d.maches)
-          d.memberOf = [group1Id];
-          group1Members.push(d._id);
-          accountData.push(d);
-        } else if ( i % 20 === 0 ) {
-          accountData.push(d);
-          machesReferenced = machesReferenced.concat(d.maches)
-          d.memberOf = [group2Id];
-          group2Members.push(d._id);
-        } else if ( devUserMaches.length < 8 && d.maches.length > 1 ) {
-          let m = d.maches[0];
-          machesReferenced.push(m);
-          devUserMaches.push(m)
-        }
-      })
-      randomMember = accountData[group2Members.length-1];
-      machesReferenced = machesReferenced.concat(devUserMaches)
-      randomMember.memberOf = randomMember.memberOf.concat([group3Id])
-      group1Members.push(devUserId)
-      group2Members.push(devUserId)
-      resolve(accountData);
-    })
-  })
+const pullAccounts = async (percentage) => {
+  const accountData = []
+  const accounts = await Account.find({ maches : { $exists : true, $not : { $size : 0 } } }).select('-password -hash').exec()
+  const selectedAccounts = accounts.splice( Math.floor(accounts.length * .2), Math.floor(accounts.length * .2)  )
+  return selectedAccounts;
 }
 
-
-
-const pullMaches = () => {
-  return new Promise( (resolve, reject) => {
-    Mache.find({ _id : { $in : machesReferenced } }, (err, maches) => {
-      if ( err ) { reject(err); }
-      maches.filter( m => devUserMaches.map(m => m.toString() ).indexOf(m._id.toString() ) != -1)
-      .forEach( devUsersMache => {
-        devUsersMache.users.push({
-          user : group1Members[getRandomInt(group1Members.length-1) ]._id,
-          roleNum : 1
-        })
-      })
-      resolve(maches);
-    })
-  })
-}
-const createGroupSeedData = (memberIds) => {
-  return [
-      {
-          "_id" : group1Id,
-          "creator" : devUserId,
-          "roles.admins" : [devUserId],
-          "members" : group1Members,
-          "key" : 'abc',
-          "name" : "##420Swag",
-          "description" : 'But are we even real though'
-        },
-        {
-            "_id" : group2Id,
-            "creator" : devUserId,
-            "roles.admins" : [devUserId],
-            "members" : group2Members,
-            "key" : 'def',
-            "name" : "MemeMasters",
-            "description" : 'lol'
-          },
-          {
-              "_id" : group3Id,
-              "creator" : randomMember,
-              "roles.admins" : [randomMember],
-              "members" : [randomMember],
-              "key" : 'efg',
-              "name" : 'Not Aarons Group',
-              "description" : 'Defintely not Aarons'
-            }
+const buildGroups = (devUser, allUsers, amount=20, adminAmount=15) => {
+  const generateGroup = (fields) => {
+    const groupnames = [
+        "weight", "sell", "survival", "tick", "preference", "spare", "credibility", "road", "learn", "fireplace", "reproduction", "superior", "rabbit", "conservation", "protest", "mood", "chin", "space", "canvas", "meaning", "trap", "cook", "absorption", "shower", "remember", "venture", "loss", "rise", "quota", "soldier", "dealer", "insist", "incapable", "powder", "resolution", "boot", "stop", "breast", "opposite", "provincial", "country", "design", "reaction", "represent", "heel", "lodge", "exile", "initiative", "final", "psychology", "wear out", "shame", "point", "failure", "pan", "brag", "weave", "boat", "hostility", "factor", "dip", "rest", "abortion", "episode", "complete", "tone", "budge", "world", "barrel", "stir", "volcano", "mosaic", "west", "elephant", "stimulation", "launch", "deficit", "shot", "tropical", "sound", "motorcycle", "curve", "contemporary", "musical", "trade", "flush", "heavy", "prevent", "unrest", "hold", "knot", "pillow", "turn", "wisecrack", "child", "content", "whip", "deter", "color-blind", "white"
       ]
+    return {
+      "_id" : fields._id || mongoose.Types.ObjectId(),
+      "creator" : fields.creator,
+      "roles.admins" : fields.admins,
+      "members" : fields.members,
+      "name" : groupnames[getRandomInt(groupnames.length)] + getRandomInt(100000),
+      "description" : 'A brilliant if not meaningless description'
+    }
+  }
+  const getRandomMembers = (n) => {
+    const start = getRandomInt(allUsers.length-n)
+    const end = start + n
+    return allUsers.slice( start, end )
+  }
+  const groups = []
+  for ( let i = 0; i < amount; i++ ) {
+    const members = getRandomMembers(20);
+
+    if ( i < adminAmount ) {
+      const group = generateGroup({
+        creator : devUser._id,
+        admins : [devUser._id],
+        members : members.map( m => m._id ).concat([devUser._id])
+      })
+      groups.push(group)
+      members.forEach( m => {
+        m.memberOf.push(group._id)
+      })
+      devUser.memberOf.push(group._id)
+    } else {
+      const group = generateGroup({
+        creator : members[0],
+        admins : members[0],
+        members : members.map( m => m._id )
+      })
+      members.forEach( m => {
+        m.memberOf.push(group._id)
+      })
+      groups.push(group)
+    }
+  }
+  return groups;
 }
-const devUserAccount = () => {
-  // console.log("Creating aarons account with the following maches", devUserMaches)
+
+const pullMaches = async (allUsers) => {
+  const machesReferenced = allUsers.map( u => u.maches ).reduce( (a,b) => a.concat(b) )
+  const maches = await Mache.find({ _id : { $in : machesReferenced} }).exec()
+  return maches;
+}
+
+const buildDevUserAccount = () => {
   return {
-    "_id" : devUserId,
+    "_id" : mongoose.Types.ObjectId(),
     "username": config.developmentUsername,
     "password": "xxx",
     "email": "DasGroupDevUser@tamu.edu",
     "salt": "xxx",
     "hash": "xxx",
     "bio": "living",
-    "memberOf" : [group1Id, group2Id],
-    "maches": devUserMaches
+    "memberOf" : [],
+    "maches": []
   }
 }
+
+
 const writeToFile = (data, file) => {
   return new Promise( (resolve, reject) => {
     jsonfile.writeFile(file, data, (err) => {
@@ -135,20 +104,14 @@ const writeToFile = (data, file) => {
 }
 
 const pullElements = async (macheData) => {
-  let elementIds = []
-  console.log("IN MACHE DATA", macheData.length)
-  macheData.forEach( m => {
-    elementIds = elementIds.concat(m.elements)
-  })
+  let elementIds = macheData.map( m => m.elements).reduce( (a,b) => a.concat(b) )
   let elements = await Element.find({ _id : { $in : elementIds } }).exec()
+  console.log(`Pulled ${elements.length} elements from ${macheData.length} maches`)
   return elements;
 }
 
 const pullClippings = async (elementData) => {
-  let clippingIds = []
-  elementData.forEach( element => {
-    clippingIds.push(element.clipping)
-  })
+  const clippingIds = elementData.map( e => e.clipping)
   let clippings = await Clipping.find({ _id : { $in : clippingIds } }).exec()
   let reducedClippings = clippings.map( clipping => {
     let oClipping = clipping.toObject();
@@ -157,6 +120,7 @@ const pullClippings = async (elementData) => {
     }
     return oClipping;
   })
+  console.log(`Pulled ${reducedClippings.length} clippings from ${elementData.length} elements`)
   return reducedClippings;
 }
 
@@ -164,12 +128,14 @@ const pullClippings = async (elementData) => {
 const buildSeed = async () => {
   try {
     const seedData = { accounts : [], groups : [], maches : [], elements : [], clippings : [] };
-    const accountData = await pullAccounts();
-    const groupData = await createGroupSeedData();
-    const macheData = await pullMaches();
+    const allUsers = await pullAccounts();
+    const devUser = buildDevUserAccount()
+    const groupData = await buildGroups(devUser, allUsers);
+    const macheData = await pullMaches(allUsers);
     const elementData = await pullElements(macheData);
     const clippingData = await pullClippings( elementData );
-    seedData.accounts = seedData.accounts.concat(accountData).concat( [devUserAccount()] );
+    seedData.accounts = seedData.accounts.concat(allUsers);
+    seedData.accounts.push(devUser)
     seedData.groups = seedData.groups.concat(groupData);
     seedData.maches = seedData.maches.concat(macheData);
     seedData.elements = seedData.elements.concat(elementData);
@@ -177,29 +143,8 @@ const buildSeed = async () => {
     await writeToFile(seedData, seedFile)
     console.log('Finished building seed data!');
     process.exit(0);
-
   } catch ( e ) {
     console.error("Build seed data failed!", e);
     process.exit(0);
   }
 }
-
-// const buildSeed = async () => {
-//   try {
-//     const seedData = { accounts : [], groups : [], maches : [] };
-//     const accountData = await pullAccounts();
-//     const groupData = await createGroupSeedData();
-//     const macheData = await pullMaches();
-//     const elementData = await pullElements(macheData);
-//     seedData.accounts = seedData.accounts.concat(accountData).concat( [devUserAccount()] );
-//     seedData.groups = seedData.groups.concat(groupData);
-//     seedData.maches = seedData.maches.concat(macheData);
-//     await writeToFile(seedData, seedFile)
-//     console.log('Finished building seed data!');
-//     process.exit(0);
-//
-//   } catch ( e ) {
-//     console.error("Build seed data failed!", e);
-//     process.exit(0);
-//   }
-// }

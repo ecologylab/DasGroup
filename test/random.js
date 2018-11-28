@@ -48,7 +48,7 @@ const randomId = mongoose.Types.ObjectId();
 
 const test = async () => {
   let user = await Account.findOne({username : "avsphere"}).populate('maches').exec()
-  console.log(user.maches);
+  console.log(user)
   process.exit(0);
 }
 

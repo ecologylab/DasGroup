@@ -7,6 +7,7 @@ const Clipping = require('../../models/clipping');
 const path = require('path')
 const fs = require('fs')
 
+
 mongoose.connect(config.database.devSeedDb, { useNewUrlParser : true }).then(
   () => { console.log("Connected. Beginning pull"); run(); },
   err => { console.log("ERROR - Database connection failed")}
@@ -36,21 +37,22 @@ const checkImageClipping = (imageClipping) => {
 
 
 const testClippings = async () => {
-  let clippings = await Clipping.find({}).select('-semantics').limit(1000).exec()
+  let clippings = await Clipping.find({}).select('-semantics').exec()
   try {
     const imageClippingChecks = clippings
     .map( c => c.toObject() )
     .filter( c => c['remoteLocation'] && c['localLocation'] )
     .map( async( imageClipping,i  ) => {
+      await sleep(i*400)
+      const clippingCheck = await checkImageClipping(imageClipping)
       if ( i % 1000  == 0 ) { console.log(`Tested ${i} clippings. FailedClippings : ${failedClippings}`)}
-      await sleep(getRandomInt(1000))
-      return await checkImageClipping(imageClipping)
+      return clippingCheck;
     })
 
     // console.log(`Found ${requestUrls.length} image clippings that have a local and remote path`)
 
     const requestStatuses = await Promise.all(imageClippingChecks)
-    await jsonFile.writeFile( path.join(__dirname, `clippingRequestStatus.json`), requestStatuses)
+    await jsonFile.writeFile( path.join(__dirname, `seedData/clippingRequestStatus.json`), requestStatuses)
 
     console.log('Write success')
     return requestStatuses;
@@ -64,15 +66,17 @@ const testClippings = async () => {
 const analyzeResults = async() => {
   const jsonData = await jsonFile.readFile( path.join(__dirname, 'seedData/clippingRequestStatus.json') )
   let testing = []
+  let failedUrls = []
   let i = 0;
   let j = 0;
   jsonData.forEach( testResult => {
      if ( testResult.hasOwnProperty('fail') ) {
        testResult.fail.remoteLocation = '';
        i++
-       // console.log(testResult)
+       failedUrls.push(testResult.url)
        testing.push(testResult);
      } else {
+       testResult.success.remoteLocation = '';
        j++;
        testing.push(testResult);
      }
@@ -84,8 +88,8 @@ const analyzeResults = async() => {
 }
 
 const run = async () => {
-  await testClippings()
-  // await analyzeResults()
+  // await testClippings()
+  await analyzeResults()
   console.log("Complete!")
   process.exit(0);
 }

@@ -8,7 +8,7 @@ const Folio = require('../models/folio');
 const Clipping = require('../models/clipping');
 const Element = require('../models/element');
 const Role = require('../models/role');
-const { extractMaches, extractElements, extractClippings } = require('./analysisHelpers')
+const { extractMaches, extractElements, extractClippings } = require('./helpers')
 
 // mongoose.connect(config.database.connectionString, { useNewUrlParser : true }).then(
 //   () => { console.log("Connected to database. Running analytics");  },

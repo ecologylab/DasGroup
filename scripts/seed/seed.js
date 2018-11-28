@@ -30,7 +30,7 @@ const runSeed = (emptyFirst) => {
   .then( () => dropIndexes(Group) )
   .then( () => dropIndexes(Mache) )
   .then( () => seed() )
-  .then( () => setAaronsMaches() )
+  .then( () => seedFolios() )
   .then( () => { console.log('Seed success!'); process.exit(0); })
   .catch( (e) => console.error('Error in seeding', e))
 }
@@ -105,7 +105,6 @@ const seed = () => {
 
       Promise.all( savePromises )
       .then( async (saves) => {
-        await seedFolios()
         resolve(true);
       })
       .catch( (err) => reject(err) )
