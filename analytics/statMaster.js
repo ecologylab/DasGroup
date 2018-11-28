@@ -53,24 +53,54 @@ const testing_nonCurried = async() => {
 
 const testing_curried = async() => {
   const machesFromBigUsers = await helpers.getMachesFromUsersWithGtField('maches', 8)
-  const machesFromLittleUsers = await helpers.getMachesFromUsersWithGtField('maches', 2, 5)
-  const machePred_manyElements = (m) => m.elements.length > 20
+  const machesFromLittleUsers = await helpers.getMachesFromUsersWithGtField('maches', 1, 2)
+  const machePred_manyElements = (m) => m.elements.length > 10
   const machePred_fewElements = (m) => m.elements.length > 5
   const clippingPred_isImage = (c) => c.toObject().hasOwnProperty('type') && c.toObject().type === 'image_clipping'
   const clippingPred_isText = (c) => c.toObject().hasOwnProperty('type') && c.toObject().type === 'text_clipping'
+  const clippingPred_selfMade = (c) => c.toObject().hasOwnProperty('type') && c.toObject().type === 'image_selfmade'
+  const clippingPred_doesExist = (c) => c
+
   const elementPredicate = (e) => e.clipping !== null;
 
   const bigUsersManyElements_partial = macheAnalysis(machesFromBigUsers, machePred_manyElements)
   const littleUsersManyElements_partial = macheAnalysis(machesFromLittleUsers, machePred_manyElements)
 
-  const imageClippingsFromBigUsers = bigUsersManyElements_partial(elementPredicate, clippingPred_isImage)
-  const textClippingsFromBigUsers = bigUsersManyElements_partial(elementPredicate, clippingPred_isText)
+  const bigUsers = {
+    imageClippings : bigUsersManyElements_partial(elementPredicate, clippingPred_isImage).length,
+    textClippings : bigUsersManyElements_partial(elementPredicate, clippingPred_isText).length,
+    selfClippings :  bigUsersManyElements_partial(elementPredicate, clippingPred_selfMade).length,
+    allClippings : bigUsersManyElements_partial(elementPredicate, clippingPred_doesExist).length
+  }
+  const littleUsers = {
+    imageClippings : littleUsersManyElements_partial(elementPredicate, clippingPred_isImage).length,
+    textClippings : littleUsersManyElements_partial(elementPredicate, clippingPred_isText).length,
+    selfClippings :  littleUsersManyElements_partial(elementPredicate, clippingPred_selfMade).length,
+    allClippings : littleUsersManyElements_partial(elementPredicate, clippingPred_doesExist).length
+  }
 
-  const imageClippingsFromLittleUsers = littleUsersManyElements_partial(elementPredicate, clippingPred_isImage)
-  const textClippingsFromLittleUsers = littleUsersManyElements_partial(elementPredicate, clippingPred_isText)
 
-  //results 1142, 870,   747, 815
-  console.log(imageClippingsFromBigUsers.length / textClippingsFromBigUsers.length, imageClippingsFromLittleUsers.length / textClippingsFromLittleUsers.length)
+  const getBsButSlightlyInterestingStats = () => {
+    bigUsers.imageToText = bigUsers.imageClippings / bigUsers.textClippings
+    bigUsers.imageToSelf = bigUsers.imageClippings / bigUsers.selfClippings
+    bigUsers.textToSelf = bigUsers.textClippings / bigUsers.selfClippings
+    bigUsers.imageToAll = bigUsers.imageClippings / bigUsers.allClippings
+    bigUsers.textToAll = bigUsers.textClippings / bigUsers.allClippings
+    bigUsers.selfToAll = bigUsers.selfClippings / bigUsers.allClippings
+
+    littleUsers.imageToText = littleUsers.imageClippings / littleUsers.textClippings
+    littleUsers.imageToSelf = littleUsers.imageClippings / littleUsers.selfClippings
+    littleUsers.textToSelf = littleUsers.textClippings / littleUsers.selfClippings
+    littleUsers.imageToAll = littleUsers.imageClippings / littleUsers.allClippings
+    littleUsers.textToAll = littleUsers.textClippings / littleUsers.allClippings
+    littleUsers.selfToAll = littleUsers.selfClippings / littleUsers.allClippings
+  }
+
+  getBsButSlightlyInterestingStats()
+
+  console.log(bigUsers)
+  console.log(littleUsers)
+
 
 
 }
