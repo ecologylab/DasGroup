@@ -18,23 +18,25 @@ mongoose.connect(config.database.connectionString, { useNewUrlParser : true }).t
   err => { console.log("ERROR - Database connection failed")}
 )
 
-const runSeed = (emptyFirst) => {
-  clearCollection(Account)
-  .then ( () => clearCollection(Group) )
-  .then ( () => clearCollection(Mache) )
-  .then ( () => clearCollection(Folio) )
-  .then ( () => clearCollection(Role) )
-  .then ( () => clearCollection(Clipping) )
-  .then ( () => clearCollection(Element) )
-  .then( () => dropIndexes(Account) )
-  .then( () => dropIndexes(Group) )
-  .then( () => dropIndexes(Mache) )
-  .then( () => seed() )
-  .then( () => seedFolios() )
-  .then( () => { console.log('Seed success!'); process.exit(0); })
-  .catch( (e) => console.error('Error in seeding', e))
+const runSeed = async () => {
+    await clearCollection(Account)
+    await clearCollection(Mache)
+    await clearCollection(Folio)
+    await clearCollection(Role)
+    await clearCollection(Clipping)
+    await clearCollection(Element)
+    await dropIndexes(Account)
+    await dropIndexes(Group)
+    await dropIndexes(Mache)
+
+    await seed()
+    await seedFolios()
+    console.log('Seed success!');
+    process.exit(0);
 }
-//This is using the dev user set in the config
+
+
+
 const setAaronsMaches = () => {
   let devUserId = ''
   const findMache = (macheId) => Mache.findById(macheId).exec()
@@ -70,45 +72,27 @@ const dropIndexes = (Model) => {
     })
   })
 }
-const seed = () => {
-  return new Promise( (resolve, reject) => {
-    jsonfile.readFile(seedFile)
-    .then( (data) => {
-      let accounts = data.accounts,
-          groups = data.groups,
-          maches = data.maches,
-          elements = data.elements,
-          clippings = data.clippings;
-      let savePromises = [];
-      accounts.forEach( (a) => {
-        let newAcc = new Account(a);
-        savePromises.push(newAcc.save() )
-      })
-      groups.forEach( (g) => {
-        let newGroup = new Group(g);
-        savePromises.push(newGroup.save() )
-      })
-      maches.forEach( (m) => {
-        if ( !m.hasOwnProperty('description') ) { console.log(m); m.description = ''; }
-        m.description = m.description + ' ';
-        let newMache = new Mache(m);
-        savePromises.push(newMache.save() )
-      })
-      elements.forEach( (e) => {
-        let newEl = new Element(e);
-        savePromises.push(newEl.save() )
-      })
-      clippings.forEach( (c) => {
-        let newClip = new Clipping(c);
-        savePromises.push(newClip.save() )
-      })
 
-      Promise.all( savePromises )
-      .then( async (saves) => {
-        resolve(true);
-      })
-      .catch( (err) => reject(err) )
-    })
-    .catch(err => reject(err))
-  })
+const seed = async () => {
+  try {
+    const { accounts, groups, maches, elements, clippings, roles } = await jsonfile.readFile(seedFile);
+    const savePromises = []
+    await Account.insertMany(accounts)
+    console.log("Accounts seeded")
+    await Role.insertMany(roles)
+    console.log("Roles seeded")
+    await Mache.insertMany(maches)
+    console.log("Maches seeded")
+    await Group.insertMany(groups)
+    console.log("Groups seeded")
+    await Clipping.insertMany(clippings)
+    console.log("Clippings seeded")
+    await Element.insertMany(elements)
+    console.log("Elements seeded")
+    return true
+  }
+  catch ( e ) {
+    console.error("Error!", e)
+    return e
+  }
 }
