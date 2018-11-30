@@ -1,13 +1,12 @@
 process.env.NODE_ENV = 'dev'
-//This connects to an instance of a recovered live mache db -> Account does exist in old live mache, not groups
-//It then pulls 1/20th of the users
-//It then adds this data to the seedFiles
-//It then builds a group with the owner aaron and random members
+//This is now for creating a sample db that is smaller and easier for testing.
 const Account = require('../../models/account');
 const Mache = require('../../models/mache');
 const Element = require('../../models/element');
 const Clipping = require('../../models/clipping');
 const Role = require('../../models/role');
+const Group = require('../../models/group');
+const Folio = require('../../models/folio');
 const mongoose = require('mongoose');
 const jsonfile = require('jsonfile');
 const config = require('config')
@@ -21,11 +20,12 @@ mongoose.connect(config.database.devSeedDb, { useNewUrlParser : true }).then(
 const pullAccounts = async (percentage) => {
   const accountData = []
   const accounts = await Account.find({ maches : { $exists : true, $not : { $size : 0 } } }).select('-password -hash').exec()
-  const selectedAccounts = accounts.splice( Math.floor(accounts.length * .2), Math.floor(accounts.length * .5)  )
+  const selectedAccounts = accounts//.splice( Math.floor(accounts.length * .2), Math.floor(accounts.length * .5)  )
+  console.log(`Pulling ${selectedAccounts.length} accounts`)
   return selectedAccounts;
 }
 
-const buildGroups = (devUser, allUsers, amount=20, adminAmount=15) => {
+const buildGroups = (devUser, allUsers, amount=5, adminAmount=3) => {
   const generateGroup = (fields) => {
     const groupnames = [
         "weight", "sell", "survival", "tick", "preference", "spare", "credibility", "road", "learn", "fireplace", "reproduction", "superior", "rabbit", "conservation", "protest", "mood", "chin", "space", "canvas", "meaning", "trap", "cook", "absorption", "shower", "remember", "venture", "loss", "rise", "quota", "soldier", "dealer", "insist", "incapable", "powder", "resolution", "boot", "stop", "breast", "opposite", "provincial", "country", "design", "reaction", "represent", "heel", "lodge", "exile", "initiative", "final", "psychology", "wear out", "shame", "point", "failure", "pan", "brag", "weave", "boat", "hostility", "factor", "dip", "rest", "abortion", "episode", "complete", "tone", "budge", "world", "barrel", "stir", "volcano", "mosaic", "west", "elephant", "stimulation", "launch", "deficit", "shot", "tropical", "sound", "motorcycle", "curve", "contemporary", "musical", "trade", "flush", "heavy", "prevent", "unrest", "hold", "knot", "pillow", "turn", "wisecrack", "child", "content", "whip", "deter", "color-blind", "white"
@@ -117,6 +117,18 @@ const pullRoles = async () => {
   return roles
 }
 
+const pullFolios = async () => {
+  //not very many and quite small so pulling all
+  const folios = await Folio.find({}).exec()
+  return folios
+}
+
+const pullGroups = async () => {
+  //not very many and quite small so pulling all
+  const groups = await Group.find({}).exec()
+  return groups
+}
+
 const pullClippings = async (elementData) => {
   const clippingIds = elementData.map( e => e.clipping)
   let clippings = await Clipping.find({ _id : { $in : clippingIds } }).exec()
@@ -134,7 +146,7 @@ const pullClippings = async (elementData) => {
 
 const buildSeed = async () => {
   try {
-    const seedData = { accounts : [], groups : [], maches : [], elements : [], clippings : [], roles : [] };
+    const seedData = {};
     const allUsers = await pullAccounts();
     const devUser = buildDevUserAccount()
     const groupData = await buildGroups(devUser, allUsers);
@@ -142,13 +154,16 @@ const buildSeed = async () => {
     const elementData = await pullElements(macheData);
     const clippingData = await pullClippings( elementData );
     const roleData = await pullRoles();
-    seedData.accounts = seedData.accounts.concat(allUsers);
+    const trueGroups = await pullGroups();
+    const folioData = await pullFolios();
+    seedData.accounts = allUsers;
     seedData.accounts.push(devUser)
-    seedData.groups = seedData.groups.concat(groupData);
-    seedData.maches = seedData.maches.concat(macheData);
-    seedData.elements = seedData.elements.concat(elementData);
-    seedData.clippings = seedData.clippings.concat(clippingData);
-    seedData.roles = seedData.roles.concat(roleData);
+    seedData.groups = groupData.concat(trueGroups); //creating groups admin of for testing
+    seedData.folios = folioData
+    seedData.maches = macheData;
+    seedData.elements = elementData;
+    seedData.clippings = clippingData;
+    seedData.roles = roleData;
     await writeToFile(seedData, seedFile)
     console.log('Finished building seed data!');
     process.exit(0);

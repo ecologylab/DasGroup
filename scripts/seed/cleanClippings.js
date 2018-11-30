@@ -61,6 +61,23 @@ const testClippings = async () => {
   }
 }
 
+const clippingSizeScan = async(n=100) => {
+  const clippings = await Clipping.findById("5a77cdf08aafbdc828eedb7a").exec()
+  console.log(clippings.toObject().remoteLocation)
+  // let bigClippings = []
+  // let clippingSizes = []
+  // clippings.map( c => c.toJSON() ).forEach( c => {
+  //   clippingSizes.push([ c._id, JSON.stringify(c).length])
+  // })
+  // clippingSizes.sort( (a,b) => { return b[1] - a[1] })
+  // bigClippings = clippingSizes.splice(0,10).map( c => c[0])
+  // bigClippings = clippings.filter( c => bigClippings.includes(c._id) )
+  // // return clippingSizes.splice(0,n)
+  // console.log(bigClippings)
+}
+
+
+
 
 
 const analyzeResults = async() => {
@@ -89,7 +106,8 @@ const analyzeResults = async() => {
 
 const run = async () => {
   // await testClippings()
-  await analyzeResults()
+  // await analyzeResults()
+  await clippingSizeScan();
   console.log("Complete!")
   process.exit(0);
 }

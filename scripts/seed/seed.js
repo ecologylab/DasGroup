@@ -1,5 +1,6 @@
 process.env.NODE_ENV = 'dev'
 //This uses the seed data which should have been populated from buildSeedData
+//This is just for seeding a sample sized db with lots of folios and groups for easier testing
 const Account = require('../../models/account');
 const Group = require('../../models/group');
 const Mache = require('../../models/mache');
@@ -25,12 +26,13 @@ const runSeed = async () => {
     await clearCollection(Role)
     await clearCollection(Clipping)
     await clearCollection(Element)
+    await clearCollection(Group)
     await dropIndexes(Account)
     await dropIndexes(Group)
     await dropIndexes(Mache)
 
     await seed()
-    await seedFolios()
+    await seedFolios() //creation of folios for dev user
     console.log('Seed success!');
     process.exit(0);
 }
@@ -75,7 +77,7 @@ const dropIndexes = (Model) => {
 
 const seed = async () => {
   try {
-    const { accounts, groups, maches, elements, clippings, roles } = await jsonfile.readFile(seedFile);
+    const { accounts, groups, maches, elements, clippings, roles, folios } = await jsonfile.readFile(seedFile);
     const savePromises = []
     await Account.insertMany(accounts)
     console.log("Accounts seeded")
@@ -85,6 +87,8 @@ const seed = async () => {
     console.log("Maches seeded")
     await Group.insertMany(groups)
     console.log("Groups seeded")
+    await Folio.insertMany(folios)
+    console.log("Folios seeded")
     await Clipping.insertMany(clippings)
     console.log("Clippings seeded")
     await Element.insertMany(elements)
