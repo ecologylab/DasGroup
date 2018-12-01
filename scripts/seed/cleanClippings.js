@@ -8,7 +8,7 @@ const path = require('path')
 const fs = require('fs')
 
 
-mongoose.connect(config.database.devSeedDb, { useNewUrlParser : true }).then(
+mongoose.connect(config.database.connectionString, { useNewUrlParser : true }).then(
   () => { console.log("Connected. Beginning pull"); run(); },
   err => { console.log("ERROR - Database connection failed")}
 )
@@ -61,19 +61,16 @@ const testClippings = async () => {
   }
 }
 
-const clippingSizeScan = async(n=100) => {
-  const clippings = await Clipping.findById("5a77cdf08aafbdc828eedb7a").exec()
-  console.log(clippings.toObject().remoteLocation)
-  // let bigClippings = []
-  // let clippingSizes = []
-  // clippings.map( c => c.toJSON() ).forEach( c => {
-  //   clippingSizes.push([ c._id, JSON.stringify(c).length])
-  // })
-  // clippingSizes.sort( (a,b) => { return b[1] - a[1] })
-  // bigClippings = clippingSizes.splice(0,10).map( c => c[0])
-  // bigClippings = clippings.filter( c => bigClippings.includes(c._id) )
-  // // return clippingSizes.splice(0,n)
-  // console.log(bigClippings)
+const clippingSizeScan = async() => {
+  const clippings = await Clipping.find({}).exec()
+  const clippingSizes = clippings
+  .map( c => c.toJSON() )
+  .filter( c => c.hasOwnProperty('svgData') )
+  .map( c => [ c._id, JSON.stringify(c).length] )
+  const bigClippings = clippingSizes.sort( (a,b) => b[1] - a[1]).map( c => c[1]).reduce( (a,b) => a+b)
+  // const bigClipping = await Clipping.findById("59bac99914bc64263b40cb22").exec()
+  // return clippingSizes.splice(0,n)
+  console.log(bigClippings / 1000 / 1000, bigClippings / clippingSizes.length)
 }
 
 

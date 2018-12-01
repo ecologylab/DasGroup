@@ -12,6 +12,11 @@ const accountSchema = mongoose.Schema({
     required : true,
     unique : true
   },
+  access_code:
+  {
+      type: String,
+      default: "",
+  },
   password: {
     type: String,
     required : false

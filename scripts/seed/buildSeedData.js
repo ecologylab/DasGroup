@@ -139,6 +139,7 @@ const pullClippings = async (elementData) => {
     }
     return oClipping;
   })
+
   console.log(`Pulled ${reducedClippings.length} clippings from ${elementData.length} elements`)
   return reducedClippings;
 }
