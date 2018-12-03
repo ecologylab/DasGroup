@@ -28,7 +28,7 @@ const getClippingDistribution = async () => {
   })
 
   Object.keys(clippingDist).forEach( distKey => {
-    clippingDist[distKey] = { type : distKey, count : clippingDist[distKey], percentage : clippingDist[distKey] / clippings.length }
+    clippingDist[distKey] = { type : distKey, count : clippingDist[distKey], percentag e : clippingDist[distKey] / clippings.length }
   })
   return clippingDist;
 }
@@ -100,11 +100,11 @@ const collaborationMetrics = async() => {
   }
 
 
-  results.machesWith_2Users = buildCollaborationMetrics( await helpers.getCollaboratedMaches(1, 2) );
+  results.machesWith_2Users = buildCollaborationMetrics( await helpers.getCollaboratedMaches([], 1, 2) );
 
-  results.machesWith_2to5Users = await buildCollaborationMetrics( await helpers.getCollaboratedMaches(2, 5) );
+  results.machesWith_2to5Users = await buildCollaborationMetrics( await helpers.getCollaboratedMaches([], 2, 5) );
 
-  results.machesWith_gt5Users = await buildCollaborationMetrics( await helpers.getCollaboratedMaches(5, 100) );
+  results.machesWith_gt5Users = await buildCollaborationMetrics( await helpers.getCollaboratedMaches([], 5, 100) );
 
   return results;
 }

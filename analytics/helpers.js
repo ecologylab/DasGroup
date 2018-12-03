@@ -11,7 +11,11 @@ const Role = require('../models/role');
 //From Eric Elliots "Composing Software"
 const curry = (f, arr = []) => (...args) => ( a => a.length === f.length ? f(...a) : curry(f, a) )([...arr, ...args])
 const uniq = (a) => Array.from(new Set(a));
-const getDeepMaches = (macheIds) => Mache.find({ _id : { $in : macheIds } }).populate({ path : 'elements' , populate : { path : 'clipping' } }).exec()
+const getDeepMaches = (macheIds) => Mache
+.find({ _id : { $in : macheIds } })
+.populate('creator')
+.populate('users.user')
+.populate({ path : 'elements' , populate : { path : 'clipping' } }).exec()
 const avg = (a) => a.reduce( (a,b) => a + b ) / a.length
 const max = (a) => Math.max(...a)
 const min = (a) => Math.min(...a)
@@ -36,7 +40,7 @@ const extractClippings = (maches) => {
 
 const extractMaches = async (collection, options) => {
   if ( !Array.isArray(collection) ) { collection = [collection] }
-  const modelName = collection[0].constructor.modelName;
+  const modelName = collection[0].constructor.modelName
   let maches = []
 
   const extractMaches_folio = (folios) => {
@@ -68,9 +72,11 @@ const extractMaches = async (collection, options) => {
   return maches;
 }
 
-//minUsers does not count the creator
-const getCollaboratedMaches = async (minUsers, maxUsers, elementMinCount=10) => {
+
+
+const getCollaboratedMaches = async (maches=[], minUsers, maxUsers, elementMinCount=10) => {
   const query = { users : { $exists : true, $not : { $size : 0 } } }
+  if ( maches.length > 0 ) { query._id = { $in : maches.map( m => m._id ) } }
   const collaboratedMaches = await Mache.find(query).populate('creator').populate('users.user').populate({ path : 'elements' , populate : { path : 'clipping' } }).exec()
   const labUsers = [
     "bill.hamilton","nicolas.botello.jr.","nic", "brieyh'leai.reyhn.simmons", "billingsley", "ajit.jain0", "rhema.linder",

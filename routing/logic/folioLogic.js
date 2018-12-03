@@ -18,9 +18,9 @@ const isUserAdminOfGroup = helpers.isUserAdminOfGroup;
 
 //req.body = { folioLocator : { folioId/key : ... }, macheLocator : { macheId/key : ... }
 logic.addMacheToFolio = async (req, res) => {
-  const folioQuery = getQuery(req.body.folioLocator);
-  const macheQuery = getQuery(req.body.macheLocator);
   try {
+    const folioQuery = getQuery(req.body.folioLocator);
+    const macheQuery = getQuery(req.body.macheLocator);
     const collect = () => {
       const promises = [];
       const collection = {}
@@ -119,9 +119,9 @@ logic.addMacheToFolio = async (req, res) => {
 
 //req.body = { folioQuery : { folioId/key : ... }, macheQuery : { macheId/key : ... }
 logic.removeMacheFromFolio = async (req, res) => {
-  const folioQuery = getQuery(req.body.folioLocator);
-  const macheQuery = getQuery(req.body.macheLocator);
   try {
+    const folioQuery = getQuery(req.body.folioLocator);
+    const macheQuery = getQuery(req.body.macheLocator);
     const collect = () => {
       const promises = [];
       const collection = {}
@@ -222,10 +222,9 @@ logic.removeMacheFromFolio = async (req, res) => {
 }
 
 logic.updateFolio = async (req, res) => {
-  console.log(req.body.folioLocator)
-  const folioQuery = getQuery(req.body.folioLocator);
-  const folioData = req.body.folioData;
   try {
+    const folioQuery = getQuery(req.body.folioLocator);
+    const folioData = req.body.folioData;
     const collect = () => {
       const collection = {};
       return new Promise( (resolve, reject) => {
