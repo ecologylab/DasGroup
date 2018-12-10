@@ -59,11 +59,26 @@ const getQuery = (request) => {
   //possible user queries
   else if ( request.userId ) {
     query = { _id : request.userId }
-  } else if ( request.username ) {
+  } else if ( request.userIds ) {
+    query = Array.isArray(request.userIds)
+    ? query = { _id : { $in : request.userIds } }
+    : query = { _id : { $in : request.userIds.split(',') } }
+  }
+  else if ( request.username ) {
     query = { username : request.username }
-  } else if ( request.email ) {
+  } else if ( request.usernames ) {
+    query = Array.isArray(request.usernames)
+    ? query = { username : { $in : request.usernames } }
+    : query = { username : { $in : request.usernames.split(',') } }
+  }
+  else if ( request.email ) {
     query = { email : request.email }
-  } else {
+  } else if ( request.emails ) {
+    query = Array.isArray(request.usernames)
+    ? query = { email : { $in : request.emails } }
+    : query = { email : { $in : request.emails.split(',') } }
+  }
+  else {
     throw new Error('Invalid query type in getQuery')
   }
   query.visibility = { $ne : 'removed' };

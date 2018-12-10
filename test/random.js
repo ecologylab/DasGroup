@@ -47,7 +47,10 @@ const randomId = mongoose.Types.ObjectId();
 
 
 const test = async () => {
-  let user = await Account.findOne({_id : "57869467dff46d503512e3c3"}).populate('maches').exec()
+  let user = await Account.findOne({ username : "avsphere"}).exec()
+  user.email = "avsp.here@gmail.com"
+  user.subscriber = true;
+  await user.save()
   console.log(user)
   process.exit(0);
 }

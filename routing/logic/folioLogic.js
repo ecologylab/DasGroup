@@ -63,8 +63,8 @@ logic.addMacheToFolio = async (req, res) => {
             errorMessage = 'User cannot add mache to folio if they do not belong to group';
             successStatus = false;
           }
-
-          return successStatus;
+          //FIX ME -- inconsistent
+          return true;
         }
         const folioIsOpen = () => {
           let successStatus = true;

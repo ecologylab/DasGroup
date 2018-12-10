@@ -5,13 +5,15 @@ const logger = require('../utils/logger');
 const accountLogic = require('./logic/accountLogic');
 const groupLogic = require('./logic/groupLogic');
 const folioLogic = require('./logic/folioLogic');
+const adminLogic = require('./logic/adminLogic');
 const helpers = require('./helpers/helpers')
 const isAuthenticated = helpers.isAuthenticated;
 
 /* account */
 router.get('/getUser', isAuthenticated, accountLogic.getUser);
 router.get('/getOpenedFolios', isAuthenticated, accountLogic.getOpenedFolios)
-
+router.post('/emailUsers', isAuthenticated, adminLogic.emailUsers)
+router.post('/emailSubscribers', isAuthenticated, adminLogic.emailSubscribers)
 
 /* group */
 router.get('/getGroups', isAuthenticated, groupLogic.getGroups);

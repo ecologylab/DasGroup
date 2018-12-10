@@ -6,7 +6,9 @@ import index from './index.js';
 import group from './group.js';
 import admin from './admin.js';
 import test from './test.js';
+import emailTester from './tests/testEmailing.js'
 
+console.log("Emailer", emailTester)
 if ( window.location.pathname.includes('test') && NODE_ENV != 'prod' && NODE_ENV != 'production') {
   test.init()
   .then( usersAndGroups => test.tests(usersAndGroups) )

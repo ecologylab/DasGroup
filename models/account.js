@@ -25,6 +25,10 @@ const accountSchema = mongoose.Schema({
     type: String,
     required : false
   },
+  subscriber : {
+    type: Boolean,
+    default : true
+  },
   hash: {
     type : String,
     required : false
