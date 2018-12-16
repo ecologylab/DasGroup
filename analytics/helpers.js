@@ -90,7 +90,7 @@ const getCollaboratedMaches = async (maches=[], minUsers, maxUsers, elementMinCo
     })
     return pass
   }
-  const creatorNotLabUser = (m) => !labUsers.includes(m.creator.username.toString()) && m.creator.access_code.length > 10 && m.creator.access_code !== "ecologyfriends"
+  const creatorNotLabUser = (m) => !labUsers.includes(m.creator.username.toString()) && m.creator.access_code.length > 5 && m.creator.access_code !== "ecologyfriends"
   const containsStudentUsers = (m) => {
     const labUserCount = m.users.filter( u => labUsers.includes( u.user.username.toString() ) ).length
     return m.users.length - labUserCount

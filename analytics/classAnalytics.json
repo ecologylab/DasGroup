@@ -1,0 +1,1175 @@
+{
+  "collaboratedMaches": {
+    "avgProportionOfElementsByCreator": 0.4195729337871629,
+    "clippingDistribution": {
+      "text_clipping": {
+        "type": "text_clipping",
+        "count": 4822,
+        "percentage": 0.44639881503425294
+      },
+      "image_clipping": {
+        "type": "image_clipping",
+        "count": 2940,
+        "percentage": 0.2721718200333272
+      },
+      "image_selfmade": {
+        "type": "image_selfmade",
+        "count": 711,
+        "percentage": 0.06582114423254953
+      },
+      "shape_clipping": {
+        "type": "shape_clipping",
+        "count": 1735,
+        "percentage": 0.1606184039992594
+      },
+      "doc_clipping": {
+        "type": "doc_clipping",
+        "count": 527,
+        "percentage": 0.04878726161821885
+      },
+      "video_clipping": {
+        "type": "video_clipping",
+        "count": 67,
+        "percentage": 0.00620255508239215
+      }
+    },
+    "avgElements": 180.03333333333333,
+    "macheCount": 60,
+    "elementCountByUser": [{
+      "_id": "5bfb48b2722a4b1ead1763d2",
+      "totalElementCount": 459,
+      "userElementCount": {
+        "5bb643803861986338ba78d5": {
+          "createdElements": 63,
+          "createdPercentage": 0.13725490196078433
+        },
+        "5bbf7ac4bcc73a1267fa5566": {
+          "createdElements": 149,
+          "createdPercentage": 0.32461873638344224
+        },
+        "5bbf7a93bcc73a1267fa5564": {
+          "createdElements": 228,
+          "createdPercentage": 0.49673202614379086
+        },
+        "5bbf7852067a4e12579083ab": {
+          "createdElements": 19,
+          "createdPercentage": 0.04139433551198257
+        }
+      }
+    }, {
+      "_id": "5bfa209a7b840d1e851e45c5",
+      "totalElementCount": 452,
+      "userElementCount": {
+        "5bbf79ba067a4e12579083b5": {
+          "createdElements": 81,
+          "createdPercentage": 0.17920353982300885
+        },
+        "5bbf79e3bcc73a1267fa5559": {
+          "createdElements": 296,
+          "createdPercentage": 0.6548672566371682
+        },
+        "5b9a9ec0c1be99f937d9d860": {
+          "createdElements": 52,
+          "createdPercentage": 0.11504424778761062
+        },
+        "5bbf79e7067a4e12579083b8": {
+          "createdElements": 18,
+          "createdPercentage": 0.03982300884955752
+        },
+        "5bbf79d225ce2e125c4e8eea": {
+          "createdElements": 5,
+          "createdPercentage": 0.011061946902654867
+        }
+      }
+    }, {
+      "_id": "5be9064cdac8dc6d20fbfcdb",
+      "totalElementCount": 443,
+      "userElementCount": {
+        "5bb643803861986338ba78d5": {
+          "createdElements": 63,
+          "createdPercentage": 0.14221218961625282
+        },
+        "5bbf7ac4bcc73a1267fa5566": {
+          "createdElements": 149,
+          "createdPercentage": 0.3363431151241535
+        },
+        "5bbf7a93bcc73a1267fa5564": {
+          "createdElements": 212,
+          "createdPercentage": 0.4785553047404063
+        },
+        "5bbf7852067a4e12579083ab": {
+          "createdElements": 19,
+          "createdPercentage": 0.04288939051918736
+        }
+      }
+    }, {
+      "_id": "5be9078cdac8dc6d20fc01f1",
+      "totalElementCount": 363,
+      "userElementCount": {
+        "5bbf77bd067a4e12579083a8": {
+          "createdElements": 24,
+          "createdPercentage": 0.06611570247933884
+        },
+        "5bbfa23f067a4e1257908434": {
+          "createdElements": 231,
+          "createdPercentage": 0.6363636363636364
+        },
+        "5bbf79b4067a4e12579083b4": {
+          "createdElements": 29,
+          "createdPercentage": 0.07988980716253444
+        },
+        "5bbf779f25ce2e125c4e8edd": {
+          "createdElements": 79,
+          "createdPercentage": 0.21763085399449036
+        }
+      }
+    }, {
+      "_id": "5bfb72de722a4b1ead1766e0",
+      "totalElementCount": 362,
+      "userElementCount": {
+        "5b915375abb0694e7fc8523f": {
+          "createdElements": 17,
+          "createdPercentage": 0.04696132596685083
+        },
+        "5bbf784b25ce2e125c4e8ede": {
+          "createdElements": 103,
+          "createdPercentage": 0.2845303867403315
+        },
+        "5bbf77d22c5695125aae55e4": {
+          "createdElements": 157,
+          "createdPercentage": 0.43370165745856354
+        },
+        "5bbf7a7d25ce2e125c4e8eec": {
+          "createdElements": 85,
+          "createdPercentage": 0.23480662983425415
+        }
+      }
+    }, {
+      "_id": "5bea09f5dac8dc6d20fc08d6",
+      "totalElementCount": 353,
+      "userElementCount": {
+        "5b915375abb0694e7fc8523f": {
+          "createdElements": 14,
+          "createdPercentage": 0.039660056657223795
+        },
+        "5bbf784b25ce2e125c4e8ede": {
+          "createdElements": 98,
+          "createdPercentage": 0.2776203966005666
+        },
+        "5bbf77d22c5695125aae55e4": {
+          "createdElements": 156,
+          "createdPercentage": 0.44192634560906513
+        },
+        "5bbf7a7d25ce2e125c4e8eec": {
+          "createdElements": 85,
+          "createdPercentage": 0.24079320113314448
+        }
+      }
+    }, {
+      "_id": "5be7ba80558be56d1e87888f",
+      "totalElementCount": 344,
+      "userElementCount": {
+        "5bbf79ba067a4e12579083b5": {
+          "createdElements": 79,
+          "createdPercentage": 0.22965116279069767
+        },
+        "5bbf79e3bcc73a1267fa5559": {
+          "createdElements": 197,
+          "createdPercentage": 0.5726744186046512
+        },
+        "5b9a9ec0c1be99f937d9d860": {
+          "createdElements": 50,
+          "createdPercentage": 0.14534883720930233
+        },
+        "5bbf79e7067a4e12579083b8": {
+          "createdElements": 18,
+          "createdPercentage": 0.05232558139534884
+        }
+      }
+    }, {
+      "_id": "5bdfafeebdd5a83fa1e7421e",
+      "totalElementCount": 309,
+      "userElementCount": {
+        "5bbf79ba067a4e12579083b5": {
+          "createdElements": 74,
+          "createdPercentage": 0.23948220064724918
+        },
+        "5bbf79e3bcc73a1267fa5559": {
+          "createdElements": 168,
+          "createdPercentage": 0.5436893203883495
+        },
+        "5b9a9ec0c1be99f937d9d860": {
+          "createdElements": 49,
+          "createdPercentage": 0.15857605177993528
+        },
+        "5bbf79e7067a4e12579083b8": {
+          "createdElements": 18,
+          "createdPercentage": 0.05825242718446602
+        }
+      }
+    }, {
+      "_id": "5bd79d98d232f503eff1f96d",
+      "totalElementCount": 306,
+      "userElementCount": {
+        "5b915375abb0694e7fc8523f": {
+          "createdElements": 12,
+          "createdPercentage": 0.0392156862745098
+        },
+        "5bbf784b25ce2e125c4e8ede": {
+          "createdElements": 70,
+          "createdPercentage": 0.22875816993464052
+        },
+        "5bbf77d22c5695125aae55e4": {
+          "createdElements": 139,
+          "createdPercentage": 0.4542483660130719
+        },
+        "5bbf7a7d25ce2e125c4e8eec": {
+          "createdElements": 85,
+          "createdPercentage": 0.2777777777777778
+        }
+      }
+    }, {
+      "_id": "5bdfea7e60317b33fbb245df",
+      "totalElementCount": 281,
+      "userElementCount": {
+        "5bb643803861986338ba78d5": {
+          "createdElements": 39,
+          "createdPercentage": 0.1387900355871886
+        },
+        "5bbf7ac4bcc73a1267fa5566": {
+          "createdElements": 60,
+          "createdPercentage": 0.21352313167259787
+        },
+        "5bbf7a93bcc73a1267fa5564": {
+          "createdElements": 168,
+          "createdPercentage": 0.597864768683274
+        },
+        "5bbf7852067a4e12579083ab": {
+          "createdElements": 14,
+          "createdPercentage": 0.0498220640569395
+        }
+      }
+    }, {
+      "_id": "5bcd3a1b9c6b21516d22ba85",
+      "totalElementCount": 263,
+      "userElementCount": {
+        "5b97edf8bd4834833728e5f4": {
+          "createdElements": 83,
+          "createdPercentage": 0.3155893536121673
+        },
+        "5bbf799d2c5695125aae55e7": {
+          "createdElements": 52,
+          "createdPercentage": 0.19771863117870722
+        },
+        "5bc62205f8410c1f5cf5ba39": {
+          "createdElements": 112,
+          "createdPercentage": 0.42585551330798477
+        },
+        "5bbf787f067a4e12579083ad": {
+          "createdElements": 16,
+          "createdPercentage": 0.060836501901140684
+        }
+      }
+    }, {
+      "_id": "5bfb6509bc75104e772a7edb",
+      "totalElementCount": 260,
+      "userElementCount": {
+        "5bc17be2cae74c1f6aa9cbec": {
+          "createdElements": 144,
+          "createdPercentage": 0.5538461538461539
+        },
+        "5bbf78b625ce2e125c4e8edf": {
+          "createdElements": 13,
+          "createdPercentage": 0.05
+        },
+        "5bbf7787067a4e12579083a6": {
+          "createdElements": 64,
+          "createdPercentage": 0.24615384615384617
+        },
+        "5bbf78b0bcc73a1267fa5548": {
+          "createdElements": 39,
+          "createdPercentage": 0.15
+        }
+      }
+    }, {
+      "_id": "5bcd2988c7dfaf516bf5696d",
+      "totalElementCount": 250,
+      "userElementCount": {
+        "5bb643803861986338ba78d5": {
+          "createdElements": 39,
+          "createdPercentage": 0.156
+        },
+        "5bbf7ac4bcc73a1267fa5566": {
+          "createdElements": 56,
+          "createdPercentage": 0.224
+        },
+        "5bbf7a93bcc73a1267fa5564": {
+          "createdElements": 141,
+          "createdPercentage": 0.564
+        },
+        "5bbf7852067a4e12579083ab": {
+          "createdElements": 14,
+          "createdPercentage": 0.056
+        }
+      }
+    }, {
+      "_id": "5bdfea9660317b33fbb247d6",
+      "totalElementCount": 250,
+      "userElementCount": {
+        "5bb643803861986338ba78d5": {
+          "createdElements": 39,
+          "createdPercentage": 0.156
+        },
+        "5bbf7ac4bcc73a1267fa5566": {
+          "createdElements": 56,
+          "createdPercentage": 0.224
+        },
+        "5bbf7a93bcc73a1267fa5564": {
+          "createdElements": 141,
+          "createdPercentage": 0.564
+        },
+        "5bbf7852067a4e12579083ab": {
+          "createdElements": 14,
+          "createdPercentage": 0.056
+        }
+      }
+    }, {
+      "_id": "5bcd4a6fc415f9516c09cde0",
+      "totalElementCount": 241,
+      "userElementCount": {
+        "5bc17be2cae74c1f6aa9cbec": {
+          "createdElements": 135,
+          "createdPercentage": 0.5601659751037344
+        },
+        "5bbf78b625ce2e125c4e8edf": {
+          "createdElements": 12,
+          "createdPercentage": 0.04979253112033195
+        },
+        "5bbf7787067a4e12579083a6": {
+          "createdElements": 54,
+          "createdPercentage": 0.22406639004149378
+        },
+        "5bbf78b0bcc73a1267fa5548": {
+          "createdElements": 40,
+          "createdPercentage": 0.16597510373443983
+        }
+      }
+    }, {
+      "_id": "5bfb3786bc75104e772a7cd0",
+      "totalElementCount": 240,
+      "userElementCount": {
+        "5bbf7a1325ce2e125c4e8eeb": {
+          "createdElements": 18,
+          "createdPercentage": 0.075
+        },
+        "5bbd02606b452d68c650bffc": {
+          "createdElements": 51,
+          "createdPercentage": 0.2125
+        },
+        "5bc0dc57cc51f91f3da4cbc2": {
+          "createdElements": 170,
+          "createdPercentage": 0.7083333333333334
+        },
+        "5bbf7ab52c5695125aae55eb": {
+          "createdElements": 1,
+          "createdPercentage": 0.004166666666666667
+        }
+      }
+    }, {
+      "_id": "5be8c07460c5e26d07debddf",
+      "totalElementCount": 231,
+      "userElementCount": {
+        "5bbf7a1325ce2e125c4e8eeb": {
+          "createdElements": 18,
+          "createdPercentage": 0.07792207792207792
+        },
+        "5bbd02606b452d68c650bffc": {
+          "createdElements": 42,
+          "createdPercentage": 0.18181818181818182
+        },
+        "5bc0dc57cc51f91f3da4cbc2": {
+          "createdElements": 170,
+          "createdPercentage": 0.7359307359307359
+        },
+        "5bbf7ab52c5695125aae55eb": {
+          "createdElements": 1,
+          "createdPercentage": 0.004329004329004329
+        }
+      }
+    }, {
+      "_id": "5bb671730337586f38e28a70",
+      "totalElementCount": 219,
+      "userElementCount": {
+        "5bb671b37f1cb36938b10686": {
+          "createdElements": 61,
+          "createdPercentage": 0.2785388127853881
+        },
+        "5bb66db20337586f38e28a6f": {
+          "createdElements": 112,
+          "createdPercentage": 0.5114155251141552
+        },
+        "5bb671f60337586f38e28a72": {
+          "createdElements": 46,
+          "createdPercentage": 0.2100456621004566
+        }
+      }
+    }, {
+      "_id": "5bc7acef39cbc74a24aded3a",
+      "totalElementCount": 213,
+      "userElementCount": {
+        "5bbf77bd067a4e12579083a8": {
+          "createdElements": 24,
+          "createdPercentage": 0.11267605633802817
+        },
+        "5bbfa23f067a4e1257908434": {
+          "createdElements": 147,
+          "createdPercentage": 0.6901408450704225
+        },
+        "5bbf79b4067a4e12579083b4": {
+          "createdElements": 29,
+          "createdPercentage": 0.13615023474178403
+        },
+        "5bbf779f25ce2e125c4e8edd": {
+          "createdElements": 13,
+          "createdPercentage": 0.06103286384976526
+        }
+      }
+    }, {
+      "_id": "5bdfdbbe9a97b203c7350ceb",
+      "totalElementCount": 213,
+      "userElementCount": {
+        "5bbf7a1325ce2e125c4e8eeb": {
+          "createdElements": 14,
+          "createdPercentage": 0.06572769953051644
+        },
+        "5bbd02606b452d68c650bffc": {
+          "createdElements": 28,
+          "createdPercentage": 0.13145539906103287
+        },
+        "5bc0dc57cc51f91f3da4cbc2": {
+          "createdElements": 170,
+          "createdPercentage": 0.7981220657276995
+        },
+        "5bbf7ab52c5695125aae55eb": {
+          "createdElements": 1,
+          "createdPercentage": 0.004694835680751174
+        }
+      }
+    }, {
+      "_id": "5bd79dc3d232f503eff1fb02",
+      "totalElementCount": 202,
+      "userElementCount": {
+        "5bbf784b25ce2e125c4e8ede": {
+          "createdElements": 62,
+          "createdPercentage": 0.3069306930693069
+        },
+        "5b915375abb0694e7fc8523f": {
+          "createdElements": 11,
+          "createdPercentage": 0.054455445544554455
+        },
+        "5bbf7a7d25ce2e125c4e8eec": {
+          "createdElements": 21,
+          "createdPercentage": 0.10396039603960396
+        },
+        "5bbf77d22c5695125aae55e4": {
+          "createdElements": 108,
+          "createdPercentage": 0.5346534653465347
+        }
+      }
+    }, {
+      "_id": "5bd79c399a97b203c7350978",
+      "totalElementCount": 202,
+      "userElementCount": {
+        "5bbf784b25ce2e125c4e8ede": {
+          "createdElements": 62,
+          "createdPercentage": 0.3069306930693069
+        },
+        "5b915375abb0694e7fc8523f": {
+          "createdElements": 11,
+          "createdPercentage": 0.054455445544554455
+        },
+        "5bbf7a7d25ce2e125c4e8eec": {
+          "createdElements": 21,
+          "createdPercentage": 0.10396039603960396
+        },
+        "5bbf77d22c5695125aae55e4": {
+          "createdElements": 108,
+          "createdPercentage": 0.5346534653465347
+        }
+      }
+    }, {
+      "_id": "5bcd03739c6b21516d22b79b",
+      "totalElementCount": 202,
+      "userElementCount": {
+        "5bbf784b25ce2e125c4e8ede": {
+          "createdElements": 62,
+          "createdPercentage": 0.3069306930693069
+        },
+        "5b915375abb0694e7fc8523f": {
+          "createdElements": 11,
+          "createdPercentage": 0.054455445544554455
+        },
+        "5bbf7a7d25ce2e125c4e8eec": {
+          "createdElements": 21,
+          "createdPercentage": 0.10396039603960396
+        },
+        "5bbf77d22c5695125aae55e4": {
+          "createdElements": 108,
+          "createdPercentage": 0.5346534653465347
+        }
+      }
+    }, {
+      "_id": "5bcd0ce09c6b21516d22b91f",
+      "totalElementCount": 201,
+      "userElementCount": {
+        "5bbf7a1325ce2e125c4e8eeb": {
+          "createdElements": 10,
+          "createdPercentage": 0.04975124378109453
+        },
+        "5bbd02606b452d68c650bffc": {
+          "createdElements": 20,
+          "createdPercentage": 0.09950248756218906
+        },
+        "5bc0dc57cc51f91f3da4cbc2": {
+          "createdElements": 170,
+          "createdPercentage": 0.845771144278607
+        },
+        "5bbf7ab52c5695125aae55eb": {
+          "createdElements": 1,
+          "createdPercentage": 0.004975124378109453
+        }
+      }
+    }, {
+      "_id": "5bf97155722a4b1ead176031",
+      "totalElementCount": 196,
+      "userElementCount": {
+        "5b918da48a6e2e5f774c971a": {
+          "createdElements": 104,
+          "createdPercentage": 0.5306122448979592
+        },
+        "5bbe791ccf4bd2689d7d5b6d": {
+          "createdElements": 23,
+          "createdPercentage": 0.11734693877551021
+        },
+        "5bbe783e6b452d68c650c02e": {
+          "createdElements": 39,
+          "createdPercentage": 0.1989795918367347
+        },
+        "5bbe714ea74c6668aa1bde01": {
+          "createdElements": 23,
+          "createdPercentage": 0.11734693877551021
+        },
+        "57cf788fcc6eed723679ba4e": {
+          "createdElements": 1,
+          "createdPercentage": 0.00510204081632653
+        },
+        "5bbe788fcf4bd2689d7d5b6c": {
+          "createdElements": 5,
+          "createdPercentage": 0.025510204081632654
+        },
+        "5a1de8214e89cc5d482f9a7c": {
+          "createdElements": 1,
+          "createdPercentage": 0.00510204081632653
+        }
+      }
+    }, {
+      "_id": "5bbf834225ce2e125c4e8f06",
+      "totalElementCount": 195,
+      "userElementCount": {
+        "5bbf7a1325ce2e125c4e8eeb": {
+          "createdElements": 8,
+          "createdPercentage": 0.041025641025641026
+        },
+        "5bbd02606b452d68c650bffc": {
+          "createdElements": 11,
+          "createdPercentage": 0.05641025641025641
+        },
+        "5bc0dc57cc51f91f3da4cbc2": {
+          "createdElements": 175,
+          "createdPercentage": 0.8974358974358975
+        },
+        "5bbf7ab52c5695125aae55eb": {
+          "createdElements": 1,
+          "createdPercentage": 0.005128205128205128
+        }
+      }
+    }, {
+      "_id": "5bcce04093a0c251b3d10acd",
+      "totalElementCount": 191,
+      "userElementCount": {
+        "5bbf79ba067a4e12579083b5": {
+          "createdElements": 72,
+          "createdPercentage": 0.3769633507853403
+        },
+        "5bbf79e3bcc73a1267fa5559": {
+          "createdElements": 58,
+          "createdPercentage": 0.3036649214659686
+        },
+        "5b9a9ec0c1be99f937d9d860": {
+          "createdElements": 43,
+          "createdPercentage": 0.225130890052356
+        },
+        "5bbf79e7067a4e12579083b8": {
+          "createdElements": 18,
+          "createdPercentage": 0.09424083769633508
+        }
+      }
+    }, {
+      "_id": "5bfb8ade722a4b1ead1769c2",
+      "totalElementCount": 190,
+      "userElementCount": {
+        "5bbea87325ce2e125c4e8ec4": {
+          "createdElements": 144,
+          "createdPercentage": 0.7578947368421053
+        },
+        "5b97edd0bd4834833728e5f3": {
+          "createdElements": 31,
+          "createdPercentage": 0.1631578947368421
+        },
+        "5bbf79c5067a4e12579083b6": {
+          "createdElements": 15,
+          "createdPercentage": 0.07894736842105263
+        }
+      }
+    }, {
+      "_id": "5be5ce2a60317b33fbb24b30",
+      "totalElementCount": 183,
+      "userElementCount": {
+        "5b918da48a6e2e5f774c971a": {
+          "createdElements": 93,
+          "createdPercentage": 0.5081967213114754
+        },
+        "5bbe791ccf4bd2689d7d5b6d": {
+          "createdElements": 23,
+          "createdPercentage": 0.12568306010928962
+        },
+        "5bbe783e6b452d68c650c02e": {
+          "createdElements": 39,
+          "createdPercentage": 0.21311475409836064
+        },
+        "5bbe714ea74c6668aa1bde01": {
+          "createdElements": 22,
+          "createdPercentage": 0.12021857923497267
+        },
+        "57cf788fcc6eed723679ba4e": {
+          "createdElements": 1,
+          "createdPercentage": 0.00546448087431694
+        },
+        "5bbe788fcf4bd2689d7d5b6c": {
+          "createdElements": 5,
+          "createdPercentage": 0.0273224043715847
+        }
+      }
+    }, {
+      "_id": "5be8e5efdac8dc6d20fbf85f",
+      "totalElementCount": 182,
+      "userElementCount": {
+        "5bbf77bc2c5695125aae55e3": {
+          "createdElements": 125,
+          "createdPercentage": 0.6868131868131868
+        },
+        "5bbf799425ce2e125c4e8ee3": {
+          "createdElements": 44,
+          "createdPercentage": 0.24175824175824176
+        },
+        "5bbfa7bbbcc73a1267fa55a1": {
+          "createdElements": 13,
+          "createdPercentage": 0.07142857142857142
+        }
+      }
+    }, {
+      "_id": "5bfb808f722a4b1ead176854",
+      "totalElementCount": 182,
+      "userElementCount": {
+        "5bbf77bc2c5695125aae55e3": {
+          "createdElements": 125,
+          "createdPercentage": 0.6868131868131868
+        },
+        "5bbf799425ce2e125c4e8ee3": {
+          "createdElements": 44,
+          "createdPercentage": 0.24175824175824176
+        },
+        "5bbfa7bbbcc73a1267fa55a1": {
+          "createdElements": 13,
+          "createdPercentage": 0.07142857142857142
+        }
+      }
+    }, {
+      "_id": "5be8c09bdac8dc6d20fbf4ec",
+      "totalElementCount": 179,
+      "userElementCount": {
+        "5bbea87325ce2e125c4e8ec4": {
+          "createdElements": 133,
+          "createdPercentage": 0.7430167597765364
+        },
+        "5b97edd0bd4834833728e5f3": {
+          "createdElements": 31,
+          "createdPercentage": 0.17318435754189945
+        },
+        "5bbf79c5067a4e12579083b6": {
+          "createdElements": 15,
+          "createdPercentage": 0.08379888268156424
+        }
+      }
+    }, {
+      "_id": "5bc65d5bcc51f91f3da4d0a5",
+      "totalElementCount": 156,
+      "userElementCount": {
+        "5bc3bf1bcc51f91f3da4cd8e": {
+          "createdElements": 118,
+          "createdPercentage": 0.7564102564102564
+        },
+        "5bbf7a35bcc73a1267fa555f": {
+          "createdElements": 30,
+          "createdPercentage": 0.19230769230769232
+        },
+        "5bbf7a04067a4e12579083b9": {
+          "createdElements": 8,
+          "createdPercentage": 0.05128205128205128
+        }
+      }
+    }, {
+      "_id": "5bdb4604d232f503eff1fc0f",
+      "totalElementCount": 144,
+      "userElementCount": {
+        "5bbea87325ce2e125c4e8ec4": {
+          "createdElements": 108,
+          "createdPercentage": 0.75
+        },
+        "5b97edd0bd4834833728e5f3": {
+          "createdElements": 21,
+          "createdPercentage": 0.14583333333333334
+        },
+        "5bbf79c5067a4e12579083b6": {
+          "createdElements": 15,
+          "createdPercentage": 0.10416666666666667
+        }
+      }
+    }, {
+      "_id": "5bdf97e660317b33fbb24230",
+      "totalElementCount": 139,
+      "userElementCount": {
+        "5b918da48a6e2e5f774c971a": {
+          "createdElements": 51,
+          "createdPercentage": 0.3669064748201439
+        },
+        "5bbe791ccf4bd2689d7d5b6d": {
+          "createdElements": 21,
+          "createdPercentage": 0.1510791366906475
+        },
+        "5bbe783e6b452d68c650c02e": {
+          "createdElements": 39,
+          "createdPercentage": 0.2805755395683453
+        },
+        "5bbe714ea74c6668aa1bde01": {
+          "createdElements": 22,
+          "createdPercentage": 0.15827338129496402
+        },
+        "57cf788fcc6eed723679ba4e": {
+          "createdElements": 1,
+          "createdPercentage": 0.007194244604316547
+        },
+        "5bbe788fcf4bd2689d7d5b6c": {
+          "createdElements": 5,
+          "createdPercentage": 0.03597122302158273
+        }
+      }
+    }, {
+      "_id": "5bc77afecc51f91f3da4d226",
+      "totalElementCount": 131,
+      "userElementCount": {
+        "5b918da48a6e2e5f774c971a": {
+          "createdElements": 46,
+          "createdPercentage": 0.3511450381679389
+        },
+        "5bbe791ccf4bd2689d7d5b6d": {
+          "createdElements": 21,
+          "createdPercentage": 0.16030534351145037
+        },
+        "5bbe783e6b452d68c650c02e": {
+          "createdElements": 39,
+          "createdPercentage": 0.29770992366412213
+        },
+        "5bbe714ea74c6668aa1bde01": {
+          "createdElements": 19,
+          "createdPercentage": 0.1450381679389313
+        },
+        "57cf788fcc6eed723679ba4e": {
+          "createdElements": 1,
+          "createdPercentage": 0.007633587786259542
+        },
+        "5bbe788fcf4bd2689d7d5b6c": {
+          "createdElements": 5,
+          "createdPercentage": 0.03816793893129771
+        }
+      }
+    }, {
+      "_id": "5bbf787b067a4e12579083ac",
+      "totalElementCount": 115,
+      "userElementCount": {
+        "5bb643803861986338ba78d5": {
+          "createdElements": 26,
+          "createdPercentage": 0.22608695652173913
+        },
+        "5bbf7ac4bcc73a1267fa5566": {
+          "createdElements": 27,
+          "createdPercentage": 0.23478260869565218
+        },
+        "5bbf7a93bcc73a1267fa5564": {
+          "createdElements": 57,
+          "createdPercentage": 0.4956521739130435
+        },
+        "5bbf7852067a4e12579083ab": {
+          "createdElements": 5,
+          "createdPercentage": 0.043478260869565216
+        }
+      }
+    }, {
+      "_id": "5bcd5554c415f9516c09d026",
+      "totalElementCount": 115,
+      "userElementCount": {
+        "5bb643803861986338ba78d5": {
+          "createdElements": 26,
+          "createdPercentage": 0.22608695652173913
+        },
+        "5bbf7ac4bcc73a1267fa5566": {
+          "createdElements": 27,
+          "createdPercentage": 0.23478260869565218
+        },
+        "5bbf7a93bcc73a1267fa5564": {
+          "createdElements": 57,
+          "createdPercentage": 0.4956521739130435
+        },
+        "5bbf7852067a4e12579083ab": {
+          "createdElements": 5,
+          "createdPercentage": 0.043478260869565216
+        }
+      }
+    }, {
+      "_id": "5bbe140a6b452d68c650bffd",
+      "totalElementCount": 109,
+      "userElementCount": {
+        "5b97edf8bd4834833728e5f4": {
+          "createdElements": 80,
+          "createdPercentage": 0.7339449541284404
+        },
+        "5bbf799d2c5695125aae55e7": {
+          "createdElements": 4,
+          "createdPercentage": 0.03669724770642202
+        },
+        "5bc62205f8410c1f5cf5ba39": {
+          "createdElements": 25,
+          "createdPercentage": 0.22935779816513763
+        }
+      }
+    }, {
+      "_id": "5be185109a97b203c7350e12",
+      "totalElementCount": 95,
+      "userElementCount": {
+        "5b97edf8bd4834833728e5f4": {
+          "createdElements": 54,
+          "createdPercentage": 0.5684210526315789
+        },
+        "5bbf799d2c5695125aae55e7": {
+          "createdElements": 28,
+          "createdPercentage": 0.29473684210526313
+        },
+        "5bbf79ac2c5695125aae55e8": {
+          "createdElements": 2,
+          "createdPercentage": 0.021052631578947368
+        },
+        "5bc62205f8410c1f5cf5ba39": {
+          "createdElements": 7,
+          "createdPercentage": 0.07368421052631578
+        },
+        "5bbf787f067a4e12579083ad": {
+          "createdElements": 3,
+          "createdPercentage": 0.031578947368421054
+        },
+        "5a1de8214e89cc5d482f9a7c": {
+          "createdElements": 1,
+          "createdPercentage": 0.010526315789473684
+        }
+      }
+    }, {
+      "_id": "5bdf97ed9a97b203c7350a63",
+      "totalElementCount": 94,
+      "userElementCount": {
+        "5bbf77bc2c5695125aae55e3": {
+          "createdElements": 37,
+          "createdPercentage": 0.39361702127659576
+        },
+        "5bbf799425ce2e125c4e8ee3": {
+          "createdElements": 44,
+          "createdPercentage": 0.46808510638297873
+        },
+        "5bbfa7bbbcc73a1267fa55a1": {
+          "createdElements": 13,
+          "createdPercentage": 0.13829787234042554
+        }
+      }
+    }, {
+      "_id": "5bcb68169c6b21516d22b669",
+      "totalElementCount": 94,
+      "userElementCount": {
+        "5b9157a1bd4834833728e5e7": {
+          "createdElements": 43,
+          "createdPercentage": 0.4574468085106383
+        },
+        "5bbf77b8067a4e12579083a7": {
+          "createdElements": 16,
+          "createdPercentage": 0.1702127659574468
+        },
+        "5b9a9e844d1cadcc723bae87": {
+          "createdElements": 28,
+          "createdPercentage": 0.2978723404255319
+        },
+        "5bbe7d9e6b452d68c650c03b": {
+          "createdElements": 7,
+          "createdPercentage": 0.07446808510638298
+        }
+      }
+    }, {
+      "_id": "5bc28b76f8410c1f5cf5b7c7",
+      "totalElementCount": 93,
+      "userElementCount": {
+        "5bbf79ba067a4e12579083b5": {
+          "createdElements": 59,
+          "createdPercentage": 0.6344086021505376
+        },
+        "5bbf79e3bcc73a1267fa5559": {
+          "createdElements": 28,
+          "createdPercentage": 0.3010752688172043
+        },
+        "5b9a9ec0c1be99f937d9d860": {
+          "createdElements": 6,
+          "createdPercentage": 0.06451612903225806
+        }
+      }
+    }, {
+      "_id": "5bbe463ea74c6668aa1bdddc",
+      "totalElementCount": 93,
+      "userElementCount": {
+        "5b918da48a6e2e5f774c971a": {
+          "createdElements": 35,
+          "createdPercentage": 0.3763440860215054
+        },
+        "5bbe791ccf4bd2689d7d5b6d": {
+          "createdElements": 22,
+          "createdPercentage": 0.23655913978494625
+        },
+        "5bbe783e6b452d68c650c02e": {
+          "createdElements": 23,
+          "createdPercentage": 0.24731182795698925
+        },
+        "5bbe714ea74c6668aa1bde01": {
+          "createdElements": 12,
+          "createdPercentage": 0.12903225806451613
+        },
+        "57cf788fcc6eed723679ba4e": {
+          "createdElements": 1,
+          "createdPercentage": 0.010752688172043012
+        }
+      }
+    }, {
+      "_id": "5bccfcc6c7dfaf516bf56819",
+      "totalElementCount": 91,
+      "userElementCount": {
+        "5bbea87325ce2e125c4e8ec4": {
+          "createdElements": 69,
+          "createdPercentage": 0.7582417582417582
+        },
+        "5b97edd0bd4834833728e5f3": {
+          "createdElements": 8,
+          "createdPercentage": 0.08791208791208792
+        },
+        "5bbf79c5067a4e12579083b6": {
+          "createdElements": 14,
+          "createdPercentage": 0.15384615384615385
+        }
+      }
+    }, {
+      "_id": "5bcd3e2dc7dfaf516bf56a34",
+      "totalElementCount": 87,
+      "userElementCount": {
+        "5bbf77bc2c5695125aae55e3": {
+          "createdElements": 37,
+          "createdPercentage": 0.42528735632183906
+        },
+        "5bbf799425ce2e125c4e8ee3": {
+          "createdElements": 37,
+          "createdPercentage": 0.42528735632183906
+        },
+        "5bbfa7bbbcc73a1267fa55a1": {
+          "createdElements": 13,
+          "createdPercentage": 0.14942528735632185
+        }
+      }
+    }, {
+      "_id": "5bbf8f5725ce2e125c4e8f44",
+      "totalElementCount": 86,
+      "userElementCount": {
+        "5bbf784b25ce2e125c4e8ede": {
+          "createdElements": 46,
+          "createdPercentage": 0.5348837209302325
+        },
+        "5b915375abb0694e7fc8523f": {
+          "createdElements": 11,
+          "createdPercentage": 0.12790697674418605
+        },
+        "5bbf7a7d25ce2e125c4e8eec": {
+          "createdElements": 3,
+          "createdPercentage": 0.03488372093023256
+        },
+        "5bbf77d22c5695125aae55e4": {
+          "createdElements": 26,
+          "createdPercentage": 0.3023255813953488
+        }
+      }
+    }, {
+      "_id": "5bdfcad060317b33fbb242d8",
+      "totalElementCount": 80,
+      "userElementCount": {
+        "5b9157a1bd4834833728e5e7": {
+          "createdElements": 38,
+          "createdPercentage": 0.475
+        },
+        "5bbf77b8067a4e12579083a7": {
+          "createdElements": 19,
+          "createdPercentage": 0.2375
+        },
+        "5b9a9e844d1cadcc723bae87": {
+          "createdElements": 23,
+          "createdPercentage": 0.2875
+        }
+      }
+    }, {
+      "_id": "5bbeab0a25ce2e125c4e8ec5",
+      "totalElementCount": 79,
+      "userElementCount": {
+        "5bbea87325ce2e125c4e8ec4": {
+          "createdElements": 61,
+          "createdPercentage": 0.7721518987341772
+        },
+        "5b97edd0bd4834833728e5f3": {
+          "createdElements": 3,
+          "createdPercentage": 0.0379746835443038
+        },
+        "5bbf79c5067a4e12579083b6": {
+          "createdElements": 15,
+          "createdPercentage": 0.189873417721519
+        }
+      }
+    }, {
+      "_id": "5bbe7db46b452d68c650c03c",
+      "totalElementCount": 71,
+      "userElementCount": {
+        "5b9157a1bd4834833728e5e7": {
+          "createdElements": 28,
+          "createdPercentage": 0.39436619718309857
+        },
+        "5bbf77b8067a4e12579083a7": {
+          "createdElements": 19,
+          "createdPercentage": 0.2676056338028169
+        },
+        "5b9a9e844d1cadcc723bae87": {
+          "createdElements": 23,
+          "createdPercentage": 0.323943661971831
+        },
+        "5bbe7d9e6b452d68c650c03b": {
+          "createdElements": 1,
+          "createdPercentage": 0.014084507042253521
+        }
+      }
+    }, {
+      "_id": "5bc17befcae74c1f6aa9cbed",
+      "totalElementCount": 63,
+      "userElementCount": {
+        "5bc17be2cae74c1f6aa9cbec": {
+          "createdElements": 58,
+          "createdPercentage": 0.9206349206349206
+        },
+        "5bbf78b0bcc73a1267fa5548": {
+          "createdElements": 2,
+          "createdPercentage": 0.031746031746031744
+        },
+        "5bbf78b625ce2e125c4e8edf": {
+          "createdElements": 3,
+          "createdPercentage": 0.047619047619047616
+        }
+      }
+    }, {
+      "_id": "5bbfa4982c5695125aae5774",
+      "totalElementCount": 53,
+      "userElementCount": {
+        "5bbf77bc2c5695125aae55e3": {
+          "createdElements": 46,
+          "createdPercentage": 0.8679245283018868
+        },
+        "5bbf799425ce2e125c4e8ee3": {
+          "createdElements": 4,
+          "createdPercentage": 0.07547169811320754
+        },
+        "5bbfa7bbbcc73a1267fa55a1": {
+          "createdElements": 3,
+          "createdPercentage": 0.05660377358490566
+        }
+      }
+    }, {
+      "_id": "5bc90daa9c6b21516d22b5bd",
+      "totalElementCount": 52,
+      "userElementCount": {
+        "5bbd02606b452d68c650bffc": {
+          "createdElements": 21,
+          "createdPercentage": 0.40384615384615385
+        },
+        "5bbf7a1325ce2e125c4e8eeb": {
+          "createdElements": 8,
+          "createdPercentage": 0.15384615384615385
+        },
+        "5bc0dc57cc51f91f3da4cbc2": {
+          "createdElements": 22,
+          "createdPercentage": 0.4230769230769231
+        },
+        "5bbf7ab52c5695125aae55eb": {
+          "createdElements": 1,
+          "createdPercentage": 0.019230769230769232
+        }
+      }
+    }, {
+      "_id": "5be49a189a97b203c7351070",
+      "totalElementCount": 47,
+      "userElementCount": {
+        "5bb66db20337586f38e28a6f": {
+          "createdElements": 32,
+          "createdPercentage": 0.6808510638297872
+        },
+        "5bb671b37f1cb36938b10686": {
+          "createdElements": 13,
+          "createdPercentage": 0.2765957446808511
+        },
+        "5bbf7a04067a4e12579083b9": {
+          "createdElements": 2,
+          "createdPercentage": 0.0425531914893617
+        }
+      }
+    }, {
+      "_id": "5bbfa12a25ce2e125c4e8f5c",
+      "totalElementCount": 39,
+      "userElementCount": {
+        "5bbf77bd067a4e12579083a8": {
+          "createdElements": 11,
+          "createdPercentage": 0.28205128205128205
+        },
+        "5bbfa23f067a4e1257908434": {
+          "createdElements": 18,
+          "createdPercentage": 0.46153846153846156
+        },
+        "5bbf79b4067a4e12579083b4": {
+          "createdElements": 10,
+          "createdPercentage": 0.2564102564102564
+        }
+      }
+    }]
+  }
+}

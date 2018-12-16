@@ -8,13 +8,13 @@ import admin from './admin.js';
 import test from './test.js';
 import emailTester from './tests/testEmailing.js'
 
-console.log("Emailer", emailTester)
 if ( window.location.pathname.includes('test') && NODE_ENV != 'prod' && NODE_ENV != 'production') {
   test.init()
   .then( usersAndGroups => test.tests(usersAndGroups) )
   .then( testStatus => console.log('Testing complete : ', testStatus) )
   .catch( e => console.error('Error in tests: ' , e ))
 } else if ( window.location.pathname.includes('admin') ) {
+  console.log("Emailer", emailTester)
   admin.init()
   .catch( e => console.error('Error in admin.init', e) )
 } else if ( window.location.pathname.includes('group') ) {
