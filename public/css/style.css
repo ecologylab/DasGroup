@@ -1,15 +1,15 @@
 html,
 body {
+  background-color: #FAFAFA;
 }
 
 .wrapper {
-  margin-top: 5%;
+  margin-top: 3%;
   margin-left: 5%;
 }
 
 .group_heading_wrapper {
 }
-
 
 .group_heading {
   text-align: center;
@@ -22,4 +22,43 @@ body {
 .groupFields {
   max-width: 50%;
   overflow-x: scroll;
+}
+
+.link {
+  color: #0088CC;
+}
+
+.table_main {
+  margin: 20px;
+}
+
+thead.thead_main {
+  background-color: #A4C32F;
+}
+
+thead.thead_alt {
+  background-color: #333333;
+}
+
+th, td {
+  padding: 10px;
+  text-align: center;
+}
+
+th.center {
+  text-align: center;
+}
+
+.low {
+  color: #FF0000;
+}
+
+.medium {
+  color: #FFDE16;
+  opacity: 0.3;
+}
+
+.high {
+  color: #6ACA6B;
+  opacity: 0.3;
 }

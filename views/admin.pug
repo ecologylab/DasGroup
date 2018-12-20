@@ -6,8 +6,7 @@ block content
   .wrapper
     .group_heading_wrapper
       .group_heading
-        h1 #{group.name}
-        h5 #{group.description}
+        h4 #{group.name}    
     hr
     .container
       .row 
@@ -16,60 +15,35 @@ block content
             ul.nav.nav-tabs
               li.nav-item
                 a.nav-link.active(href="#")
-                  | Folios
+                  | Assignments
               li.nav-item
                 a.nav-link(href="#")
-                  | Analytics
-            .container
-              .row
-                h4(style="text-align:center") Folios
-                .container.folios
-                  .card-deck#folioCards
+                  | Settings
+          
+          .row
+            div.card(style="width: 500px; height: 300px; margin: 40px; padding: 20px;")
+              h5.card-title chart visualization
+          
+          .row
+            .col
+              table.table-striped.table_main#assignments
+                thead.thead_main
+                  tr
+                    th.center Assignment
+                    th.center #Submissions
+                    th.center Mean
+                    th.center Median
+                    th.center State
+                    th.center Visibility
+                  tbody
                     each folio in group.folios
-                      .card.bg-light.mb-3.folioCard(style="min-width:25%; cursor: pointer;" data-folio_id = folio._id, )
-                        .card-header
-                          | #{folio.name}
-                        .card-body
-                          .card-title State : #{folio.state} 
-                          .card-text Submission Count : #{folio.macheSubmissions.length}
-              .row
-                .container
-                  h3#folioName
-                  h4#folioDescription
-                  h4#folioState
-                  h4#folioVisibility
-                  .submissions 
-                    .row
-                      .col
-                        h3 Maches Submitted
-                        table.table#macheSubmissions
-                    
-                    .row
-                      .col
-                        h3 Members who have submitted
-                        ul.list-group#usersSubmitted
-                      .col
-                        h3 Members who have not submitted
-                        ul.list-group#usersnotSubmitted
-            
-        .col-4
-          h4(style="text-align:center") Admins
-          ul.list-group#admins
-            each admin in group.roles.admins
-              li.list-group-item.d-flex.justify-content-between.align-items-center(data-user_id=admin._id)
-                | #{admin.username}
-                span.badge.badge-primary.badge-pill
-                  <i class="fas fa-arrow-circle-down"></i>
-          hr
-          h4(style="text-align:center") Members
-          ul.list-group#members
-            each member in group.members
-              li.list-group-item.d-flex.justify-content-between.align-items-center(data-user_id=member._id)
-                | #{member.username}
-                span.badge.badge-primary.badge-pill
-                  <i class="fas fa-arrow-circle-up"></i>
-    #buttonArea
-  
-  
-    
-    
+                      tr
+                        td 
+                          a.link(href=resourceBasePath + 'folio/' + folio.key) #{folio.name}
+                        td #{folio.macheSubmissions.length}
+                        td -
+                        td -
+                        td #{folio.state}
+                        td #{folio.visibility}
+                    tr
+                      td.link [Add]
