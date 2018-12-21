@@ -13,42 +13,33 @@ const accountLogic = require('../routing/logic/accountLogic')
 const helpers = require('../routing/helpers/helpers')
 const config = require('config')
 const tokenHandler = require('../utils/tokenHandler')
+
 mongoose.connect(config.database.connectionString, { useNewUrlParser : true }).then(
   () => { console.log("Connected!"); },
   err => { console.log("ERROR - Database connection failed")}
 )
 const randomId = mongoose.Types.ObjectId();
 
-//
-// helpers.findGroup({ key : 'abc'})
-// .then( group => {
-//   const members = group.members;
-//   const randomMember = members[0];
-//   console.log(members.includes(randomMember))
-//
-// })
-// const setAaronsMaches = () => {
-//   const findMache = (macheId) => Mache.findById(macheId).exec()
-//   return new Promise( (resolve, reject) => {
-//     Account.findOne({ username : 'avsphere'}).exec()
-//     .then( avsphere => Promise.all( avsphere.maches.map( macheId => findMache(macheId)) ))
-//     .then( maches => {
-//       console.log("maches", maches)
-//     })
-//   })
-// }
-// let group = {}
-// Group.findOne({ 'key' : '_YB6qwMv0' })
-// .populate({ path : 'folios', populate : { path : 'macheSubmissions.mache' } })
-// .exec()
-// .then( g => {
-//   console.log(g.folios[0].macheSubmissions);
-// })
 
+
+// const test = async () => {
+//   const user = await Account.findOne({ username : config.developmentUsername }).populate('memberOf').exec()
+//   const folioIds = user.memberOf.map( g => g.folios ).reduce( (acc, folioList) => acc.concat(folioList), [])
+//   const folios = await Folio.find({ _id : { $in : folioIds } }).populate('macheSubmissions').limit(5).exec()
+//
+//   const maches = await Mache.find({
+//     memberOfFolios : { $exists : true, $not : { $size : 0 } },
+//   }).limit(4).exec()
+//
+//   console.log(maches)
+//
+//   // console.log(folios)
+//   process.exit(0);
+// }
 
 const test = async () => {
-  let user = await Mache.findOne({ _id : "5bbf7b63bcc73a1267fa5568"}).exec()
-  console.log(user)
+  const users = await Account.find({ username : 'nic' }).exec()
+  console.log(users)
   process.exit(0);
 }
 

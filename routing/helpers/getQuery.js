@@ -70,6 +70,7 @@ const getQuery = (request) => {
     query = Array.isArray(request.usernames)
     ? query = { username : { $in : request.usernames } }
     : query = { username : { $in : request.usernames.split(',') } }
+    console.log("QQ", query)
   }
   else if ( request.email ) {
     query = { email : request.email }

@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const tokenHandler = require('../utils/tokenHandler.js')
 const logger = require('../utils/logger');
+const delay = require('../utils/delay');
 const accountLogic = require('./logic/accountLogic');
 const groupLogic = require('./logic/groupLogic');
 const folioLogic = require('./logic/folioLogic');
@@ -39,14 +40,28 @@ router.get('/sessTest', (req,res) => {
 })
 
 router.get('/mail', helpers.isNotProd, (req,res) => {
-  mailer.sendMail({
-    from: config.nodemailer.username,
-    to : req.query.to,
-    subject : 'Hi this is Monica, looking for a good time?',
-    html : `<p> ;) ${ getRandomInt(100) } `
-  })
-  .then( res.send(true) )
-  .catch( e => res.send(e) )
+  for ( let i = 0; i < 5; i++ ) {
+    mailer.sendMail({
+      from: 'livemache@ecologylab.net',
+      to : 'nic@ecologylab.net', //'nic@ecologylab.net'
+      subject : `Test ${i} of 9999`,
+      html : `<p>  ${ getRandomInt(100)} </p> `
+    })
+    delay(i*i*2000)
+  }
+  // mailer.sendMail({
+  //   from: 'livemache@ecologylab.net',
+  //   to : 'nic@ecologylab.net', //'nic@ecologylab.net'
+  //   subject : `Test ${i} of 9999`,
+  //   html : `<p>  ${ getRandomInt(100)} </p> `
+  // })
+  res.send(true)
+  // .then( res.send(true) )
+  // .catch( e => {
+  //   console.log("MAIL ERROR", e)
+  //   res.send(e)
+  //
+  // })
 })
 
 

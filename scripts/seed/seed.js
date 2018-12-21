@@ -32,7 +32,7 @@ const runSeed = async () => {
     await dropIndexes(Mache)
 
     await seed()
-    await seedFolios() //creation of folios for dev user
+    // await seedFolios() //creation of folios for dev user
     console.log('Seed success!');
     process.exit(0);
 }

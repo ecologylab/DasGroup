@@ -9,7 +9,7 @@ const mongoose = require('mongoose');
 const seedFile = './scripts/seed/seedData/seedData.json';
 const jsonfile = require('jsonfile');
 const config = require('config')
-//
+
 // mongoose.connect(config.database.connectionString, { useNewUrlParser : true }).then(
 //   () => { console.log("Connected and seeding!"); },
 //   err => { console.log("ERROR - Database connection failed")}
@@ -68,13 +68,15 @@ const addMachesToFolios = async () => {
       })
       saves = saves.concat( group.folios.map( f => f.save() ) )
     })
+    console.log(`Saving ${machesToSave.length} maches to folios`)
     machesToSave.forEach( mache => {
       if ( !alreadySaved.hasOwnProperty(mache._id) ) {
         saves.push( mache.save() )
       }
       alreadySaved[mache._id] = true
     })
-    Promise.all(saves)
+    console.log(`Final saves ${saves.length}`)
+    await Promise.all(saves)
     .then(_ => { console.log("Added maches to folios"); return true; })
     .catch(e => console.error(e) )
   }
@@ -103,6 +105,7 @@ const seedFolios = async() => {
   })
   await Promise.all(saves);
   await addMachesToFolios();
+  console.log("folios have been seeded!")
   return true;
 }
 // seedFolios()

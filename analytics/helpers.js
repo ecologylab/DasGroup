@@ -35,41 +35,60 @@ const extractClippings = (maches) => {
   if ( maches.length === 0 ) { return [] }
   // let clippingIds = maches.map( mache => mache.elements.map( element => element.clipping ) ).reduce( (a,b) => a.concat(b) ).filter( clipping => clipping !== null ).map( c => c._id )
   // return Clipping.find({ _id : { $in : clippingIds } }).exec()
-  return maches.map( mache => mache.elements.map( element => element.clipping ) ).reduce( (a,b) => a.concat(b) ).filter( clipping => clipping !== null )
+  return maches.map( mache => mache.elements.map( element => element.clipping ) ).reduce( (a,b) => a.concat(b), []).filter( clipping => clipping !== null )
 }
 
 const extractMaches = async (collection, options) => {
-  if ( !Array.isArray(collection) ) { collection = [collection] }
-  const modelName = collection[0].constructor.modelName
-  let maches = []
+  try {
+    if ( !Array.isArray(collection) ) { collection = [collection] }
+    const modelName = collection[0].constructor.modelName
+    let maches = []
 
-  const extractMaches_folio = (folios) => {
-    if ( !folios ) { folios = collection }
-    const macheIds = folios.map( (folio) => folio.macheSubmissions.map( sub => sub.mache.toString() ) ).reduce( (a, b) => a.concat(b) )
-    if ( macheIds.length === 0 ) { return [] }
-    return getDeepMaches(macheIds)
-  }
-  const extractMaches_group = async () => {
-    const folioIds = collection.map( (group) => group.folios ).reduce( (a, b) => a.concat(b) )
-    const folios = await Folio.find({ _id : { $in : folioIds },  macheSubmissions : { $exists : true, $not : { $size : 0 } }  }).select('macheSubmissions').exec()
-    if ( folios.length === 0 ) { return [] }
-    return extractMaches_folio(folios);
-  }
-  const extractMaches_user = async () => {
-    const macheIds = collection.map( (user) => user.maches ).reduce( (a, b) => a.concat(b) )
-    return getDeepMaches(macheIds)
+    const extractMaches_folio = (folios) => {
+      if ( !folios ) { folios = collection }
+      const macheIds = folios.map( (folio) => folio.macheSubmissions.map( sub => sub.mache.toString() ) ).reduce( (a, b) => a.concat(b), [])
+      if ( macheIds.length === 0 ) { return [] }
+      return getDeepMaches(macheIds)
+    }
+    const extractMaches_group = async () => {
+      const folioIds = collection.map( (group) => group.folios ).reduce( (a, b) => a.concat(b), [])
+      const folios = await Folio.find({ _id : { $in : folioIds },  macheSubmissions : { $exists : true, $not : { $size : 0 } }  }).select('macheSubmissions').exec()
+      if ( folios.length === 0 ) { return [] }
+      return extractMaches_folio(folios);
+    }
+    const extractMaches_user = async () => {
+      const macheIds = collection.map( (user) => user.maches ).reduce( (a, b) => a.concat(b), [])
+      return getDeepMaches(macheIds)
+    }
+
+    const extractMaches_mache = async () => {
+      if ( collection[0].toString().length == 24 ) { return getDeepMaches(collection) }
+      else if ( collection[0].hasOwnProperty('_id') ) {
+        return getDeepMaches( collection.map( (m) => m._id ) )
+      }
+      else {
+        throw new Error('mache collection appears to be invalid')
+      }
+    }
+
+    if ( modelName === 'Folio' ) {
+      maches = await extractMaches_folio()
+    } else if ( modelName === 'Group' ) {
+      maches = await extractMaches_group()
+    } else if ( modelName === 'Account') {
+      maches = await extractMaches_user();
+    } else if ( modelName === 'Mache' || collection[0].toString().length == 24 ) {
+      maches = await extractMaches_mache();
+    }
+     else {
+      throw new Error(`Model ${modelName} is not supported`)
+    }
+    return maches;
+  } catch ( e ) {
+    console.error('Error in extract maches', e)
+    return e;
   }
 
-  if ( modelName === 'Folio' ) {
-    maches = await extractMaches_folio()
-  } else if ( modelName === 'Group' ) {
-    maches = await extractMaches_group()
-  } else if ( modelName === 'Account') {
-    maches = await extractMaches_user();
-  } else {
-    console.log(`Model ${modelName} is not supported`)
-  }
-  return maches;
 }
 
 

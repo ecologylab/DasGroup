@@ -25,9 +25,9 @@ const accountSchema = mongoose.Schema({
     type: String,
     required : false
   },
-  subscriber : {
+  unsubscribed : {
     type: Boolean,
-    default : true
+    default : false
   },
   hash: {
     type : String,

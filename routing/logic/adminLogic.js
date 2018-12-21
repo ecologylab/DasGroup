@@ -1,6 +1,7 @@
 const Account = require('../../models/account')
 const Group = require('../../models/group')
 const logger = require('../../utils/logger');
+const delay = require('../../utils/delay');
 const helpers = require('../helpers/helpers')
 const RequestError = require('../../utils/errors/RequestError')
 const mailer = require('../../utils/mailer.js')
@@ -77,76 +78,28 @@ logic.renderAdmin = async (req, res) => {
   }
 }
 
+
 logic.emailUsers = async(req, res) => {
   try {
-    const query = getQuery(req.body.userLocator);
     const { emailBodyHtml, emailSubject } = req.body
-    const collect = () => {
-      const collection = {};
-      return new Promise( (resolve, reject) => {
-        Account.find(query)
-        .exec()
-        .then( users => {
-          collection.users = users;
-          resolve(collection)
-        })
-        .catch( e => {
-          logger.error("emailUsers collect error")
-          reject(e);
-        })
-      })
-    }
-    const validate = (collection) => {
-      let errorMessage = '';
-      return new Promise( (resolve, reject) => {
-        const userExists = () => {
-          let successStatus = true;
-          if ( !collection.users ) {
-            errorMessage = 'users do not exist'
-            successStatus = false;
-          }
-          return successStatus;
-        }
-        if ( userExists() ) {
-          resolve(true);
-        } else {
-          logger.error("emailUsers validate error")
-          reject(`validateError ${errorMessage}`)
-        }
-      })
-    }
-
-    const collection = await collect('users');
-    const validated = await validate(collection);
-    const emails = collection.users.filter( u => u.toObject().hasOwnProperty('email') ).map( (u) => {
-      return new Promise( (resolve, reject) => {
-        mailer.sendMail({
-          from : config.nodemailer.username,
-          to : u.email,
-          subject : emailSubject,
-          html : emailBodyHtml
-        })
-        .then(resolve(true))
-        .catch( e => {
-          console.log("Error in emailer!!", e)
-          resolve(true)
-        })
+    const query = getQuery(req.body.userLocator);
+    const users = await Account.find(query).exec()
+    const usersWithEmail = users.filter( u => u.toObject().hasOwnProperty('email') )
+    console.log("Emailings users", usersWithEmail)
+    const pendingEmails = usersWithEmail.map( async(u,i) => {
+      await delay(i*300) //not wanting to possibly overload queue, so spacing 300ms apart
+      return mailer.sendMail({
+        from : config.nodemailer.username,
+        to : u.email,
+        subject : emailSubject,
+        html : emailBodyHtml
       })
     })
-
-    await Promise.all(emails)
-    .then( statuses => {
-      console.log("success!", statuses)
-    })
-    .catch( e => {
-      console.log("emails failed!", e)
-      throw new Error('Failed emailing users')
-    })
-
-    res.send(collection)
+    await Promise.all(pendingEmails)
+    res.send({success : true, emailedUsers : usersWithEmail.map( u => u._id )  })
 
   } catch ( err ) {
-    logger.error('Error in emailUsers %j %O', req.body, err)
+    logger.error('Error in email users %j %O', req.body, err)
     res.status(404);
     res.redirect('/')
   }
@@ -154,74 +107,26 @@ logic.emailUsers = async(req, res) => {
 
 logic.emailSubscribers = async(req, res) => {
   try {
-    const collect = () => {
-      const collection = {};
-      return new Promise( (resolve, reject) => {
-        Account.find({ subscriber : true })
-        .exec()
-        .then( users => {
-          collection.users = users;
-          resolve(collection)
-        })
-        .catch( e => {
-          logger.error("emailUsers collect error")
-          reject(e);
-        })
-      })
-    }
-    const validate = (collection) => {
-      let errorMessage = '';
-      return new Promise( (resolve, reject) => {
-        const userExists = () => {
-          let successStatus = true;
-          if ( !collection.users ) {
-            errorMessage = 'users do not exist'
-            successStatus = false;
-          }
-          return successStatus;
-        }
-        if ( userExists() ) {
-          resolve(true);
-        } else {
-          logger.error("emailUsers validate error")
-          reject(`validateError ${errorMessage}`)
-        }
-      })
-    }
-
-    const collection = await collect('users');
-    const validated = await validate(collection);
-    const emails = collection.users.filter( u => u.toObject().hasOwnProperty('email') ).map( (u) => {
-      return new Promise( (resolve, reject) => {
-        mailer.sendMail({
-          from : config.nodemailer.username,
-          to : u.email,
-          subject : emailSubject,
-          html : emailBodyHtml
-        })
-        .then(resolve(true))
-        .catch( e => {
-          console.log("Error in emailer!!", e)
-          resolve(false)
-        })
+    const { emailBodyHtml, emailSubject } = req.body
+    if ( !emailBodyHtml || !emailSubject ) { throw new Error('Check params') }
+    const subscribedUsers = await Account.find({ unsubscribed : false }).exec()
+    const usersWithEmail = subscribedUsers.filter( u => u.toObject().hasOwnProperty('email') )
+    const pendingEmails = usersWithEmail.map( async(u,i) => {
+      await delay(i*300) //not wanting to possibly overload queue, so spacing 300ms apart
+      return mailer.sendMail({
+        from : config.nodemailer.username,
+        to : u.email,
+        subject : emailSubject,
+        html : emailBodyHtml
       })
     })
-
-    await Promise.all(emails)
-    .then( statuses => {
-      console.log("success!", statuses)
-    })
-    .catch( e => {
-      console.log("emails failed!", e)
-      throw new Error('Failed emailing subscribers')
-    })
-
-    res.send(collection)
+    await Promise.all(pendingEmails)
+    res.send({success : true, emailedUsers : usersWithEmail.map( u => u._id )  })
 
   } catch ( err ) {
     logger.error('Error in email subscribers %j %O', req.body, err)
     res.status(404);
-    res.redirect('/')
+    res.send({ success : false, error : 'check params'})
   }
 }
 
