@@ -1,6 +1,7 @@
 html,
 body {
   background-color: #FAFAFA;
+  color: #333333;
 }
 
 .wrapper {
@@ -37,7 +38,7 @@ thead.thead_main {
 }
 
 thead.thead_alt {
-  background-color: #333333;
+  background-color: #F14E00;
 }
 
 th, td {
@@ -61,4 +62,12 @@ th.center {
 .high {
   color: #6ACA6B;
   opacity: 0.3;
+}
+
+.button_main {
+  background-color: #33A4D3;
+}
+
+.button_secondary {
+  background-color: #689ACA;
 }
