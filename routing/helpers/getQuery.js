@@ -13,7 +13,7 @@ can then be broken into:
 const getQuery = (request) => {
   //possible group queries
   let key = Object.keys(request)[0];
-  if ( request[key] == "undefined") { throw new Error('getQuery query value undefined') }
+  if ( request[key] == "undefined") { throw new Error(`getQuery query value undefined request : ${request}`) }
   let query = {};
   if ( request.groupId) {
     query = { _id : request.groupId }
@@ -86,6 +86,26 @@ const getQuery = (request) => {
   return query;
 }
 
+const getQueryType = (request) => {
+  let key = Object.keys(request)[0];
+  if ( request[key] == "undefined") { throw new Error('getQueryType query value undefined') }
+  let queryType = ''
+  if ( key.includes('group') ) {
+    queryType = 'group'
+  } else if ( key.includes('folio') ) {
+    queryType = 'folio'
+  } else if ( key.includes('mache') ) {
+    queryType = 'mache'
+  } else if ( key.includes('user') || key.includes('email')  ) {
+    queryType = 'account'
+  } else {
+    throw new Error(`unknown query type request : ${request}`)
+  }
+
+  return queryType
+}
+
 module.exports = {
-  getQuery : getQuery
+  getQuery : getQuery,
+  getQueryType : getQueryType
 }

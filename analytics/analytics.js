@@ -8,7 +8,7 @@ const Folio = require('../models/folio');
 const Clipping = require('../models/clipping');
 const Element = require('../models/element');
 const Role = require('../models/role');
-const { getQuery } = require('../routing/helpers/getQuery')
+const { getQuery, getQueryType } = require('../routing/helpers/getQuery')
 const { extractMaches, extractElements, extractClippings, ...helpers } = require('./helpers')
 const testAnalytics = require('./testAnalytics')
 const analytics = {}
@@ -20,15 +20,15 @@ const macheAnalytics = require('./macheAnalytics')
 //operandType : mache, user... if it is user it would extract users from collection
 //collection : collection of a single type
 
-analytics.analytics = ( operandType, collection, applyingFnSet ) => {
+analytics.analytics = ( operandType, collection, analyticFns ) => {
   try {
     const operandTypes = ['mache', 'user', 'group']
     const collectionType = collection[0].constructor.modelName
     const applyMache = () => {
       const possibleFunctions = Object.keys(macheAnalytics)
-      return applyingFnSet.map( functionName => {
+      return analyticFns.map( functionName => {
         if ( !possibleFunctions.includes(functionName) ) { throw new Error(`applyMache does not know of function ${functionName}`) }
-        return macheAnalytics[functionName](collection)
+        return { functionName : functionName, results : macheAnalytics[functionName](collection) }
       })
     }
     if ( collectionType === 'Mache' ) {
@@ -36,20 +36,26 @@ analytics.analytics = ( operandType, collection, applyingFnSet ) => {
     }
 
   } catch (e) {
-    console.error(`Error in analytics main: ${e}`)
+    console.error('Error in analytics main', e)
     return e;
   }
 
 }
 //right now just maches
 analytics.runAnalytics = async( req, res ) => {
-  const { operandType, locatorType, locators, applyingFnSet } = req.body;
+  const { operandType, locator, analyticFns } = req.body;
   try {
-    let collection = [];
-    if ( locatorType.toLowerCase() === 'mache' ) {
-      collection = await Mache.find( getQuery(locators) )
+    const collect = async() => {
+      let collection = [];
+      const locatorType = getQueryType(locator)
+      if ( locatorType === 'mache' ) {
+        const macheIds = await Mache.find( getQuery(locator) ).select('_id').exec().then( maches => maches.map( m => m._id ) )
+        collection = await extractMaches(macheIds)
+      }
+      return collection
     }
-    const results = analytics.analytics(operandType, collection, applyingFnSet)
+    const collection = await collect()
+    const results = analytics.analytics(operandType, collection, analyticFns)
     res.send(results)
 
   } catch (e) {

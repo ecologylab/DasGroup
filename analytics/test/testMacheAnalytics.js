@@ -74,10 +74,10 @@ const run = async() => {
     const maches = await helpers.getCollaboratedMaches([], 2)
     const t = test_getClippingDist(maches)
     console.log(t)
-    process.exit(0)
   } catch ( e ) {
     console.error(`Error testing macheAnalytics ${e}`)
-    process.exit(0)
 
   }
+  process.exit(0)
+  
 }

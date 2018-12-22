@@ -9,6 +9,7 @@ import test from './test.js';
 import emailTester from './tests/testEmailing.js'
 
 if ( window.location.pathname.includes('test') && NODE_ENV != 'prod' && NODE_ENV != 'production') {
+  window.axios = axios
   test.init()
   .then( usersAndGroups => test.tests(usersAndGroups) )
   .then( testStatus => console.log('Testing complete : ', testStatus) )

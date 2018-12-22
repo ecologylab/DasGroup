@@ -25,6 +25,7 @@ const getUserElementCount = (deepMache, includeLabUsers=false) => deepMache.elem
 macheAnalytics.getClippingDistribution = (deepMaches) => {
   if ( !Array.isArray(deepMaches) ) { deepMaches = [deepMaches] }
   const macheClippings = deepMaches.map( m => { return { macheId : m._id, clippings : extractClippings(m) }  })
+  console.log('MACHE CLIPPINGS', macheClippings )
   const clippingDist = macheClippings.map( ({macheId, clippings}) => {
     return clippings
     .map( c => c.toObject() )
