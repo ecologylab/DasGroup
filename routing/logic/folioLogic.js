@@ -57,6 +57,7 @@ logic.addMacheToFolio = async (req, res) => {
           usersWhoCanEdit.push(collection.mache.creator)
           if ( usersWhoCanEdit.includes(req.user._id.toString() ) ) {
             errorMessage = 'User cannot add mache to folio if they are not part of the mache';
+            console.log(`addMacheToFolio: User trying to add mache ${req.user}. Users allowed to add ${userCanEdit}`)
             successStatus = false;
           }
           if ( req.user.memberOf.indexOf(collection.folio.belongsTo) === -1) {

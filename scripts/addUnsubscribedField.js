@@ -1,4 +1,4 @@
-process.env.NODE_ENV = 'dev'
+process.env.NODE_ENV = 'staging'
 const Account = require('../models/account');
 const mongoose = require('mongoose');
 const config = require('config')

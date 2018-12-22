@@ -68,7 +68,6 @@ logic.renderGroup = async (req, res) => {
 }
 
 logic.renderRoot = async (req, res) => {
-  if ( req.user.memberOf.length < 1 ) { res.render('index', {user : req.user, memberOf : [], adminOf : [] }) }
   try {
     const query = getQuery({ groupIds : req.user.memberOf });
     const collect = () => {
@@ -105,11 +104,14 @@ logic.renderRoot = async (req, res) => {
     }
     const collection = await collect('groups');
     const validated = await validate(collection);
-    const groups = collection.groups;
-    const adminOf = collection.groups.filter( g => g.roles.admins.indexOf(req.user._id) !== -1 )
-    req.user.currentGroup = '';
-    res.render('index', {user : req.user, memberOf : groups, adminOf : adminOf })
 
+    if ( req.user.memberOf.length < 1 ) { res.render('index', { user : req.user, memberOf : [], adminOf : [] }) }
+    else {
+      const groups = collection.groups;
+      const adminOf = collection.groups.filter( g => g.roles.admins.indexOf(req.user._id) !== -1 )
+      req.user.currentGroup = '';
+      res.render('index', {user : req.user, memberOf : groups, adminOf : adminOf })
+    }
   } catch ( err ) {
     logger.error('Error in renderRoot %j %O', req.query, err)
     res.status(404);

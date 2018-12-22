@@ -9,7 +9,7 @@ const Clipping = require('../models/clipping');
 const Element = require('../models/element');
 const Role = require('../models/role');
 const moment = require('moment')
-const { extractMaches, extractElements, extractClippings, macheAnalysis, avg, min, max, ...helpers } = require('./helpers')
+const { extractMaches, extractElements, extractClippings, macheExtractor, avg, min, max, ...helpers } = require('./helpers')
 
 mongoose.connect(config.database.connectionString, { useNewUrlParser : true }).then(
   () => { console.log("Connected to database. Running analytics"); run()  },

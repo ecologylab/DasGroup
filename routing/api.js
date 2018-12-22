@@ -6,6 +6,7 @@ const accountLogic = require('./logic/accountLogic');
 const groupLogic = require('./logic/groupLogic');
 const folioLogic = require('./logic/folioLogic');
 const adminLogic = require('./logic/adminLogic');
+const { runAnalytics } = require('../analytics/analytics')
 const helpers = require('./helpers/helpers')
 const isAuthenticated = helpers.isAuthenticated;
 
@@ -37,5 +38,9 @@ router.post('/addMacheToFolio', isAuthenticated, folioLogic.addMacheToFolio);
 router.post('/removeMacheFromFolio', isAuthenticated, folioLogic.removeMacheFromFolio);
 router.post('/getFolios', isAuthenticated, folioLogic.getFolios)
 router.post('/deleteFolio', isAuthenticated, folioLogic.deleteFolio)
+
+
+/* analytics */
+router.post('/analytics', isAuthenticated, runAnalytics)
 
 module.exports = router;

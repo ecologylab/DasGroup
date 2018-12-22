@@ -13,7 +13,8 @@ const accountLogic = require('../routing/logic/accountLogic')
 const helpers = require('../routing/helpers/helpers')
 const config = require('config')
 const tokenHandler = require('../utils/tokenHandler')
-
+const { runAnalytics } = require('../analytics/analytics')
+const analyticHelpers = require('../analytics/helpers')
 mongoose.connect(config.database.connectionString, { useNewUrlParser : true }).then(
   () => { console.log("Connected!"); },
   err => { console.log("ERROR - Database connection failed")}
@@ -38,8 +39,9 @@ const randomId = mongoose.Types.ObjectId();
 // }
 
 const test = async () => {
-  const users = await Account.find({ username : 'nic' }).exec()
-  console.log(users)
+  const maches = await analyticHelpers.getCollaboratedMaches([], 2)
+  const results = runAnalytics('mache', maches, ['elementCountByUser'] )
+  console.log('Results', results)
   process.exit(0);
 }
 

@@ -1,4 +1,6 @@
-process.env.NODE_ENV = 'dev'
+//These are more general helpers
+process.env.NODE_ENV = process.env.NODE_ENV ? process.env.NODE_ENV : process.env.NODE_ENV = 'dev'
+
 const config = require('config')
 const Account = require('../models/account');
 const Group = require('../models/group');
@@ -8,8 +10,16 @@ const Clipping = require('../models/clipping');
 const Element = require('../models/element');
 const Role = require('../models/role');
 
+
+const labUsers = [
+  "bill.hamilton","nicolas.botello.jr.","nic", "brieyh'leai.reyhn.simmons", "billingsley", "ajit.jain0", "rhema.linder",
+  "ecologylab", "nic_endsDemo", "ajit.jain", "alexandria.stacy", "nicTest3", "hannah.jo.fowler", "ajit.courses", "andruid.courses"
+]
+
+
 //From Eric Elliots "Composing Software"
 const curry = (f, arr = []) => (...args) => ( a => a.length === f.length ? f(...a) : curry(f, a) )([...arr, ...args])
+
 const uniq = (a) => Array.from(new Set(a));
 const getDeepMaches = (macheIds) => Mache
 .find({ _id : { $in : macheIds } })
@@ -19,6 +29,8 @@ const getDeepMaches = (macheIds) => Mache
 const avg = (a) => a.reduce( (a,b) => a + b ) / a.length
 const max = (a) => Math.max(...a)
 const min = (a) => Math.min(...a)
+
+
 
 
 const extractElements = (maches) => {
@@ -93,14 +105,10 @@ const extractMaches = async (collection, options) => {
 
 
 
-const getCollaboratedMaches = async (maches=[], minUsers, maxUsers, elementMinCount=10) => {
+const getCollaboratedMaches = async (maches=[], minUsers, maxUsers=100, elementMinCount=10) => {
   const query = { users : { $exists : true, $not : { $size : 0 } } }
   if ( maches.length > 0 ) { query._id = { $in : maches.map( m => m._id ) } }
   const collaboratedMaches = await Mache.find(query).populate('creator').populate('users.user').populate({ path : 'elements' , populate : { path : 'clipping' } }).exec()
-  const labUsers = [
-    "bill.hamilton","nicolas.botello.jr.","nic", "brieyh'leai.reyhn.simmons", "billingsley", "ajit.jain0", "rhema.linder",
-    "ecologylab", "nic_endsDemo", "ajit.jain", "alexandria.stacy", "nicTest3", "hannah.jo.fowler"
-  ]
   const inRange = (m) => m.users.length >= minUsers && m.users.length < maxUsers
   const userIsNotNull = (m) => {
     let pass = true
@@ -109,7 +117,7 @@ const getCollaboratedMaches = async (maches=[], minUsers, maxUsers, elementMinCo
     })
     return pass
   }
-  const creatorNotLabUser = (m) => !labUsers.includes(m.creator.username.toString()) && m.creator.access_code.length > 5 && m.creator.access_code !== "ecologyfriends"
+  const creatorNotLabUser = (m) => !labUsers.includes(m.creator.username.toString()) && m.creator.access_code !== "ecologyfriends"
   const containsStudentUsers = (m) => {
     const labUserCount = m.users.filter( u => labUsers.includes( u.user.username.toString() ) ).length
     return m.users.length - labUserCount
@@ -117,7 +125,7 @@ const getCollaboratedMaches = async (maches=[], minUsers, maxUsers, elementMinCo
   const hasNElements = (m) => m.elements.length > elementMinCount
   const machePred = (m) => inRange(m) && userIsNotNull(m) && creatorNotLabUser(m) && hasNElements(m) && containsStudentUsers(m)
 
-  return macheAnalysis(collaboratedMaches, machePred, -1, -1)
+  return macheExtractor(collaboratedMaches, machePred, -1, -1)
 }
 
 const proliferateUsers = async (macheThreshold) => {
@@ -144,7 +152,7 @@ const getMachesFromUsersWithGtField = async(field='maches', n=8, max=1000 ) => {
 
 //the resultings maches from macheCollector must be at the depth at which you wish to filter
 //This function can be curried to desire use by passing null args, therefore the return value is dependent on args
-const macheAnalysis = curry(  (maches, machePredicate, elementPredicate, clippingPredicate) => {
+const macheExtractor = curry(  (maches, machePredicate, elementPredicate, clippingPredicate) => {
   if ( !Array.isArray(maches) ) { maches = [maches] }
   const filteredMaches = maches.filter(machePredicate)
   if ( elementPredicate === -1 ) { return filteredMaches; }
@@ -157,7 +165,7 @@ const macheAnalysis = curry(  (maches, machePredicate, elementPredicate, clippin
 })
 
 module.exports = {
-  macheAnalysis : macheAnalysis,
+  macheExtractor : macheExtractor,
   getMachesFromUsersWithGtField : getMachesFromUsersWithGtField,
   getDeepMaches : getDeepMaches,
   extractMaches : extractMaches,
@@ -165,6 +173,7 @@ module.exports = {
   extractClippings : extractClippings,
   proliferateUsers : proliferateUsers,
   getCollaboratedMaches : getCollaboratedMaches,
+  labUsers : labUsers,
   avg : avg,
   min : min,
   max : max,
