@@ -1,0 +1,29 @@
+extends layout
+
+block content
+  h1#user(data-userId=user._id style="display:none;") User: #{user.username}
+  h2#group(data-groupId=group._id, data-groupVisibility=group.visibility style="display:none;") Group Name: #{group.name}
+  .wrapper
+    .headband
+      include logo.pug
+      .group_heading
+        h2
+          a.link(style="color: #777777; font-size: .6em; padding-right: 40px;" href=resourceBasePath + 'admin/' + group.key) #{group.name}
+          span New Assignment
+      h5(style="padding-top: 15px;") #{user.username}       
+    hr
+    .container.vest
+      .row 
+        .col
+          .row
+            ul.nav.nav-tabs
+              li.nav-item
+                a.nav-link(href="#")
+                  | Curations
+              li.nav-item
+                a.nav-link.active(href="#")
+                  | Settings
+          
+      .row
+        .col          
+          #buttonArea(style="margin-top:60px;margin-left:120px;")

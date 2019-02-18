@@ -10,8 +10,9 @@ let user = {},
     components = [];
 
 const createGroupForm = (el) => {
-  console.log("in render form")
-  let ren = groupViewHelper.renderCreateGroupForm('#formArea');
+  console.log("in create group form")
+  //let ren = groupViewHelper.renderCreateGroupForm('#formArea');
+  window.location.href = '/newgroup';
 }
 
 const setHandlers = () => {

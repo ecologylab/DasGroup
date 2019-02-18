@@ -30,6 +30,7 @@ router.post('/demoteAdmin', isAuthenticated, groupLogic.demoteAdmin);
 
 router.post('/deleteGroup', isAuthenticated, groupLogic.deleteGroup);
 router.post('/createGroup', isAuthenticated, groupLogic.createGroup);
+router.post('/updateGroup', isAuthenticated, groupLogic.updateGroup);
 
 /* folios */
 router.post('/createFolio', isAuthenticated, folioLogic.createFolio);

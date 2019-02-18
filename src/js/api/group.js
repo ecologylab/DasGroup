@@ -126,9 +126,10 @@ wrapper.demoteAdmin = (groupLocator, userLocator) => {
   })
 }
 
-wrapper.updateGroup = (modifiedGroupFields) => {
+wrapper.updateGroup = (groupLocator, groupData) => {
+  let request = { groupLocator : groupLocator, groupData : groupData };
   return new Promise( (resolve, reject) => {
-    axios.post(`${BASEPATH}a/updateGroup`, modifiedGroupFields)
+    axios.post(`${BASEPATH}a/updateGroup`, request)
     .then( (response) => {
       resolve(response.data)
     })

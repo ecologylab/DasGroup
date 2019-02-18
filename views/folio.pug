@@ -1,0 +1,43 @@
+extends layout
+
+block content
+  h1#user(data-userId=user._id style="display:none;") User: #{user.username}
+  h2#folio(data-folioId=folio._id, data-folioVisibility=folio.visibility data-folioVState=folio.state style="display:none;") Folio Name: #{folio.name}
+  h2#group(data-groupId=folio.belongsTo, style="display:none;") Group Id: #{folio.belongsTo}
+  .wrapper
+    .headband
+      include logo.pug
+      .group_heading#heading
+      h5(style="padding-top: 15px;") #{user.username}    
+    hr
+    .container.vest
+      .row 
+        .col
+          .row
+            ul.nav.nav-tabs
+              li.nav-item
+                a.nav-link.active#curations_tab(href="#")
+                  | Curations
+              li.nav-item
+                a.nav-link#settings_tab(href="#")
+                  | Settings
+          
+          .row
+            .col
+              table.table.table-striped.table_main#macheSubmissions
+                thead
+                  tr
+                    th.center Team 
+                    th.center Curation
+                    th.center Total
+                    th.center Fluency
+                    th.center Contexts
+                    th.center Contrast
+                    th.center Color Range
+                    th.center Sources
+                    th.center Submitted
+                tbody
+                  
+          .row
+            .col
+              #buttonArea(style="margin-top:60px;margin-left:120px;display:none;")

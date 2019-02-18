@@ -1,0 +1,26 @@
+extends layout
+
+block content
+  h1#user(data-userId=user._id style="display:none;") User: #{user.username}
+  .wrapper
+    .headband
+      include logo.pug
+      .group_heading
+        h2 New Course
+      h5(style="padding-top: 15px;") #{user.username}  
+    hr
+    .container.vest
+      .row 
+        .col
+          .row
+            ul.nav.nav-tabs
+              li.nav-item
+                a.nav-link(href="#")
+                  | Assignments
+              li.nav-item
+                a.nav-link.active(href="#")
+                  | Settings
+          
+      .row
+        .col          
+          #buttonArea(style="margin-top:60px;margin-left:120px;")

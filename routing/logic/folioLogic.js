@@ -286,6 +286,12 @@ logic.updateFolio = async (req, res) => {
     const collection = await collect('folio', 'group');
     const validated = await validate(collection);
 
+    if ( folioData.hasOwnProperty('name') ) {
+      collection.folio.name = folioData.name;
+    }
+    if ( folioData.hasOwnProperty('description') ) {
+      collection.folio.description = folioData.description;
+    }
     if ( folioData.hasOwnProperty('visibility') ) {
       collection.folio.visibility = folioData.visibility;
     }
@@ -435,6 +441,112 @@ logic.deleteFolio = async (req, res) => {
   }
 }
 
+logic.renderFolio = async (req, res) => {
+  try {
+    const query = getQuery({folioId : req.params.id})
+    const collect = () => {
+      const collection = {};
+      return new Promise( (resolve, reject) => {
+        Folio.findOne(query)
+        //.populate('belongsTo', 'name')
+        .populate('macheSubmissions', 'mache date_submitted')
+        .exec()
+        .then( folio => {
+          collection.folio = folio;
+          resolve(collection)
+        })
+        .catch( e => {
+          logger.error("renderFolio collect error")
+          reject(e);
+        })
+      })
+    }
+    const validate = (collection) => {
+      let errorMessage = '';
+      return new Promise( (resolve, reject) => {
+        const folioExists = () => {
+          let successStatus = true;
+          if ( !collection.folio ) {
+            errorMessage = 'folio does not exist'
+            successStatus = false;
+          }
+          return successStatus;
+        }
+        if ( folioExists() ) {
+          resolve(true);
+        } else {
+          logger.error("renderFolio validate error")
+          reject(`validateError ${errorMessage}`)
+        }
+      })
+    }
 
+    const collection = await collect('folio');
+    const validated = await validate(collection);
+    const renderData = {
+      user :  req.user,
+      folio : collection.folio,
+    }
+    req.user.currentFolio = collection.folio;
+    res.render('folio', renderData)
+  } catch ( err ) {
+    logger.error('Error in renderFolio %j %O', req.query, err)
+    res.status(404);
+    res.redirect('/')
+  }
+}
+
+logic.newFolio = async (req, res) => {
+  try {
+    const query = getQuery({groupKey : req.params.key})
+    const collect = () => {
+      const collection = {};
+      return new Promise( (resolve, reject) => {
+        Group.findOne(query)
+        .exec()
+        .then( group => {
+          collection.group = group;
+          resolve(collection)
+        })
+        .catch( e => {
+          logger.error("newFolio collect error")
+          reject(e);
+        })
+      })
+    }
+    const validate = (collection) => {
+      let errorMessage = '';
+      return new Promise( (resolve, reject) => {
+        const groupExists = () => {
+          let successStatus = true;
+          if ( !collection.group ) {
+            errorMessage = 'group does not exist'
+            successStatus = false;
+          }
+          return successStatus;
+        }
+        if ( groupExists() ) {
+          resolve(true);
+        } else {
+          logger.error("renderGroup validate error")
+          reject(`validateError ${errorMessage}`)
+        }
+      })
+    }
+
+    const collection = await collect('group');
+    const validated = await validate(collection);
+    const renderData = {
+      user :  req.user,
+      group : collection.group,
+    }
+    req.user.currentGroup = collection.group;
+    res.render('newFolio', renderData)
+  } catch ( err ) {
+    logger.error('Error in newFolio %j %O', req.query, err)
+    res.status(404);
+    res.redirect('/')
+  }
+}
 
 module.exports = logic;

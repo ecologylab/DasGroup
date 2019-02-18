@@ -269,6 +269,7 @@ logic.getGroupMembers = async (req, res) => {
 
 logic.updateGroup = async (req, res) => {
   try {
+    console.log("request: " + Object.keys(req.body));
     const query = getQuery(req.body.groupLocator);
     const collect = () => {
       const collection = {};
@@ -318,14 +319,14 @@ logic.updateGroup = async (req, res) => {
 
     const group = collection.group;
 
-    if ( req.body.hasOwnProperty('visibility') ) {
-      group.visibility = req.body.visibility;
+    if ( req.body.groupData.hasOwnProperty('visibility') ) {
+      group.visibility = req.body.groupData.visibility;
     }
-    if ( req.body.hasOwnProperty('name') ) {
-      group.name = req.body.name;
+    if ( req.body.groupData.hasOwnProperty('name') ) {
+      group.name = req.body.groupData.name;
     }
-    if ( req.body.hasOwnProperty('description') ) {
-      group.description = req.body.description;
+    if ( req.body.groupData.hasOwnProperty('description') ) {
+      group.description = req.body.groupData.description;
     }
 
     const updatedGroup = await group.save()

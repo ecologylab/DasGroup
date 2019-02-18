@@ -17,6 +17,20 @@ wrapper.createFolio = (groupLocator, folioData) => {
   })
 }
 
+wrapper.getFolios = (folioLocator, folioData) => {
+  let request = { folioLocator : folioLocator, folioData : folioData };
+  return new Promise( (resolve, reject) => {
+    axios.post(`${BASEPATH}a/getFolios`, request)
+    .then( (response) => {
+      resolve(response.data)
+    })
+    .catch( e => {
+      console.error('Error finding folio', folioLocator, e)
+      reject(e);
+    })
+  })
+}
+
 wrapper.updateFolio = (folioLocator, folioData) => {
   let request = { folioLocator : folioLocator, folioData : folioData };
   return new Promise( (resolve, reject) => {
@@ -25,7 +39,7 @@ wrapper.updateFolio = (folioLocator, folioData) => {
       resolve(response.data)
     })
     .catch( e => {
-      console.error('Error updating folio', groupLocator, e)
+      console.error('Error updating folio', folioLocator, e)
       reject(e);
     })
   })

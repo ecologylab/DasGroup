@@ -17,19 +17,21 @@ viewHelper.renderGetMembersButton = (appendLocation, group) => {
 }
 
 
-viewHelper.renderCreateGroupForm = (appendLocation) => {
-  let inputGroup = groupHtmlBuilder.formBuilder.createGroup();
+viewHelper.renderCreateGroupForm = (appendLocation, fieldValues) => {
+  let inputGroup = groupHtmlBuilder.formBuilder.createGroup(fieldValues);
   let $inputGroup = $(inputGroup.html)
   $inputGroup.find('button').on('click', inputGroup.handler())
+  $inputGroup.find('i').on('click', inputGroup.iconselector())
   $(appendLocation).append($inputGroup)
   renderedComponents.push($inputGroup)
   return renderedComponents;
 }
 
-viewHelper.renderCreateFolio = (appendLocation, groupId) => {
-  let inputFolio = groupHtmlBuilder.formBuilder.createFolio();
+viewHelper.renderCreateFolio = (appendLocation, groupId, fieldValues) => {
+  let inputFolio = groupHtmlBuilder.formBuilder.createFolio(fieldValues);
   let $inputFolio = $(inputFolio.html)
   $inputFolio.find('button').on('click', inputFolio.handler(groupId))
+  $inputFolio.find('i').on('click', inputFolio.iconselector())
   $(appendLocation).append($inputFolio)
   renderedComponents.push($inputFolio)
   return renderedComponents;
